@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sistema de Registro por Voz - Medical AI</title>
+
+        <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <!-- CSS Personalizado -->
+        <link rel="stylesheet" href="static/css/styles.css">
+
+        <!-- Favicon (opcional) -->
+        <link rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎤</text></svg>">
+    </head>
+</head>
+
+<body class="bg-gray-50 min-h-screen p-8">
+    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-8">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">🎤 Sistema de Registro por Voz</h1>
+            <div class="flex gap-4">
+                <button id="startVoiceBtn"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition">
+                    🎤 Iniciar Dictado
+                </button>
+                <button id="stopVoiceBtn"
+                    class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold hidden">
+                    🛑 Detener
+                </button>
+            </div>
+        </div>
+
+        <!-- Transcripción en tiempo real -->
+        <div id="transcriptionPanel" class="hidden mb-6 p-4 bg-blue-50 border-l-4 border-blue-600 rounded">
+            <p class="text-sm font-semibold text-blue-900 mb-2">📝 Transcripción:</p>
+            <p id="transcriptionText" class="text-gray-700"></p>
+        </div>
+
+        <!-- Formulario -->
+        <form id="dilatacionForm" class="space-y-8" novalidate>
+            <!-- Permisos de dilatación -->
+            <div>
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Permisos de dilatación</h2>
+                <div class="flex items-center gap-6">
+                    <label class="text-gray-700 font-medium">¿El paciente requiere de dilatación?</label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="requiere_dilatacion" value="si" class="w-4 h-4" required>
+                        <span>Sí</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="requiere_dilatacion" value="no" class="w-4 h-4">
+                        <span>No</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Registro de dilatación -->
+            <div id="registroSection" class="hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">Registro de dilatación</h2>
+                    <label class="flex items-center gap-2 text-gray-600 cursor-pointer">
+                        <input type="checkbox" id="paciente_dilatado" class="w-4 h-4">
+                        <span class="text-sm">Paciente dilatado</span>
+                    </label>
+                </div>
+
+                <!-- Dilatación 1 -->
+                <div class="border border-gray-300 rounded-lg p-6">
+                    <h3 class="font-bold text-gray-700 mb-4">Dilatación 1</h3>
+
+                    <div class="grid grid-cols-4 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Hora</label>
+                            <input type="time" name="hora" class="w-full border border-gray-300 rounded px-3 py-2"
+                                value="09:05">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">No. gotas</label>
+                            <input type="number" name="num_gotas" placeholder="No. Gotas"
+                                class="w-full border border-gray-300 rounded px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Medicamento</label>
+                            <select name="medicamento" class="w-full border border-gray-300 rounded px-3 py-2">
+                                <option value="">Seleccionar artículo</option>
+                                <option value="Dolex">Dolex</option>
+                                <option value="Latanoprost">Latanoprost</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Lote</label>
+                            <input type="text" name="lote" placeholder="Lote"
+                                class="w-full border border-gray-300 rounded px-3 py-2">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Forma farmacéutica <span
+                                    class="text-red-500">*</span></label>
+                            <select name="forma_farmaceutica" class="w-full border border-gray-300 rounded px-3 py-2"
+                                required>
+                                <option value="">Seleccionar</option>
+                                <option value="Emulsion">Emulsión</option>
+                                <option value="Tubo">Tubo</option>
+                                <option value="Frasco">Frasco</option>
+                                <option value="Tableta">Tableta</option>
+                                <option value="Gel">Gel</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Vía de administración <span
+                                    class="text-red-500">*</span></label>
+                            <select name="via_administracion" class="w-full border border-gray-300 rounded px-3 py-2"
+                                required>
+                                <option value="">Seleccionar</option>
+                                <option value="Oftalmico">Oftálmico</option>
+                                <option value="Oral">Oral</option>
+                                <option value="Intramuscular">Intramuscular</option>
+                                <option value="Topica">Tópica</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Órgano <span
+                                    class="text-red-500">*</span></label>
+                            <select name="organo" class="w-full border border-gray-300 rounded px-3 py-2" required>
+                                <option value="">Seleccionar</option>
+                                <option value="OD">OD (Ojo Derecho)</option>
+                                <option value="OI">OI (Ojo Izquierdo)</option>
+                                <option value="AO">AO (Ambos Ojos)</option>
+                                <option value="N/A">N/A (No Aplica)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Observaciones clínicas</label>
+                        <textarea name="observaciones" rows="3" placeholder="Escribe..."
+                            class="w-full border border-gray-300 rounded px-3 py-2"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón guardar -->
+            <div class="flex justify-end">
+                <button type="submit"
+                    class="bg-teal-500 hover:bg-teal-600 text-white px-8 py-3 rounded-lg font-semibold">
+                    💾 Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Scripts -->
+    <script src="static/js/recorder.js?v=15"></script>
+    <script src="static/js/websocket.js?v=9"></script>
+    <script src="static/js/autofill.js?v=4"></script>
+
+    <script>
+        // Mostrar/ocultar registro según selección
+        document.querySelectorAll('input[name="requiere_dilatacion"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const registroSection = document.getElementById('registroSection');
+                if (e.target.value === 'si') {
+                    registroSection.classList.remove('hidden');
+                } else {
+                    registroSection.classList.add('hidden');
+                }
+            });
+        });
+
+        // Prevenir submit
+        document.getElementById('dilatacionForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('✅ Formulario listo para enviar');
+            console.log('Datos:', new FormData(e.target));
+        });
+    </script>
+</body>
+
+</html>

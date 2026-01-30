@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  voice-to-form:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - ELEVENLABS_VOICE_ID=${ELEVENLABS_VOICE_ID}
+    volumes:
+      - ./backend/app:/app/app
+      - ./frontend:/app/frontend
+    restart: unless-stopped
