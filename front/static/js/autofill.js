@@ -53,16 +53,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Mostrar/ocultar registro según selección
+    // Mostrar/ocultar registro Y motivo según selección
     document.querySelectorAll('input[name="requiere_dilatacion"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
-            const section = document.getElementById('registroSection');
+            const registroSection = document.getElementById('registroSection');
+            const motivoSection = document.getElementById('motivoNoDialatacionSection');
+            const motivoTextarea = document.getElementById('motivo_no_dilatacion');
+
             if (e.target.value === 'si') {
-                section.classList.remove('hidden');
+                // Sí requiere dilatación
+                registroSection.classList.remove('hidden');
+                motivoSection.classList.add('hidden');
+                motivoTextarea.required = false;
+                motivoTextarea.value = ''; // Limpiar campo
                 console.log('✅ Sección de registro mostrada');
             } else {
-                section.classList.add('hidden');
-                console.log('ℹ️ Sección de registro ocultada');
+                // No requiere dilatación
+                registroSection.classList.add('hidden');
+                motivoSection.classList.remove('hidden');
+                motivoTextarea.required = true;
+                console.log('✅ Sección de motivo mostrada');
             }
         });
     });

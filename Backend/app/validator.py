@@ -4,7 +4,7 @@ from typing import Dict, Any, List
 class FormValidator:
     def __init__(self, form_structure: FormStructure):
         self.form_structure = form_structure
-    
+
     def validate_mappings(self, mappings: List[FieldMapping]) -> ValidationResult:
         """
         Valida que todos los campos requeridos estén completos
@@ -12,26 +12,47 @@ class FormValidator:
         # Campos mapeados
         filled_fields = {mapping.field_name for mapping in mappings}
         
-        # Campos requeridos
-        required_fields = {
-            field.name 
-            for field in self.form_structure.fields 
-            if field.required
-        }
+        # Verificar si requiere dilatación
+        requiere_dilatacion = next(
+            (mapping.value for mapping in mappings if mapping.field_name == 'requiere_dilatacion'), 
+            None
+        )
+        
+        # Determinar campos requeridos según requiere_dilatacion
+        if requiere_dilatacion == 'no':
+            # Si NO requiere dilatación, solo validar estos campos
+            required_fields = ['requiere_dilatacion', 'motivo_no_dilatacion']
+        elif requiere_dilatacion == 'si':
+            # Si SÍ requiere dilatación, validar campos del registro (excepto motivo)
+            required_fields = [
+                field.name 
+                for field in self.form_structure.fields 
+                if field.required and field.name != 'motivo_no_dilatacion'
+            ]
+        else:
+            # Si no se especificó requiere_dilatacion, usar todos los campos requeridos
+            required_fields = [
+                field.name 
+                for field in self.form_structure.fields 
+                if field.required
+            ]
         
         # Campos faltantes
-        missing_fields = required_fields - filled_fields
+        missing_fields = [
+            field for field in required_fields 
+            if field not in filled_fields
+        ]
         
         # Validar tipos de datos
         errors = self._validate_field_types(mappings)
         
         return ValidationResult(
             is_valid=len(missing_fields) == 0 and len(errors) == 0,
-            missing_fields=list(missing_fields),
+            missing_fields=missing_fields,
             filled_fields=list(filled_fields),
             errors=errors
         )
-    
+       
     def _validate_field_types(self, mappings: List[FieldMapping]) -> List[str]:
         """Valida tipos de datos"""
         errors = []
