@@ -1,0 +1,22 @@
+notepad .gitignore
+```
+```
+# Environment variables
+.env
+Backend/.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+*.egg-info/
+
+# Temporal
+*.log
+*.tmp
+tmpfiles/
+
+# OS
+.DS_Store
+Thumbs.db

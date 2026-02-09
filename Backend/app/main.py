@@ -23,21 +23,40 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Servir archivos estáticos
+# Servir archivos estáticos del frontend
 frontend_path = Path(__file__).parent.parent.parent / "front"
-app.mount("/static", StaticFiles(directory=frontend_path / "static"), name="static")
+dist_path = frontend_path / "dist"
 
-@app.get("/", response_class=HTMLResponse)
-async def serve_form():
-    """Servir el formulario HTML"""
-    form_path = frontend_path / "form.html"
-    return form_path.read_text(encoding='utf-8')
+# En producción, servir desde dist (build de Vite)
+if dist_path.exists():
+    app.mount("/assets", StaticFiles(directory=dist_path / "assets"), name="assets")
+
+    @app.get("/", response_class=HTMLResponse)
+    async def serve_form():
+        """Servir el formulario HTML (build de producción)"""
+        index_path = dist_path / "index.html"
+        return index_path.read_text(encoding='utf-8')
+else:
+    # Fallback para desarrollo (usar Vite dev server o archivos legacy)
+    if (frontend_path / "static").exists():
+        app.mount("/static", StaticFiles(directory=frontend_path / "static"), name="static")
+
+    @app.get("/", response_class=HTMLResponse)
+    async def serve_form():
+        """Servir el formulario HTML (desarrollo)"""
+        # Primero intentar form.html (legacy)
+        form_path = frontend_path / "form.html"
+        if form_path.exists():
+            return form_path.read_text(encoding='utf-8')
+        # Fallback a index.html
+        index_path = frontend_path / "index.html"
+        return index_path.read_text(encoding='utf-8')
 
 @app.websocket("/ws/voice-stream")
 async def voice_stream_endpoint(websocket: WebSocket):
     await websocket.accept()
     print("\n" + "=" * 70)
-    print("✅ Cliente conectado al WebSocket")
+    print(" Cliente conectado al WebSocket")
     print("=" * 70)
     
     # Inicializar servicios
@@ -52,26 +71,26 @@ async def voice_stream_endpoint(websocket: WebSocket):
             message = json.loads(data)
             
             msg_type = message.get("type")
-            print(f"\n📨 Mensaje recibido - Tipo: {msg_type}")
+            print(f"\n Mensaje recibido - Tipo: {msg_type}")
             
             # 1. RECIBIR ESTRUCTURA DEL FORMULARIO
             if msg_type == "form_structure":
                 print("\n" + "=" * 70)
-                print("📥 RECIBIENDO ESTRUCTURA DEL FORMULARIO")
+                print(" RECIBIENDO ESTRUCTURA DEL FORMULARIO")
                 print("=" * 70)
                 
                 form_data = message.get("data")
                 
-                print(f"📊 Tipo de form_data: {type(form_data)}")
-                print(f"📊 Claves en form_data: {form_data.keys() if isinstance(form_data, dict) else 'No es dict'}")
+                print(f" Tipo de form_data: {type(form_data)}")
+                print(f" Claves en form_data: {form_data.keys() if isinstance(form_data, dict) else 'No es dict'}")
                 
                 try:
-                    print("\n🔨 Intentando crear FormStructure...")
+                    print("\n Intentando crear FormStructure...")
                     form_structure = FormStructure(**form_data)
                     
-                    print(f"✅ FormStructure creado exitosamente")
-                    print(f"📋 form_id: {form_structure.form_id}")
-                    print(f"📋 Número de fields: {len(form_structure.fields)}")
+                    print(f" FormStructure creado exitosamente")
+                    print(f" form_id: {form_structure.form_id}")
+                    print(f" Número de fields: {len(form_structure.fields)}")
                     
                     voice_processor.set_form_structure(form_structure)
                     validator = FormValidator(form_structure)
@@ -80,15 +99,15 @@ async def voice_stream_endpoint(websocket: WebSocket):
                         "type": "info",
                         "message": "Estructura del formulario recibida"
                     })
-                    print("✅ Estructura del formulario guardada correctamente\n")
+                    print(" Estructura del formulario guardada correctamente\n")
                     
                 except Exception as e:
                     print("\n" + "=" * 70)
-                    print(f"❌ ERROR CREANDO FormStructure")
+                    print(f" ERROR CREANDO FormStructure")
                     print("=" * 70)
-                    print(f"❌ Tipo de error: {type(e).__name__}")
-                    print(f"❌ Mensaje: {str(e)}")
-                    print(f"\n❌ Traceback completo:")
+                    print(f" Tipo de error: {type(e).__name__}")
+                    print(f" Mensaje: {str(e)}")
+                    print(f"\n Traceback completo:")
                     import traceback
                     traceback.print_exc()
                     print("=" * 70)
@@ -103,7 +122,7 @@ async def voice_stream_endpoint(websocket: WebSocket):
                 audio_base64 = message.get("data")
                 
                 if not audio_base64:
-                    print("⚠️ Chunk vacío recibido")
+                    print(" Chunk vacío recibido")
                     continue
                 
                 # Solo acumular el chunk (no transcribir todavía)
@@ -112,7 +131,7 @@ async def voice_stream_endpoint(websocket: WebSocket):
             # 3. FIN DEL STREAM - TRANSCRIBIR TODO
             elif msg_type == "end_stream":
                 print("\n" + "=" * 70)
-                print("🎬 STREAM FINALIZADO - INICIANDO TRANSCRIPCIÓN")
+                print(" STREAM FINALIZADO - INICIANDO TRANSCRIPCIÓN")
                 print("=" * 70)
                 
                 try:
@@ -120,7 +139,7 @@ async def voice_stream_endpoint(websocket: WebSocket):
                     transcription = await voice_processor.transcribe_accumulated_audio()
                     
                     if transcription:
-                        print(f"\n📝 Transcripción completa: '{transcription}'")
+                        print(f"\n Transcripción completa: '{transcription}'")
                         
                         # Enviar transcripción al cliente
                         await websocket.send_json({
@@ -129,11 +148,11 @@ async def voice_stream_endpoint(websocket: WebSocket):
                         })
                         
                         # Mapear a campos del formulario
-                        print(f"\n🧠 Iniciando mapeo de campos...")
+                        print(f"\n Iniciando mapeo de campos...")
                         mappings = await voice_processor.map_voice_to_fields(transcription)
                         
                         if mappings:
-                            print(f"\n✅ Campos mapeados exitosamente: {len(mappings)}")
+                            print(f"\n Campos mapeados exitosamente: {len(mappings)}")
                             
                             # Preparar datos para auto-fill
                             autofill_data = {
@@ -141,7 +160,7 @@ async def voice_stream_endpoint(websocket: WebSocket):
                                 for mapping in mappings
                             }
                             
-                            print(f"\n📤 Datos para auto-fill:")
+                            print(f"\n Datos para auto-fill:")
                             for field_name, value in autofill_data.items():
                                 print(f"   - {field_name} = {value}")
                             
@@ -150,7 +169,7 @@ async def voice_stream_endpoint(websocket: WebSocket):
                                 "type": "autofill_data",
                                 "data": autofill_data
                             })
-                            print("\n✅ Datos de auto-fill enviados al cliente")
+                            print("\n Datos de auto-fill enviados al cliente")
                             
                             # Validar formulario
                             if validator:
@@ -164,9 +183,9 @@ async def voice_stream_endpoint(websocket: WebSocket):
                                 })
                                 
                                 if validation.is_valid:
-                                    print(f"\n✅ Validación: Formulario completo")
+                                    print(f"\n Validación: Formulario completo")
                                 else:
-                                    print(f"\n⚠️ Validación: Campos faltantes:")
+                                    print(f"\n Validación: Campos faltantes:")
                                     for field in validation.missing_fields:
                                         print(f"   - {field}")
                                     
@@ -175,7 +194,7 @@ async def voice_stream_endpoint(websocket: WebSocket):
                                         validation.missing_fields
                                     )
                                     
-                                    print(f"\n🔊 Generando TTS: '{missing_msg}'")
+                                    print(f"\n Generando TTS: '{missing_msg}'")
                                     tts_audio = await tts_service.generate_speech(missing_msg)
                                     
                                     if tts_audio:
@@ -184,11 +203,11 @@ async def voice_stream_endpoint(websocket: WebSocket):
                                             "audio_base64": tts_audio,
                                             "text": missing_msg
                                         })
-                                        print("✅ TTS enviado al cliente")
+                                        print(" TTS enviado al cliente")
                         else:
-                            print("\n⚠️ No se pudieron mapear campos de la transcripción")
+                            print("\n No se pudieron mapear campos de la transcripción")
                     else:
-                        print("\n⚠️ Transcripción vacía o sin audio suficiente")
+                        print("\n Transcripción vacía o sin audio suficiente")
                     
                     # Reiniciar acumulación para el próximo dictado
                     voice_processor.reset_accumulation()
@@ -199,11 +218,11 @@ async def voice_stream_endpoint(websocket: WebSocket):
                     })
                     
                     print("\n" + "=" * 70)
-                    print("✅ STREAM PROCESADO COMPLETAMENTE")
+                    print(" STREAM PROCESADO COMPLETAMENTE")
                     print("=" * 70 + "\n")
                     
                 except Exception as e:
-                    print(f"\n❌ Error procesando stream:")
+                    print(f"\n Error procesando stream:")
                     print(f"   Tipo: {type(e).__name__}")
                     print(f"   Mensaje: {str(e)}")
                     import traceback
@@ -219,10 +238,10 @@ async def voice_stream_endpoint(websocket: WebSocket):
     
     except WebSocketDisconnect:
         print("\n" + "=" * 70)
-        print("🔌 Cliente desconectado del WebSocket")
+        print(" Cliente desconectado del WebSocket")
         print("=" * 70 + "\n")
     except Exception as e:
-        print(f"\n❌ Error general en WebSocket:")
+        print(f"\n Error general en WebSocket:")
         print(f"   Tipo: {type(e).__name__}")
         print(f"   Mensaje: {str(e)}")
         import traceback
