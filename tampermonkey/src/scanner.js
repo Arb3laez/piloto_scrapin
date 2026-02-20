@@ -1,71 +1,214 @@
 import { CONFIG } from './config';
 
+// ============================================
+// Registro de campos conocidos con clave
+// Solo estos campos serán escaneados en el DOM
+// ============================================
+const REGISTERED_FIELDS = {
+    'attention-origin-reason-for-consulting-badge-field': {
+        label: 'Motivo de consulta',
+        section: 'motivo_consulta',
+        fieldType: 'textarea',
+        keywords: ['motivo de consulta', 'motivo', 'consulta por'],
+    },
+    'attention-origin-current-disease-badge-field': {
+        label: 'Enfermedad actual',
+        section: 'enfermedad_actual',
+        fieldType: 'textarea',
+        keywords: ['enfermedad actual', 'padecimiento actual', 'cuadro clínico'],
+    },
+    'attention-origin-select': {
+        label: 'Origen de la atención',
+        section: 'motivo_consulta',
+        fieldType: 'select',
+        keywords: ['origen de la atención', 'origen de atención', 'general', 'soat', 'laboral', 'profesional'],
+    },
+    'attention-origin-adverse-event-checkbox': {
+        label: 'Evento adverso',
+        section: 'motivo_consulta',
+        fieldType: 'checkbox',
+        keywords: ['evento adverso', 'adverso'],
+    },
+    'oftalmology-all-normal-checkbox': {
+        label: 'Examen normal en ambos ojos',
+        section: 'biomicroscopia',
+        fieldType: 'checkbox',
+        keywords: ['ojos normales', 'examen normal', 'todo normal', 'ambos ojos normales'],
+    },
+    'diagnostic-impression-diagnosis-select': {
+        label: 'Impresión diagnóstica',
+        section: 'diagnostico',
+        fieldType: 'select',
+        keywords: ['impresión diagnóstica', 'diagnóstico'],
+    },
+    'attention-origin-evolution-time-input': {
+        label: 'Tiempo de evolución (cantidad)',
+        section: 'motivo_consulta',
+        fieldType: 'number',
+        keywords: ['cantidad', 'valor'],
+    },
+    'attention-origin-evolution-time-unit-select': {
+        label: 'Tiempo de evolución (unidad)',
+        section: 'motivo_consulta',
+        fieldType: 'select',
+        keywords: ['tiempo', 'unidad'],
+    },
+    'oftalmology-observations-textarea': {
+        label: 'Observaciones',
+        section: 'biomicroscopia',
+        fieldType: 'textarea',
+        keywords: ['observaciones', 'observación', 'notas', 'comentarios'],
+    },
+    'analysis-and-plan-textarea': {
+        label: 'Análisis y plan',
+        section: 'diagnostico',
+        fieldType: 'textarea',
+        keywords: ['análisis y plan', 'analisis y plan', 'análisis', 'analisis', 'plan'],
+    },
+    'diagnostic-impression-type-cie10-radio': {
+        label: 'IDX (CIE-10)',
+        section: 'diagnostico',
+        fieldType: 'radio',
+        keywords: ['diagnóstico', 'diagnostico', 'idx'],
+    },
+    'diagnostic-impression-type-extended-radio': {
+        label: 'IDX Ampliada',
+        section: 'diagnostico',
+        fieldType: 'radio',
+        keywords: ['diagnóstico ampliado', 'diagnostico ampliado', 'idx ampliada', 'ampliada'],
+    },
+
+};
+
 export class DOMScanner {
     constructor() {
         this.fields = [];
         this.elementMap = new Map(); // unique_key → contenedor con data-testid
         this.inputMap = new Map();   // unique_key → input/textarea/select real
+        // Copia mutable del registro (para registerField en runtime)
+        this._registry = { ...REGISTERED_FIELDS };
     }
 
+    /**
+     * Escanea SOLO los campos registrados en el DOM.
+     * Busca cada data-testid del registro y construye la lista de campos encontrados.
+     */
     scan() {
         this.fields = [];
         this.elementMap = new Map();
         this.inputMap = new Map();
 
-        const GENERIC_TESTIDS = new Set([
-            'badge-text-field-textarea',
-            'badge-text-field-input',
-            'badge-checkbox',
-            'badge-select',
-            'badge-radio',
-        ]);
-
-        const elements = document.querySelectorAll('[data-testid]');
-        const seenKeys = new Set();
-
-        elements.forEach(el => {
-            const testId = el.getAttribute('data-testid');
-            if (!testId) return;
-
-            let containerTestId = testId;
-            let container = el;
-            let inputEl = null;
-
-            if (GENERIC_TESTIDS.has(testId)) {
-                const parent = el.closest('[data-testid]:not([data-testid="' + testId + '"])');
-                if (parent) {
-                    containerTestId = parent.getAttribute('data-testid');
-                    container = parent;
-                    inputEl = el;
-                } else {
-                    return;
-                }
-            } else {
-                inputEl = this._findNearbyInput(el) || el;
+        for (const [testId, meta] of Object.entries(this._registry)) {
+            const result = this._scanOneField(testId, meta);
+            if (result) {
+                this.fields.push(result.field);
+                this.elementMap.set(testId, result.container);
+                this.inputMap.set(testId, result.inputEl);
             }
+        }
 
-            if (seenKeys.has(containerTestId)) return;
-            seenKeys.add(containerTestId);
-
-            const field = {
-                data_testid: containerTestId,
-                unique_key: containerTestId,
-                label: this._extractLabel(container, inputEl),
-                field_type: this._detectFieldType(inputEl || container),
-                eye: this._detectEye(containerTestId, container),
-                section: this._detectSection(containerTestId),
-                options: this._extractOptions(container),
-                tag: (inputEl || container).tagName.toLowerCase(),
-            };
-
-            this.fields.push(field);
-            this.elementMap.set(containerTestId, container);
-            this.inputMap.set(containerTestId, inputEl || container);
-        });
-
-        console.log(`[BVA-Scanner] ${this.fields.length} campos únicos escaneados`);
+        console.log(`[BVA-Scanner] ${this.fields.length} campos registrados encontrados en DOM`);
         return this.fields;
     }
+
+    /**
+     * Escanea UN solo campo por su data-testid bajo demanda.
+     * Si el campo ya fue escaneado, lo actualiza.
+     * @param {string} testId - El data-testid del campo a escanear
+     * @returns {object|null} - El campo encontrado o null
+     */
+    scanField(testId) {
+        const meta = this._registry[testId];
+        if (!meta) {
+            console.warn(`[BVA-Scanner] Campo '${testId}' no está registrado`);
+            return null;
+        }
+
+        const result = this._scanOneField(testId, meta);
+        if (!result) {
+            console.warn(`[BVA-Scanner] Campo '${testId}' registrado pero no encontrado en DOM`);
+            return null;
+        }
+
+        // Actualizar o agregar en las colecciones
+        const existingIdx = this.fields.findIndex(f => f.unique_key === testId);
+        if (existingIdx >= 0) {
+            this.fields[existingIdx] = result.field;
+        } else {
+            this.fields.push(result.field);
+        }
+        this.elementMap.set(testId, result.container);
+        this.inputMap.set(testId, result.inputEl);
+
+        console.log(`[BVA-Scanner] Campo '${testId}' escaneado bajo demanda`);
+        return result.field;
+    }
+
+    /**
+     * Registra un campo nuevo en runtime sin modificar el código fuente.
+     * @param {string} testId - El data-testid del campo
+     * @param {object} meta - Metadatos: { label, section, fieldType, keywords }
+     */
+    registerField(testId, meta) {
+        if (!testId || !meta) {
+            console.warn('[BVA-Scanner] registerField requiere testId y meta');
+            return;
+        }
+        this._registry[testId] = {
+            label: meta.label || testId,
+            section: meta.section || null,
+            fieldType: meta.fieldType || 'text',
+            keywords: meta.keywords || [],
+        };
+        console.log(`[BVA-Scanner] Campo '${testId}' registrado (total: ${Object.keys(this._registry).length})`);
+    }
+
+    /**
+     * Retorna la lista de data-testids registrados.
+     */
+    getRegisteredIds() {
+        return Object.keys(this._registry);
+    }
+
+    /**
+     * Retorna los keywords asociados a un data-testid.
+     */
+    getKeywords(testId) {
+        return this._registry[testId]?.keywords || [];
+    }
+
+    // ============================================
+    // Escaneo interno de un campo individual
+    // ============================================
+
+    _scanOneField(testId, meta) {
+        const el = document.querySelector(`[data-testid="${testId}"]`);
+        if (!el) return null;
+
+        let container = el;
+        let inputEl = this._findNearbyInput(el) || el;
+
+        // Detectar tipo real del DOM (puede diferir del registrado)
+        const detectedType = this._detectFieldType(inputEl || container);
+
+        const field = {
+            data_testid: testId,
+            unique_key: testId,
+            label: meta.label || this._extractLabel(container, inputEl),
+            field_type: meta.fieldType || detectedType,
+            eye: this._detectEye(testId, container),
+            section: meta.section || this._detectSection(testId),
+            options: this._extractOptions(container),
+            keywords: meta.keywords || [],
+            tag: (inputEl || container).tagName.toLowerCase(),
+        };
+
+        return { field, container, inputEl };
+    }
+
+    // ============================================
+    // Métodos de acceso (sin cambios)
+    // ============================================
 
     getElement(uniqueKey) {
         return this.elementMap.get(uniqueKey) || null;
@@ -78,6 +221,10 @@ export class DOMScanner {
     findByKey(uniqueKey) {
         return this.fields.find(f => f.unique_key === uniqueKey) || null;
     }
+
+    // ============================================
+    // Helpers de detección (sin cambios)
+    // ============================================
 
     _extractLabel(container, inputEl) {
         const col = container.closest('[class*="col"]');

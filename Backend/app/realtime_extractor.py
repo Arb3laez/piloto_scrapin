@@ -33,27 +33,69 @@ KEYWORD_TO_FIELD = {
     
     "enfermedad actual": "attention-origin-current-disease-badge-field",
     "padecimiento actual": "attention-origin-current-disease-badge-field",
+    "cuadro clínico": "attention-origin-current-disease-badge-field",
+    "cuadro clinico": "attention-origin-current-disease-badge-field",
+    "enfermedad": "attention-origin-current-disease-badge-field",
+    
 
     "origen de la atención": "attention-origin-select",
     "origen de atención": "attention-origin-select",
     "origen de atencion": "attention-origin-select",
-    "origen": "attention-origin-select",
+    
+    "general": "attention-origin-select",
     "enfermedad general": "attention-origin-select",
-    "enfermedad profesional": "attention-origin-select",
+    "url": "attention-origin-select",
     "soat": "attention-origin-select",
-    "tránsito": "attention-origin-select",
-    "transito": "attention-origin-select",
-    "accidente laboral": "attention-origin-select",
+    "accidente de tránsito": "attention-origin-select",
+    "accidente de transito": "attention-origin-select",
+    "laboral": "attention-origin-select",
     "accidente de trabajo": "attention-origin-select",
+    "enfermedad profesional": "attention-origin-select",
+    "profesional": "attention-origin-select",
     "evento adverso": "attention-origin-adverse-event-checkbox",
-    "evento": "attention-origin-adverse-event-checkbox",
     "adverso": "attention-origin-adverse-event-checkbox",
-    
-    # Intento con otros posibles testids si el anterior falla
-    "evento adverso switch": "attention-origin-adverse-event-switch",
-    "evento adverso badge": "attention-origin-adverse-event-badge-field",
-    
+
+    # Examen físico / ocular
+    "ojos normales": "oftalmology-all-normal-checkbox",
+    "examen normal": "oftalmology-all-normal-checkbox",
+    "examen normal en ambos ojos": "oftalmology-all-normal-checkbox",
+    "normal en ambos ojos": "oftalmology-all-normal-checkbox",
+    "ambos ojos normales": "oftalmology-all-normal-checkbox",
+    "todo normal": "oftalmology-all-normal-checkbox",
+    "examen de ojos normal": "oftalmology-all-normal-checkbox",
+    "examen ojos normal": "oftalmology-all-normal-checkbox",
+    "examen de ojo normal": "oftalmology-all-normal-checkbox",
+    "ojo normal": "oftalmology-all-normal-checkbox",
+    "ojos normal": "oftalmology-all-normal-checkbox",
+    "examen de ambos ojos normal": "oftalmology-all-normal-checkbox",
+    "ambos ojos normal": "oftalmology-all-normal-checkbox",
+    "examen ocular normal": "oftalmology-all-normal-checkbox",
+
     "impresión diagnóstica": "diagnostic-impression-diagnosis-select",
+    
+    # Tipo de diagnóstico (radio buttons CIE-10)
+    "diagnóstico": "diagnostic-impression-type-cie10-radio",
+    "diagnostico": "diagnostic-impression-type-cie10-radio",
+    "idx": "diagnostic-impression-type-cie10-radio",
+    "diagnóstico ampliado": "diagnostic-impression-type-extended-radio",
+    "diagnostico ampliado": "diagnostic-impression-type-extended-radio",
+    "diagnóstico amplio": "diagnostic-impression-type-extended-radio",
+    "diagnostico amplio": "diagnostic-impression-type-extended-radio",
+    "diagnóstico amplia": "diagnostic-impression-type-extended-radio",
+    "diagnostico amplia": "diagnostic-impression-type-extended-radio",
+    "idx ampliada": "diagnostic-impression-type-extended-radio",
+    "idx amplio": "diagnostic-impression-type-extended-radio",
+    "ampliada": "diagnostic-impression-type-extended-radio",
+    "ampliado": "diagnostic-impression-type-extended-radio",
+    "amplio": "diagnostic-impression-type-extended-radio",
+    
+    # Análisis y plan
+    "análisis y plan": "analysis-and-plan-textarea",
+    "analisis y plan": "analysis-and-plan-textarea",
+    "análisis plan": "analysis-and-plan-textarea",
+    "analisis plan": "analysis-and-plan-textarea",
+    "análisis": "analysis-and-plan-textarea",
+    "analisis": "analysis-and-plan-textarea",
     
     # Tiempo de evolución
     "cantidad": "attention-origin-evolution-time-input",
@@ -66,15 +108,89 @@ KEYWORD_TO_FIELD = {
 
 }
 
-# Palabras clave de control (comandos)
+# Mapeo de keywords de select → valor REAL que el select espera mostrar
+# Esto resuelve el problema donde el usuario dice "url" pero el select espera "SOAT (Accidente de tránsito)"
+KEYWORD_TO_SELECT_VALUE = {
+    # Origen de la atención
+    "general": "Enfermedad general",
+    "enfermedad general": "Enfermedad general",
+    "url": "Accidente de trabajo",
+    "laboral": "Accidente de trabajo",
+    "trabajo": "Accidente de trabajo",
+    "accidente de trabajo": "Accidente de trabajo",
+    "profesional": "Enfermedad profesional",
+    "enfermedad profesional": "Enfermedad profesional",
+    "soat": "SOAT (Accidente de tránsito)",
+    "transito": "SOAT (Accidente de tránsito)",
+    "tránsito": "SOAT (Accidente de tránsito)",
+    "accidente de tránsito": "SOAT (Accidente de tránsito)",
+    "accidente de transito": "SOAT (Accidente de tránsito)",
+}
+
+def get_select_value_for_keyword(keyword: str) -> str:
+    """
+    Obtiene el valor REAL que el select espera para una keyword dada.
+    
+    Ejemplo: 
+        - keyword="url" → retorna "SOAT (Accidente de tránsito)"
+        - keyword="general" → retorna "Enfermedad general"
+        - keyword="desconocido" → retorna la keyword sin cambios (fallback)
+    """
+    kw_lower = keyword.lower().strip()
+    return KEYWORD_TO_SELECT_VALUE.get(kw_lower, keyword)
+
+# Mapa de keywords para DESMARCAR checkboxes específicos
+# Cuando el usuario dice "borrar ojos normales", se envía "false" al checkbox
+KEYWORD_TO_UNCHECK = {
+
+
+    # Desmarcar "Examen normal en ambos ojos"
+    "borrar ojos normales": "oftalmology-all-normal-checkbox",
+    "desmarcar ojos normales": "oftalmology-all-normal-checkbox",
+    "quitar ojos normales": "oftalmology-all-normal-checkbox",
+    "borrar examen normal": "oftalmology-all-normal-checkbox",
+    "desmarcar examen normal": "oftalmology-all-normal-checkbox",
+    "quitar examen normal": "oftalmology-all-normal-checkbox",
+    "borrar examen de ambos ojos": "oftalmology-all-normal-checkbox",
+    "desmarcar examen de ambos ojos": "oftalmology-all-normal-checkbox",
+    "quitar examen de ambos ojos": "oftalmology-all-normal-checkbox",
+    "borrar ambos ojos normales": "oftalmology-all-normal-checkbox",
+    "desmarcar ambos ojos normales": "oftalmology-all-normal-checkbox",
+    "borrar examen ojos": "oftalmology-all-normal-checkbox",
+    "borrar examen ocular": "oftalmology-all-normal-checkbox",
+    "desmarcar examen ocular": "oftalmology-all-normal-checkbox",
+    "quitar examen ocular": "oftalmology-all-normal-checkbox",
+    "borrar todo normal": "oftalmology-all-normal-checkbox",
+    "desmarcar todo normal": "oftalmology-all-normal-checkbox",
+    # Desmarcar "Evento adverso"
+    "borrar evento adverso": "attention-origin-adverse-event-checkbox",
+    "desmarcar evento adverso": "attention-origin-adverse-event-checkbox",
+    "quitar evento adverso": "attention-origin-adverse-event-checkbox",
+    "borrar adverso": "attention-origin-adverse-event-checkbox",
+    "desmarcar adverso": "attention-origin-adverse-event-checkbox",
+}
+
+# Palabras clave para fuinalizar campo
+
+
 COMMAND_KEYWORDS = {
     "listo": "cmd_stop",
     "confirmar": "cmd_stop",
     "terminar": "cmd_stop",
+    "terminado": "cmd_stop",
     "finalizar": "cmd_stop",
+    "finalizado": "cmd_stop",
     "borrar": "cmd_clear",
     "limpiar": "cmd_clear",
     "deshacer": "cmd_clear",
+}
+
+# Campos que requieren flujo "exclusivo" (lock)
+# Una vez activados, NO se debe cambiar a otro campo hasta que se diga "listo" o "terminar"
+EXCLUSIVE_FIELDS = {
+    "attention-origin-reason-for-consulting-badge-field",
+    "attention-origin-current-disease-badge-field",
+    "oftalmology-observations-textarea"
 }
 
 
@@ -118,6 +234,8 @@ class ActiveFieldTracker:
         self.active_field = testid
         self.accumulated_text = ""
         self.last_keyword = keyword
+        # Limpiar último texto enviado para nuevo campo
+        self._last_sent_text = ""
         logger.info(f"[ActiveField] Nuevo campo activado: '{testid}' (keyword: '{keyword}')")
         return previous_data
     
@@ -131,7 +249,7 @@ class ActiveFieldTracker:
         self.accumulated_text = ""
 
     def append_text(self, text: str) -> None:
-        """Acumula texto en el campo activo solo si no es repetido."""
+        """Acumula texto en el campo activo evitando duplicaciones de parciales Deepgram."""
         if not self.active_field:
             return
         
@@ -139,17 +257,52 @@ class ActiveFieldTracker:
         if not text_clean:
             return
 
-        # Si el texto es una extensión del actual (Deepgram cumulative), actualizar
-        if self.accumulated_text and text_clean.startswith(self.accumulated_text):
+        # Si no hay texto acumulado, establecerlo
+        if not self.accumulated_text:
             self.accumulated_text = text_clean
             return
 
-        if not self.accumulated_text:
+        # Detectar solapamiento inteligente entre el acumulado y el nuevo texto
+        acc_lower = self.accumulated_text.lower()
+        new_lower = text_clean.lower()
+        
+        # Buscar el mayor solapamiento al final del acumulado con el inicio del nuevo texto
+        max_overlap = 0
+        acc_words = acc_lower.split()
+        new_words = new_lower.split()
+        
+        # Probar solapamientos de hasta 10 palabras
+        max_check = min(len(acc_words), len(new_words), 10)
+        for i in range(1, max_check + 1):
+            if acc_words[-i:] == new_words[:i]:
+                max_overlap = i
+        
+        # Si hay solapamiento significativo (3+ palabras), unir inteligentemente
+        if max_overlap >= 3:
+            # Tomar las palabras nuevas que no están solapadas
+            new_words_to_add = new_words[max_overlap:]
+            if new_words_to_add:
+                # Añadir espacio si es necesario
+                if not self.accumulated_text.endswith(" "):
+                    self.accumulated_text += " "
+                # Añadir solo las palabras nuevas (preservando caso del original)
+                new_part = " ".join(text_clean.split()[max_overlap:])
+                self.accumulated_text += new_part
+            return
+        
+        # Si el nuevo texto contiene completamente al acumulado, actualizar
+        if acc_lower in new_lower:
             self.accumulated_text = text_clean
-        else:
-            if not self.accumulated_text.endswith(" "):
-                self.accumulated_text += " "
-            self.accumulated_text += text_clean
+            return
+        
+        # Si el acumulado contiene completamente al nuevo texto, ignorar
+        if new_lower in acc_lower:
+            return
+        
+        # Acumulación normal: añadir al final
+        if not self.accumulated_text.endswith(" "):
+            self.accumulated_text += " "
+        self.accumulated_text += text_clean
         
         logger.debug(
             f"[ActiveField] Acumulado en '{self.active_field}': "
@@ -196,6 +349,7 @@ class ActiveFieldTracker:
         self.active_field = None
         self.accumulated_text = ""
         self.last_keyword = ""
+        self._last_sent_text = ""
         logger.debug("[ActiveField] Estado reiniciado")
 
 
@@ -254,14 +408,10 @@ DIRECT_FIELD_PATTERNS: List[Tuple[str, str, List[str]]] = [
     # IMPORTANTE: Los patrones más específicos van PRIMERO.
     # El patrón genérico "motivo" al final se eliminó porque capturaba
     # "de consulta dolor de ojos" como valor (bug).
-    ("attention-origin-reason-for-consulting-badge-field", "after", [
-        r"motivo\s+de\s+(?:la\s+)?consulta\s*(?:es|fue|será|son)?[:\.,;\s]+(.+)",
-        r"el\s+motivo\s+(?:es|de\s+(?:la\s+)?consulta)\s*[:\.,;\s]+(.+)",
-        r"consulta\s+por\s*[:\.,;\s]+(.+)",
-        r"viene\s+por\s*[:\.,;\s]+(.+)",
-        r"paciente\s+(?:consulta|refiere|acude|viene)\s+por\s*[:\.,;\s]+(.+)",
-        r"motivo\s+de\s+consulta\s*[,;\s]+(.+)",
-    ]),
+    # Motivo de consulta
+    # IMPOTANTE: Se elimina para que pase por el flujo "exclusivo" (lock)
+    # y requiera "listo" para terminar.
+    # ("attention-origin-reason-for-consulting-badge-field", "after", [ ... ]),
 
     # Enfermedad actual
     ("attention-origin-current-disease-badge-field", "after", [
@@ -338,6 +488,57 @@ def clean_captured_value(value: str) -> str:
         val = cleaned
         
     return val # Retorna lo que quede (puede ser "")
+
+
+def strip_keywords_and_commands(text: str, active_keyword: str = "") -> str:
+    """
+    Elimina palabras clave conocidas y comandos del texto antes de acumularlo en un campo.
+    
+    Esto previene que:
+    - "Listo" aparezca como contenido del campo
+    - "motivo de consulta" se duplique dentro del texto acumulado
+    - "enfermedad actual" aparezca como parte del valor clínico
+    
+    Args:
+        text: Texto a limpiar
+        active_keyword: La keyword que activó el campo actual (se elimina primero)
+    
+    Returns:
+        Texto limpio sin keywords ni comandos
+    """
+    if not text:
+        return text
+    
+    val = text.strip()
+    val_lower = val.lower()
+    
+    # 1. Eliminar comandos (listo, borrar, etc.)
+    for cmd in COMMAND_KEYWORDS:
+        pattern = re.compile(r"\b" + re.escape(cmd) + r"\b[.,;:\s]*", re.IGNORECASE)
+        val = pattern.sub(" ", val)
+    
+    # 2. Eliminar la keyword activa que activó el campo
+    if active_keyword:
+        pattern = re.compile(r"\b" + re.escape(active_keyword) + r"\b[.,;:\s]*", re.IGNORECASE)
+        val = pattern.sub(" ", val)
+    
+    # 3. Eliminar frases de desmarcar checkbox (las más largas primero)
+    sorted_uncheck = sorted(KEYWORD_TO_UNCHECK.keys(), key=len, reverse=True)
+    for phrase in sorted_uncheck:
+        pattern = re.compile(r"\b" + re.escape(phrase) + r"\b[.,;:\s]*", re.IGNORECASE)
+        val = pattern.sub(" ", val)
+    
+    # 4. Eliminar keywords conocidas de KEYWORD_TO_FIELD (las más largas primero)
+    sorted_kws = sorted(KEYWORD_TO_FIELD.keys(), key=len, reverse=True)
+    for kw in sorted_kws:
+        pattern = re.compile(r"\b" + re.escape(kw) + r"\b[.,;:\s]*", re.IGNORECASE)
+        val = pattern.sub(" ", val)
+    
+    # 4. Limpiar espacios múltiples y conectores residuales
+    val = re.sub(r"\s{2,}", " ", val).strip()
+    val = clean_captured_value(val)
+    
+    return val
 
 # Patrones para "normal" en contexto específico de ojo/sección.
 # IMPORTANTE: Cuando el doctor dice "ojo derecho normal" o "córnea normal",
@@ -482,6 +683,7 @@ CLINICAL_KEYWORDS = re.compile(
     r"diagnóstico|diagnostico|tratamiento|hallazgo|"
     # Campos de historia clínica y tiempo de evolución
     r"motivo\s+de\s+consulta|enfermedad\s+actual|consulta\s+por|viene\s+por|"
+    r"origen|general|evento\s+adverso|soat|tránsito|transito|url|laboral|profesional|resultados|"
     r"padecimiento|cuadro\s+clínico|cuadro\s+clinico|"
     r"antecedente|alergia|medicamento|cirugía|cirugia|"
     r"evolución|evolucion|tiempo|cantidad|valor|unidad|"
@@ -573,6 +775,7 @@ def normalize_value(value: str, field_type: str = "text") -> str:
         "general": "Enfermedad general",
         "enfermedad general": "Enfermedad general",
         "url": "Accidente de trabajo",
+        "URL": "Accidente de trabajo",
         "laboral": "Accidente de trabajo",
         "accidente laboral": "Accidente de trabajo",
         "accidente de trabajo": "Accidente de trabajo",
@@ -608,6 +811,8 @@ def normalize_value(value: str, field_type: str = "text") -> str:
     
     # Normalizar valor para búsqueda en los mapas
     val_clean = value.lower().strip().rstrip(".").strip()
+    # Eliminar comas y signos de interrogación para campos de texto
+    val_clean = val_clean.replace(",", "").replace("?", "").replace("¿", "").replace("!", "").replace("¡", "")
     
     if val_clean in origin_map:
         return origin_map[val_clean]
@@ -635,9 +840,10 @@ def normalize_value(value: str, field_type: str = "text") -> str:
             return "false"
         return value
 
-    # Texto médico: capitalizar primera letra
+    # Texto médico: capitalizar primera letra y eliminar puntuación
     if field_type in ("text", "textarea"):
-        return value.strip().capitalize() if value else value
+        cleaned = value.strip().replace(",", "").replace("?", "").replace("¿", "").replace("!", "").replace("¡", "")
+        return cleaned.capitalize() if cleaned else cleaned
 
     return value
 
@@ -682,6 +888,21 @@ class RealtimeExtractor:
         self.current_section: Optional[str] = None
         self.biowel_fields: List[BiowelFieldIdentifier] = []
         self.already_filled: Dict[str, str] = {}
+        # Mapa dinámico generado a partir del escaneo del frontend
+        # key: keyword variante (lowercase) -> value: data_testid
+        self.dynamic_keyword_map: Dict[str, str] = {}
+        # Seeds útiles (pueden añadirse más manualmente)
+        # Observaciones (campo proporcionado por el usuario)
+        try:
+            self.dynamic_keyword_map.update({
+                "observaciones": "oftalmology-observations-textarea",
+                "observacion": "oftalmology-observations-textarea",
+                "notas": "oftalmology-observations-textarea",
+                "comentarios": "oftalmology-observations-textarea",
+            })
+        except Exception:
+            # seguridad: no interrumpir la inicialización
+            pass
 
         # Compilar patrones una vez
         self._compiled_eye = {
@@ -706,14 +927,107 @@ class RealtimeExtractor:
 
     def set_biowel_fields(self, fields: List[Dict]) -> None:
         """Recibe los campos escaneados del DOM de Biowel."""
-        self.biowel_fields = [
-            BiowelFieldIdentifier(**f) for f in fields
-        ]
+        # Guardar campos y construir mapeo dinámico de keywords
+        self.biowel_fields = [BiowelFieldIdentifier(**f) for f in fields]
         logger.info(f"Campos Biowel cargados: {len(self.biowel_fields)}")
+        try:
+            self.sync_with_biowel_fields(fields)
+        except Exception:
+            logger.exception("Error generando dynamic keyword map desde Biowel fields")
 
     def set_already_filled(self, filled: Dict[str, str]) -> None:
         """Recibe campos ya llenos para no repetirlos."""
         self.already_filled = filled
+
+    def sync_with_biowel_fields(self, fields: List[Dict]) -> None:
+        """
+        Construye `self.dynamic_keyword_map` a partir de los campos
+        enviados por el frontend (scanner). Genera variantes y sinónimos
+        útiles para detección por keyword.
+        """
+        self.dynamic_keyword_map = {}
+        # Asegurar que biowel_fields también esté poblado con objetos
+        self.biowel_fields = [BiowelFieldIdentifier(**f) for f in fields]
+
+        for field in self.biowel_fields:
+            label = (field.label or "").strip().lower()
+            testid = field.data_testid
+            if not label or not testid:
+                continue
+
+            # IGNORAR Opciones de Select (ej: select-option-0)
+            # Estas NO son campos llenables, son valores para el select padre.
+            # Si las incluimos, "General" mapeará a "select-option-0" y fallará.
+            if "select-option-" in testid or "select-default-" in testid:
+                continue
+
+            keywords = self._generate_keywords_from_label(label)
+            synonyms = self._get_synonyms(label)
+            for kw in keywords + synonyms:
+                kw_norm = kw.strip().lower()
+                if len(kw_norm) < 2:
+                    continue
+                # No sobrescribir si ya existe un mapeo más específico
+                if kw_norm in self.dynamic_keyword_map:
+                    continue
+                self.dynamic_keyword_map[kw_norm] = testid
+
+        logger.info(f"Dynamic keyword map construido: {len(self.dynamic_keyword_map)} entradas")
+
+    def add_manual_mappings(self, mappings: Dict[str, str]) -> None:
+        """Permite añadir mapeos manuales al dynamic_keyword_map.
+
+        mappings: dict donde key = keyword (str) y value = data_testid (str)
+        """
+        for k, v in mappings.items():
+            if not k or not v:
+                continue
+            self.dynamic_keyword_map[k.strip().lower()] = v.strip()
+        logger.info(f"Se agregaron {len(mappings)} mapeos manuales al dynamic_keyword_map")
+
+    def _generate_keywords_from_label(self, label: str) -> List[str]:
+        """Genera variantes de keywords a partir de un label."""
+        parts = label.split()
+        keywords = set()
+        # Frase completa
+        keywords.add(label)
+        # Palabras individuales (solo si tienen >= 3 caracteres)
+        for p in parts:
+            if len(p) >= 3:  # Evitar palabras muy cortas como "el", "la", "go", etc.
+                keywords.add(p)
+        # Combinaciones consecutivas (n-grams) - solo frases de 2+ palabras
+        for i in range(len(parts)):
+            for j in range(i + 1, len(parts) + 1):
+                phrase = " ".join(parts[i:j])
+                if len(phrase) >= 5:  # Solo n-gramas con 5+ caracteres
+                    keywords.add(phrase)
+
+        # Variantes sin acentos
+        import unicodedata
+        for kw in list(keywords):
+            sin_acento = ''.join(c for c in unicodedata.normalize('NFD', kw) if unicodedata.category(c) != 'Mn')
+            keywords.add(sin_acento)
+
+        # Filtrar muy cortitos: mínimo 3 caracteres para palabras aisladas, 5 para frases
+        return [k for k in keywords if len(k.strip()) >= 3]
+
+    def _get_synonyms(self, label: str) -> List[str]:
+        """Retorna sinónimos médicamente relevantes según el label."""
+        # Mapa simple de sinónimos; puede extenderse
+        synonyms_map = {
+            "motivo de consulta": ["consulta por", "viene por"],
+            "enfermedad actual": ["padecimiento actual", "cuadro clínico"],
+            "presión intraocular": ["pio", "tonometría", "tonometria"],
+            "agudeza visual": ["agudeza", "av", "visual"],
+            "observaciones": ["notas", "comentarios", "observación"],
+            "refracción": ["refraccion", "refraction"],
+            "córnea": ["cornea", "corneal"],
+        }
+        res = []
+        for pattern, syns in synonyms_map.items():
+            if pattern in label:
+                res.extend(syns)
+        return res
 
     def process_segment(self, text: str) -> List[PartialAutofillItem]:
         """
@@ -838,35 +1152,93 @@ class RealtimeExtractor:
         return is_clinically_relevant(text)
 
     def detect_keyword(self, text: str) -> Optional[Tuple[str, str, str]]:
-        """Detecta la última palabra clave en el texto (más robusto para cumulative)."""
+        """Detecta la palabra clave más específica (más larga) en el texto.
+        
+        Prioridad:
+        1. Comandos (listo, borrar) GANAN si aparecen DESPUÉS de la última keyword de campo
+           Esto permite cerrar campos: "motivo de consulta estrés listo" → cmd_stop
+        2. Keyword MÁS LARGA siempre gana (más específica)
+        3. Si misma longitud, posición más tardía (rfind)
+        
+        Esto evita que keywords cortas del mapa dinámico (ej: "normal")
+        sobreescriban frases específicas (ej: "ojos normales", "examen normal").
+        """
         text_lower = text.lower()
         best_match = None
-        max_idx = -1
+        best_kw_len = -1
+        best_idx = -1
         
-        # 1. Buscar comandos primeramente (listo, borrar)
-        for cmd, testid in COMMAND_KEYWORDS.items():
-            idx = text_lower.rfind(cmd)
-            if idx != -1 and idx > max_idx:
-                max_idx = idx
-                best_match = (testid, cmd, text[idx + len(cmd):].strip())
+        # Track del mejor comando y mejor keyword de campo por separado
+        best_cmd_match = None
+        best_cmd_idx = -1
+        best_field_match = None
+        best_field_idx = -1
+        
+        def _try_match(kw: str, testid: str, kw_for_return: str, is_command: bool = False):
+            """Intenta matchear un keyword. Prioriza longitud > posición."""
+            nonlocal best_match, best_kw_len, best_idx
+            nonlocal best_cmd_match, best_cmd_idx, best_field_match, best_field_idx
+            idx = text_lower.rfind(kw.lower())
+            if idx == -1:
+                return
+            kw_len = len(kw)
+            # Priorizar por longitud (más larga = más específica)
+            # Solo usar posición como desempate si misma longitud
+            if kw_len > best_kw_len or (kw_len == best_kw_len and idx > best_idx):
+                best_kw_len = kw_len
+                best_idx = idx
+                content_after = text[idx + kw_len:].strip()
+                best_match = (testid, kw_for_return, content_after)
+            
+            # Guardar mejor comando y mejor campo por separado
+            if is_command:
+                if idx > best_cmd_idx:
+                    best_cmd_idx = idx
+                    content_after = text[idx + kw_len:].strip()
+                    best_cmd_match = (testid, kw_for_return, content_after)
+            else:
+                kw_end = idx + kw_len
+                if kw_end > best_field_idx:
+                    best_field_idx = kw_end
+                    content_after = text[idx + kw_len:].strip()
+                    best_field_match = (testid, kw_for_return, content_after)
+        
+        # 0. Buscar frases de DESMARCAR checkbox (ej: "borrar ojos normales")
+        # Son las más largas y específicas, evaluarlas primero
+        for phrase, testid in KEYWORD_TO_UNCHECK.items():
+            _try_match(phrase, "cmd_uncheck::" + testid, phrase, is_command=True)
 
-        # 2. Buscar palabras clave de campo
+        # 1. Buscar comandos (listo, borrar, etc.)
+        for cmd, testid in COMMAND_KEYWORDS.items():
+            _try_match(cmd, testid, cmd, is_command=True)
+
+        # 2. Buscar en KEYWORD_TO_FIELD estático
+        # Evaluarlo ANTES del mapa dinámico para que keywords conocidas
+        # (como "ojos normales" → checkbox) no sean sobreescritas
         for keyword, testid in KEYWORD_TO_FIELD.items():
-            kw_lower = keyword.lower()
-            idx = text_lower.rfind(kw_lower)
-            if idx != -1:
-                # Prioridad: 1. Posición más tardía, 2. Longitud de keyword
-                if idx > max_idx:
-                    max_idx = idx
-                    best_match = (testid, keyword, text[idx + len(kw_lower):].strip())
-                elif idx == max_idx:
-                    if best_match and len(keyword) > len(best_match[1]):
-                        best_match = (testid, keyword, text[idx + len(kw_lower):].strip())
+            _try_match(keyword, testid, keyword, is_command=False)
+
+        # 3. Buscar en mapa dinámico generado por el scanner
+        # Este va último porque genera keywords automáticas que
+        # pueden ser substrings de frases que ya están en KEYWORD_TO_FIELD
+        if self.dynamic_keyword_map:
+            for keyword, testid in self.dynamic_keyword_map.items():
+                _try_match(keyword, testid, keyword, is_command=False)
+        
+        # REGLA ESPECIAL: Si un comando aparece DESPUÉS de la última keyword de campo,
+        # el comando gana. Ej: "motivo de consulta estrés listo" → cmd_stop
+        # best_cmd_idx = posición donde empieza el comando
+        # best_field_idx = posición donde TERMINA la keyword de campo
+        if best_cmd_match and best_field_match and best_cmd_idx >= best_field_idx:
+            testid, keyword, content_after = best_cmd_match
+            content_after = clean_captured_value(content_after)
+            logger.info(f"[Keyword] Comando '{keyword}' gana (pos={best_cmd_idx}) sobre campo (end={best_field_idx})")
+            return (testid, keyword, content_after)
         
         if best_match:
             testid, keyword, content_after = best_match
             content_after = clean_captured_value(content_after)
-            logger.debug(f"[Keyword] Match: '{keyword}' en idx {max_idx}")
+            logger.info(f"[Keyword] Match: '{keyword}' → '{testid}' (len={best_kw_len}, idx={best_idx})")
             return (testid, keyword, content_after)
         return None
 
@@ -1078,6 +1450,8 @@ class RealtimeExtractor:
             return "number"
         if "badge-field" in unique_key or "history" in unique_key:
             return "textarea"
+        if "radio" in unique_key:
+            return "radio"
             
         if self.biowel_fields:
             for field in self.biowel_fields:

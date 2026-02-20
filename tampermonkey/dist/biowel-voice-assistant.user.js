@@ -20,62 +20,189 @@
     div.textContent = text;
     return div.innerHTML;
   }
+  const REGISTERED_FIELDS = {
+    "attention-origin-reason-for-consulting-badge-field": {
+      label: "Motivo de consulta",
+      section: "motivo_consulta",
+      fieldType: "textarea",
+      keywords: ["motivo de consulta", "motivo", "consulta por"]
+    },
+    "attention-origin-current-disease-badge-field": {
+      label: "Enfermedad actual",
+      section: "enfermedad_actual",
+      fieldType: "textarea",
+      keywords: ["enfermedad actual", "padecimiento actual", "cuadro clínico"]
+    },
+    "attention-origin-select": {
+      label: "Origen de la atención",
+      section: "motivo_consulta",
+      fieldType: "select",
+      keywords: ["origen de la atención", "origen de atención", "general", "soat", "laboral", "profesional"]
+    },
+    "attention-origin-adverse-event-checkbox": {
+      label: "Evento adverso",
+      section: "motivo_consulta",
+      fieldType: "checkbox",
+      keywords: ["evento adverso", "adverso"]
+    },
+    "oftalmology-all-normal-checkbox": {
+      label: "Examen normal en ambos ojos",
+      section: "biomicroscopia",
+      fieldType: "checkbox",
+      keywords: ["ojos normales", "examen normal", "todo normal", "ambos ojos normales"]
+    },
+    "diagnostic-impression-diagnosis-select": {
+      label: "Impresión diagnóstica",
+      section: "diagnostico",
+      fieldType: "select",
+      keywords: ["impresión diagnóstica", "diagnóstico"]
+    },
+    "attention-origin-evolution-time-input": {
+      label: "Tiempo de evolución (cantidad)",
+      section: "motivo_consulta",
+      fieldType: "number",
+      keywords: ["cantidad", "valor"]
+    },
+    "attention-origin-evolution-time-unit-select": {
+      label: "Tiempo de evolución (unidad)",
+      section: "motivo_consulta",
+      fieldType: "select",
+      keywords: ["tiempo", "unidad"]
+    },
+    "oftalmology-observations-textarea": {
+      label: "Observaciones",
+      section: "biomicroscopia",
+      fieldType: "textarea",
+      keywords: ["observaciones", "observación", "notas", "comentarios"]
+    },
+    "analysis-and-plan-textarea": {
+      label: "Análisis y plan",
+      section: "diagnostico",
+      fieldType: "textarea",
+      keywords: ["análisis y plan", "analisis y plan", "análisis", "analisis", "plan"]
+    },
+    "diagnostic-impression-type-cie10-radio": {
+      label: "IDX (CIE-10)",
+      section: "diagnostico",
+      fieldType: "radio",
+      keywords: ["diagnóstico", "diagnostico", "idx"]
+    },
+    "diagnostic-impression-type-extended-radio": {
+      label: "IDX Ampliada",
+      section: "diagnostico",
+      fieldType: "radio",
+      keywords: ["diagnóstico ampliado", "diagnostico ampliado", "idx ampliada", "ampliada"]
+    }
+  };
   class DOMScanner {
     constructor() {
       this.fields = [];
       this.elementMap = /* @__PURE__ */ new Map();
       this.inputMap = /* @__PURE__ */ new Map();
+      this._registry = { ...REGISTERED_FIELDS };
     }
+    /**
+     * Escanea SOLO los campos registrados en el DOM.
+     * Busca cada data-testid del registro y construye la lista de campos encontrados.
+     */
     scan() {
       this.fields = [];
       this.elementMap = /* @__PURE__ */ new Map();
       this.inputMap = /* @__PURE__ */ new Map();
-      const GENERIC_TESTIDS = /* @__PURE__ */ new Set([
-        "badge-text-field-textarea",
-        "badge-text-field-input",
-        "badge-checkbox",
-        "badge-select",
-        "badge-radio"
-      ]);
-      const elements = document.querySelectorAll("[data-testid]");
-      const seenKeys = /* @__PURE__ */ new Set();
-      elements.forEach((el) => {
-        const testId = el.getAttribute("data-testid");
-        if (!testId) return;
-        let containerTestId = testId;
-        let container = el;
-        let inputEl = null;
-        if (GENERIC_TESTIDS.has(testId)) {
-          const parent = el.closest('[data-testid]:not([data-testid="' + testId + '"])');
-          if (parent) {
-            containerTestId = parent.getAttribute("data-testid");
-            container = parent;
-            inputEl = el;
-          } else {
-            return;
-          }
-        } else {
-          inputEl = this._findNearbyInput(el) || el;
+      for (const [testId, meta] of Object.entries(this._registry)) {
+        const result = this._scanOneField(testId, meta);
+        if (result) {
+          this.fields.push(result.field);
+          this.elementMap.set(testId, result.container);
+          this.inputMap.set(testId, result.inputEl);
         }
-        if (seenKeys.has(containerTestId)) return;
-        seenKeys.add(containerTestId);
-        const field = {
-          data_testid: containerTestId,
-          unique_key: containerTestId,
-          label: this._extractLabel(container, inputEl),
-          field_type: this._detectFieldType(inputEl || container),
-          eye: this._detectEye(containerTestId, container),
-          section: this._detectSection(containerTestId),
-          options: this._extractOptions(container),
-          tag: (inputEl || container).tagName.toLowerCase()
-        };
-        this.fields.push(field);
-        this.elementMap.set(containerTestId, container);
-        this.inputMap.set(containerTestId, inputEl || container);
-      });
-      console.log(`[BVA-Scanner] ${this.fields.length} campos únicos escaneados`);
+      }
+      console.log(`[BVA-Scanner] ${this.fields.length} campos registrados encontrados en DOM`);
       return this.fields;
     }
+    /**
+     * Escanea UN solo campo por su data-testid bajo demanda.
+     * Si el campo ya fue escaneado, lo actualiza.
+     * @param {string} testId - El data-testid del campo a escanear
+     * @returns {object|null} - El campo encontrado o null
+     */
+    scanField(testId) {
+      const meta = this._registry[testId];
+      if (!meta) {
+        console.warn(`[BVA-Scanner] Campo '${testId}' no está registrado`);
+        return null;
+      }
+      const result = this._scanOneField(testId, meta);
+      if (!result) {
+        console.warn(`[BVA-Scanner] Campo '${testId}' registrado pero no encontrado en DOM`);
+        return null;
+      }
+      const existingIdx = this.fields.findIndex((f) => f.unique_key === testId);
+      if (existingIdx >= 0) {
+        this.fields[existingIdx] = result.field;
+      } else {
+        this.fields.push(result.field);
+      }
+      this.elementMap.set(testId, result.container);
+      this.inputMap.set(testId, result.inputEl);
+      console.log(`[BVA-Scanner] Campo '${testId}' escaneado bajo demanda`);
+      return result.field;
+    }
+    /**
+     * Registra un campo nuevo en runtime sin modificar el código fuente.
+     * @param {string} testId - El data-testid del campo
+     * @param {object} meta - Metadatos: { label, section, fieldType, keywords }
+     */
+    registerField(testId, meta) {
+      if (!testId || !meta) {
+        console.warn("[BVA-Scanner] registerField requiere testId y meta");
+        return;
+      }
+      this._registry[testId] = {
+        label: meta.label || testId,
+        section: meta.section || null,
+        fieldType: meta.fieldType || "text",
+        keywords: meta.keywords || []
+      };
+      console.log(`[BVA-Scanner] Campo '${testId}' registrado (total: ${Object.keys(this._registry).length})`);
+    }
+    /**
+     * Retorna la lista de data-testids registrados.
+     */
+    getRegisteredIds() {
+      return Object.keys(this._registry);
+    }
+    /**
+     * Retorna los keywords asociados a un data-testid.
+     */
+    getKeywords(testId) {
+      return this._registry[testId]?.keywords || [];
+    }
+    // ============================================
+    // Escaneo interno de un campo individual
+    // ============================================
+    _scanOneField(testId, meta) {
+      const el = document.querySelector(`[data-testid="${testId}"]`);
+      if (!el) return null;
+      let container = el;
+      let inputEl = this._findNearbyInput(el) || el;
+      const detectedType = this._detectFieldType(inputEl || container);
+      const field = {
+        data_testid: testId,
+        unique_key: testId,
+        label: meta.label || this._extractLabel(container, inputEl),
+        field_type: meta.fieldType || detectedType,
+        eye: this._detectEye(testId, container),
+        section: meta.section || this._detectSection(testId),
+        options: this._extractOptions(container),
+        keywords: meta.keywords || [],
+        tag: (inputEl || container).tagName.toLowerCase()
+      };
+      return { field, container, inputEl };
+    }
+    // ============================================
+    // Métodos de acceso (sin cambios)
+    // ============================================
     getElement(uniqueKey) {
       return this.elementMap.get(uniqueKey) || null;
     }
@@ -85,6 +212,9 @@
     findByKey(uniqueKey) {
       return this.fields.find((f) => f.unique_key === uniqueKey) || null;
     }
+    // ============================================
+    // Helpers de detección (sin cambios)
+    // ============================================
     _extractLabel(container, inputEl) {
       const col = container.closest('[class*="col"]');
       if (col) {
@@ -206,10 +336,24 @@
       this.scanner = scanner;
       this.filledFields = /* @__PURE__ */ new Map();
     }
+    /**
+     * Retorna un objeto plano con los campos ya llenados.
+     * Se usa al iniciar dictado para informar al backend qué campos ya tienen valor.
+     */
+    getFilledFields() {
+      const result = {};
+      for (const [key, value] of this.filledFields) {
+        result[key] = value;
+      }
+      return result;
+    }
     applyAutofill(items) {
       const filled = [];
+      console.log(`[BVA-DOM] applyAutofill called with ${items.length} items:`, JSON.stringify(items));
       for (const item of items) {
+        console.log(`[BVA-DOM] Applying: key='${item.unique_key}', value='${item.value}'`);
         const success = this.fillField(item.unique_key, item.value);
+        console.log(`[BVA-DOM] Result for '${item.unique_key}': ${success}`);
         if (success) {
           filled.push(item.unique_key);
           this.filledFields.set(item.unique_key, item.value);
@@ -219,10 +363,21 @@
     }
     fillField(uniqueKey, value) {
       let el = null;
-      console.log(`[BVA-DOM] === fillField("${uniqueKey}", "${String(value).substring(0, 60)}") ===`);
+      console.log(`[BVA-DOM] === fillField("${uniqueKey}", "${String(value).substring(0, 200)}") ===`);
       const keyLower = uniqueKey.toLowerCase();
       if (keyLower.includes("-button") || keyLower.includes("-btn") || keyLower.includes("-link") || keyLower.includes("-load-previous")) {
         console.warn(`[BVA-DOM] RECHAZADO: "${uniqueKey}" parece ser un botón/link, no un campo llenable`);
+        return false;
+      }
+      if (uniqueKey.endsWith("-radio")) {
+        const container = document.querySelector(`[data-testid="${uniqueKey}"]`);
+        if (container) {
+          console.log(`[BVA-DOM] Radio fast-path: key='${uniqueKey}', container=`, container?.tagName, container?.outerHTML?.substring(0, 200));
+          const result = this._setRadioValue(container, String(value));
+          console.log(`[BVA-DOM] Radio result: ${result}`);
+          return result;
+        }
+        console.warn(`[BVA-DOM] Radio fast-path: container NOT found for '${uniqueKey}'`);
         return false;
       }
       el = this.scanner.getInput(uniqueKey);
@@ -237,7 +392,10 @@
         const container = document.querySelector(`[data-testid="${uniqueKey}"]`);
         if (container) {
           const tag = container.tagName.toLowerCase();
+          const containerRole = container.getAttribute("role");
           if (tag === "textarea" || tag === "select" || tag === "input") {
+            el = container;
+          } else if (tag === "button" && (containerRole === "switch" || containerRole === "checkbox")) {
             el = container;
           } else {
             const bestInput = this._findBestInput(container);
@@ -268,9 +426,12 @@
           if (nearby) el = nearby;
         }
       }
-      if (!el) return false;
+      if (!el) {
+        console.warn(`[BVA-DOM] fillField: NO se encontró elemento para '${uniqueKey}'`);
+        return false;
+      }
       const finalTag = el.tagName.toLowerCase();
-      if (finalTag !== "textarea" && finalTag !== "input" && finalTag !== "select") {
+      if (finalTag !== "textarea" && finalTag !== "input" && finalTag !== "select" && finalTag !== "button") {
         const innerInput = this._findBestInput(el);
         if (innerInput) el = innerInput;
         else return false;
@@ -299,13 +460,20 @@
     }
     _findBestInput(container) {
       if (!container) return null;
+      const testId = container.getAttribute("data-testid") || "";
+      if (testId.includes("checkbox") || testId.includes("switch")) {
+        const cb = container.querySelector('input[type="checkbox"]');
+        if (cb) return cb;
+        const sw = container.querySelector('button[role="switch"], [role="checkbox"]');
+        if (sw) return sw;
+      }
       const textareas = container.querySelectorAll("textarea");
       for (const ta of textareas) if (ta.offsetParent !== null || ta.offsetHeight > 0) return ta;
       if (textareas.length > 0) return textareas[0];
       const textInputs = container.querySelectorAll('input[type="text"], input:not([type])');
       for (const inp of textInputs) if (inp.offsetParent !== null || inp.offsetHeight > 0) return inp;
       if (textInputs.length > 0) return textInputs[0];
-      return container.querySelector('input[type="number"]') || container.querySelector('input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"])') || container.querySelector("select");
+      return container.querySelector('input[type="number"]') || container.querySelector('input[type="checkbox"]') || container.querySelector('input:not([type="radio"]):not([type="hidden"])') || container.querySelector('button[role="switch"]') || container.querySelector("select");
     }
     _isSearchableSelect(uniqueKey, el) {
       if (!uniqueKey.endsWith("-select")) return false;
@@ -318,6 +486,10 @@
       const tag = el.tagName.toLowerCase();
       if (tag === "textarea") return "textarea";
       if (tag === "select") return "select";
+      if (tag === "button") {
+        const role = el.getAttribute("role");
+        if (role === "switch" || role === "checkbox") return "checkbox";
+      }
       if (tag === "input") {
         if (el.type === "checkbox") return "checkbox";
         if (el.type === "radio") return "radio";
@@ -365,8 +537,10 @@
       else inputEl.value = value;
       inputEl.dispatchEvent(new Event("input", { bubbles: true }));
       inputEl.dispatchEvent(new Event("change", { bubbles: true }));
-      inputEl.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: value.slice(-1) }));
-      inputEl.dispatchEvent(new KeyboardEvent("keyup", { bubbles: true, key: value.slice(-1) }));
+      if (value.length > 0) {
+        inputEl.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: value[0] }));
+        inputEl.dispatchEvent(new KeyboardEvent("keyup", { bubbles: true, key: value[0] }));
+      }
       this._highlight(inputEl);
       const maxAttempts = 5;
       const delays = [200, 400, 600, 1e3, 1500];
@@ -397,35 +571,75 @@
       return true;
     }
     _setCheckboxValue(el, value) {
-      const checkbox = el instanceof HTMLInputElement ? el : el.querySelector("input");
-      const role = el.getAttribute("role");
-      const isSwitch = role === "switch" || role === "checkbox" || el.tagName.toLowerCase() === "button";
       const boolVal = value === true || value === "true" || value === "1" || value === "si" || value === "sí";
+      console.log(`[BVA-DOM] _setCheckboxValue: tag=${el.tagName}, role=${el.getAttribute("role")}, target=${boolVal}`);
+      let checkbox = null;
+      if (el instanceof HTMLInputElement && el.type === "checkbox") {
+        checkbox = el;
+      } else {
+        checkbox = el.querySelector('input[type="checkbox"]');
+      }
+      if (!checkbox && el.parentElement) {
+        checkbox = el.parentElement.querySelector('input[type="checkbox"]');
+      }
       if (checkbox) {
+        console.log(`[BVA-DOM] Checkbox encontrado: checked=${checkbox.checked}, target=${boolVal}`);
         if (checkbox.checked !== boolVal) {
           checkbox.click();
-          this._highlight(el);
+          checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+          this._highlight(checkbox.closest("[data-testid]") || checkbox);
         }
         return true;
-      } else if (isSwitch) {
+      }
+      const role = el.getAttribute("role");
+      const isSwitch = role === "switch" || role === "checkbox" || el.tagName.toLowerCase() === "button";
+      if (isSwitch) {
         const currentChecked = el.getAttribute("aria-checked") === "true";
+        console.log(`[BVA-DOM] Switch/toggle: aria-checked=${currentChecked}, target=${boolVal}`);
         if (currentChecked !== boolVal) {
           el.click();
           this._highlight(el);
         }
         return true;
       }
+      console.warn(`[BVA-DOM] No se encontró checkbox ni switch en el elemento`);
       return false;
     }
     _setRadioValue(el, value) {
-      const name = el.name || el.querySelector("input")?.name;
-      if (!name) return false;
-      const target = document.querySelector(`input[name="${name}"][value="${value}"]`);
-      if (target) {
-        target.click();
-        this._highlight(target);
+      console.log(`[BVA-DOM] _setRadioValue called: tag=${el?.tagName}, value='${value}', outerHTML=${el?.outerHTML?.substring(0, 300)}`);
+      const name = el.name || el.querySelector('input[type="radio"]')?.name;
+      console.log(`[BVA-DOM] Radio name=${name}`);
+      if (name) {
+        const target = document.querySelector(`input[name="${name}"][value="${value}"]`);
+        if (target) {
+          target.click();
+          target.dispatchEvent(new Event("change", { bubbles: true }));
+          this._highlight(target);
+          console.log(`[BVA-DOM] Radio (standard name/value) clicked`);
+          return true;
+        }
+      }
+      const innerRadio = el.querySelector('input[type="radio"]');
+      console.log(`[BVA-DOM] innerRadio found:`, innerRadio, innerRadio?.checked);
+      if (innerRadio) {
+        if (!innerRadio.checked) {
+          innerRadio.click();
+          innerRadio.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+        this._highlight(innerRadio.closest("[data-testid]") || innerRadio);
+        console.log(`[BVA-DOM] Radio (inner input) clicked, now checked=${innerRadio.checked}`);
         return true;
       }
+      const tag = el.tagName.toLowerCase();
+      console.log(`[BVA-DOM] Radio fallback: tag=${tag}`);
+      if (tag === "div" || tag === "span" || tag === "label" || tag === "button") {
+        el.click();
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+        this._highlight(el);
+        console.log(`[BVA-DOM] Radio (container click) activated`);
+        return true;
+      }
+      console.warn(`[BVA-DOM] _setRadioValue: no se pudo activar el radio`);
       return false;
     }
     _findNearbyInput(container) {
@@ -467,25 +681,33 @@
       this.audioContext = null;
       this.sourceNode = null;
       this.processorNode = null;
+      this.worklet = null;
       this.isRecording = false;
+      this.onDataAvailable = null;
     }
     async start(onDataAvailable) {
       try {
+        this.onDataAvailable = onDataAvailable;
         this.stream = await navigator.mediaDevices.getUserMedia({
-          audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true }
+          audio: {
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false
+          }
         });
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const actualRate = this.audioContext.sampleRate;
         const resampleRatio = actualRate / TARGET_SAMPLE_RATE;
-        console.log(`[BVA-Recorder] AudioContext nativo: ${actualRate}Hz → resample a ${TARGET_SAMPLE_RATE}Hz`);
+        console.log(`[BVA-Recorder] AudioContext: ${actualRate}Hz → ${TARGET_SAMPLE_RATE}Hz (ratio: ${resampleRatio.toFixed(2)})`);
         this.sourceNode = this.audioContext.createMediaStreamSource(this.stream);
-        const bufferSize = 2048;
+        const bufferSize = 4096;
         this.processorNode = this.audioContext.createScriptProcessor(bufferSize, 1, 1);
+        let chunkCount = 0;
         this.processorNode.onaudioprocess = (event) => {
           if (!this.isRecording) return;
           const float32Input = event.inputBuffer.getChannelData(0);
           let float32;
-          if (resampleRatio > 1) {
+          if (Math.abs(resampleRatio - 1) > 0.01) {
             const outputLength = Math.floor(float32Input.length / resampleRatio);
             float32 = new Float32Array(outputLength);
             for (let i = 0; i < outputLength; i++) {
@@ -500,34 +722,53 @@
             pcm16[i] = s < 0 ? s * 32768 : s * 32767;
           }
           const blob = new Blob([pcm16.buffer], { type: "application/octet-stream" });
-          onDataAvailable(blob);
+          console.debug(`[BVA-Recorder] Chunk enviado: ${pcm16.length} samples (${blob.size} bytes)`);
+          this.onDataAvailable(blob);
         };
         this.sourceNode.connect(this.processorNode);
-        this.processorNode.connect(this.audioContext.destination);
+        this.muteNode = this.audioContext.createGain();
+        this.muteNode.gain.value = 0;
+        this.processorNode.connect(this.muteNode);
+        this.muteNode.connect(this.audioContext.destination);
         this.isRecording = true;
+        console.log("[BVA-Recorder] Grabación iniciada");
         return true;
       } catch (error) {
-        console.error("[BVA-Recorder] Error:", error);
+        console.error("[BVA-Recorder] Error al iniciar:", error);
         alert(`Error micrófono: ${error.message}`);
         return false;
       }
     }
     stop() {
       this.isRecording = false;
+      console.log("[BVA-Recorder] Grabación detenida");
       try {
         this.processorNode?.disconnect();
       } catch (e) {
+        console.debug(e);
+      }
+      try {
+        this.muteNode?.disconnect();
+      } catch (e) {
+        console.debug(e);
       }
       try {
         this.sourceNode?.disconnect();
       } catch (e) {
+        console.debug(e);
       }
       try {
         this.audioContext?.close();
       } catch (e) {
+        console.debug(e);
       }
-      this.stream?.getTracks().forEach((t) => t.stop());
+      try {
+        this.stream?.getTracks().forEach((t) => t.stop());
+      } catch (e) {
+        console.debug(e);
+      }
       this.processorNode = null;
+      this.muteNode = null;
       this.sourceNode = null;
       this.audioContext = null;
       this.stream = null;
@@ -654,8 +895,8 @@
 
     <div class="bva-panel" id="bvaPanel">
       <div class="bva-header">
-        <span class="bva-title">Dictado Medico</span>
-        <div class="bva-status">
+        <span class="bva-title">Streaming Bio</span>
+        <div class="bva-status"> 
           <div class="bva-dot" id="bvaDot"></div>
           <span id="bvaStatusText">Desconectado</span>
         </div>
@@ -673,7 +914,7 @@
             <line x1="12" y1="19" x2="12" y2="23"/>
             <line x1="8" y1="23" x2="16" y2="23"/>
           </svg>
-          Iniciar Dictado
+          Iniciar 
         </button>
         <button class="bva-btn bva-btn-stop" id="bvaStopBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -818,7 +1059,7 @@
         case "partial_autofill":
           if (msg.items?.length) {
             const filled = manipulator.applyAutofill(msg.items);
-            if (filled.length > 0) addLog("fill", `${filled.join(", ")} ← "${(msg.source_text || "").substring(0, 40)}"`);
+            if (filled.length > 0) addLog("fill", `${filled.join(", ")} ← "${(msg.source_text || "").substring(0, 100)}"`);
           }
           break;
         case "autofill_data":
@@ -827,6 +1068,13 @@
             const filled = manipulator.applyAutofill(items);
             if (filled.length > 0) addLog("fill", `LLM final: ${filled.join(", ")}`);
           }
+          break;
+        case "info":
+          addLog("decision", msg.message || "Info del servidor");
+          break;
+        case "error":
+          addLog("ignore", `⚠ Error: ${msg.message || "Error desconocido"}`);
+          console.error("[BVA] Error del backend:", msg.message);
           break;
       }
     }
@@ -840,14 +1088,44 @@
       });
     }
     startBtn.addEventListener("click", async () => {
-      if (!ws || ws.readyState !== WebSocket.OPEN) await connectWS();
-      const freshFields = scanner.scan();
-      ws.send(JSON.stringify({ type: "biowel_form_structure", fields: freshFields, already_filled: manipulator.getFilledFields() }));
-      if (await recorder.start(sendAudioChunk)) {
-        startBtn.style.display = "none";
-        stopBtn.style.display = "flex";
-        panel.classList.add("recording");
-        setDot("recording");
+      try {
+        if (!ws || ws.readyState !== WebSocket.OPEN) await connectWS();
+        const freshFields = scanner.scan();
+        accumulatedText = "";
+        transcript.textContent = "";
+        const ready = await new Promise((resolve) => {
+          const timeout = setTimeout(() => {
+            addLog("ignore", "⚠ Timeout esperando backend (5s)");
+            resolve(false);
+          }, 5e3);
+          const origHandler = ws.onmessage;
+          ws.onmessage = (event) => {
+            const msg = JSON.parse(event.data);
+            if (msg.type === "info" || msg.type === "error") {
+              clearTimeout(timeout);
+              ws.onmessage = origHandler;
+              handleMessage(msg);
+              resolve(msg.type === "info");
+            } else {
+              handleMessage(msg);
+            }
+          };
+          ws.send(JSON.stringify({ type: "biowel_form_structure", fields: freshFields, already_filled: manipulator.getFilledFields() }));
+        });
+        if (!ready) {
+          addLog("ignore", "⚠ No se pudo iniciar el streaming");
+          return;
+        }
+        if (await recorder.start(sendAudioChunk)) {
+          startBtn.style.display = "none";
+          stopBtn.style.display = "flex";
+          panel.classList.add("recording");
+          setDot("recording");
+        }
+      } catch (err) {
+        console.error("[BVA] Error iniciando:", err);
+        addLog("ignore", `⚠ Error: ${err.message}`);
+        setDot("disconnected");
       }
     });
     stopBtn.addEventListener("click", () => {

@@ -4,10 +4,25 @@ export class DOMManipulator {
         this.filledFields = new Map();
     }
 
+    /**
+     * Retorna un objeto plano con los campos ya llenados.
+     * Se usa al iniciar dictado para informar al backend qué campos ya tienen valor.
+     */
+    getFilledFields() {
+        const result = {};
+        for (const [key, value] of this.filledFields) {
+            result[key] = value;
+        }
+        return result;
+    }
+
     applyAutofill(items) {
         const filled = [];
+        console.log(`[BVA-DOM] applyAutofill called with ${items.length} items:`, JSON.stringify(items));
         for (const item of items) {
+            console.log(`[BVA-DOM] Applying: key='${item.unique_key}', value='${item.value}'`);
             const success = this.fillField(item.unique_key, item.value);
+            console.log(`[BVA-DOM] Result for '${item.unique_key}': ${success}`);
             if (success) {
                 filled.push(item.unique_key);
                 this.filledFields.set(item.unique_key, item.value);
@@ -18,12 +33,26 @@ export class DOMManipulator {
 
     fillField(uniqueKey, value) {
         let el = null;
-        console.log(`[BVA-DOM] === fillField("${uniqueKey}", "${String(value).substring(0, 60)}") ===`);
+        console.log(`[BVA-DOM] === fillField("${uniqueKey}", "${String(value).substring(0, 200)}") ===`);
 
         const keyLower = uniqueKey.toLowerCase();
         if (keyLower.includes('-button') || keyLower.includes('-btn') ||
             keyLower.includes('-link') || keyLower.includes('-load-previous')) {
             console.warn(`[BVA-DOM] RECHAZADO: "${uniqueKey}" parece ser un botón/link, no un campo llenable`);
+            return false;
+        }
+
+        // Fast-path para radio buttons: no necesitan buscar un input estándar,
+        // solo el contenedor con data-testid (Biowel usa divs clickeables)
+        if (uniqueKey.endsWith('-radio')) {
+            const container = document.querySelector(`[data-testid="${uniqueKey}"]`);
+            if (container) {
+                console.log(`[BVA-DOM] Radio fast-path: key='${uniqueKey}', container=`, container?.tagName, container?.outerHTML?.substring(0, 200));
+                const result = this._setRadioValue(container, String(value));
+                console.log(`[BVA-DOM] Radio result: ${result}`);
+                return result;
+            }
+            console.warn(`[BVA-DOM] Radio fast-path: container NOT found for '${uniqueKey}'`);
             return false;
         }
 
@@ -40,7 +69,11 @@ export class DOMManipulator {
             const container = document.querySelector(`[data-testid="${uniqueKey}"]`);
             if (container) {
                 const tag = container.tagName.toLowerCase();
+                const containerRole = container.getAttribute('role');
                 if (tag === 'textarea' || tag === 'select' || tag === 'input') {
+                    el = container;
+                } else if (tag === 'button' && (containerRole === 'switch' || containerRole === 'checkbox')) {
+                    // Biowel uses button[role="switch"] for toggle checkboxes
                     el = container;
                 } else {
                     const bestInput = this._findBestInput(container);
@@ -74,10 +107,13 @@ export class DOMManipulator {
             }
         }
 
-        if (!el) return false;
+        if (!el) {
+            console.warn(`[BVA-DOM] fillField: NO se encontró elemento para '${uniqueKey}'`);
+            return false;
+        }
 
         const finalTag = el.tagName.toLowerCase();
-        if (finalTag !== 'textarea' && finalTag !== 'input' && finalTag !== 'select') {
+        if (finalTag !== 'textarea' && finalTag !== 'input' && finalTag !== 'select' && finalTag !== 'button') {
             const innerInput = this._findBestInput(el);
             if (innerInput) el = innerInput;
             else return false;
@@ -105,6 +141,16 @@ export class DOMManipulator {
 
     _findBestInput(container) {
         if (!container) return null;
+
+        // Si el container tiene data-testid con "checkbox" o "switch", buscar checkbox/switch primero
+        const testId = container.getAttribute('data-testid') || '';
+        if (testId.includes('checkbox') || testId.includes('switch')) {
+            const cb = container.querySelector('input[type="checkbox"]');
+            if (cb) return cb;
+            const sw = container.querySelector('button[role="switch"], [role="checkbox"]');
+            if (sw) return sw;
+        }
+
         const textareas = container.querySelectorAll('textarea');
         for (const ta of textareas) if (ta.offsetParent !== null || ta.offsetHeight > 0) return ta;
         if (textareas.length > 0) return textareas[0];
@@ -114,7 +160,9 @@ export class DOMManipulator {
         if (textInputs.length > 0) return textInputs[0];
 
         return container.querySelector('input[type="number"]') ||
-            container.querySelector('input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"])') ||
+            container.querySelector('input[type="checkbox"]') ||
+            container.querySelector('input:not([type="radio"]):not([type="hidden"])') ||
+            container.querySelector('button[role="switch"]') ||
             container.querySelector('select');
     }
 
@@ -130,6 +178,10 @@ export class DOMManipulator {
         const tag = el.tagName.toLowerCase();
         if (tag === 'textarea') return 'textarea';
         if (tag === 'select') return 'select';
+        if (tag === 'button') {
+            const role = el.getAttribute('role');
+            if (role === 'switch' || role === 'checkbox') return 'checkbox';
+        }
         if (tag === 'input') {
             if (el.type === 'checkbox') return 'checkbox';
             if (el.type === 'radio') return 'radio';
@@ -187,8 +239,11 @@ export class DOMManipulator {
 
         inputEl.dispatchEvent(new Event('input', { bubbles: true }));
         inputEl.dispatchEvent(new Event('change', { bubbles: true }));
-        inputEl.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: value.slice(-1) }));
-        inputEl.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, key: value.slice(-1) }));
+        // Eliminado slice(-1) que causaba corte de texto largo
+        if (value.length > 0) {
+            inputEl.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: value[0] }));
+            inputEl.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, key: value[0] }));
+        }
 
         this._highlight(inputEl);
 
@@ -224,37 +279,90 @@ export class DOMManipulator {
     }
 
     _setCheckboxValue(el, value) {
-        const checkbox = el instanceof HTMLInputElement ? el : el.querySelector('input');
-        const role = el.getAttribute('role');
-        const isSwitch = role === 'switch' || role === 'checkbox' || el.tagName.toLowerCase() === 'button';
         const boolVal = (value === true || value === 'true' || value === '1' || value === 'si' || value === 'sí');
+        console.log(`[BVA-DOM] _setCheckboxValue: tag=${el.tagName}, role=${el.getAttribute('role')}, target=${boolVal}`);
+
+        // 1. Buscar input[type=checkbox] dentro del elemento o en su contenedor padre
+        let checkbox = null;
+        if (el instanceof HTMLInputElement && el.type === 'checkbox') {
+            checkbox = el;
+        } else {
+            checkbox = el.querySelector('input[type="checkbox"]');
+        }
+        // Si no encontramos checkbox, buscar en el contenedor padre (label > input pattern)
+        if (!checkbox && el.parentElement) {
+            checkbox = el.parentElement.querySelector('input[type="checkbox"]');
+        }
 
         if (checkbox) {
+            console.log(`[BVA-DOM] Checkbox encontrado: checked=${checkbox.checked}, target=${boolVal}`);
             if (checkbox.checked !== boolVal) {
                 checkbox.click();
-                this._highlight(el);
+                checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                this._highlight(checkbox.closest('[data-testid]') || checkbox);
             }
             return true;
-        } else if (isSwitch) {
+        }
+
+        // 2. Manejar button[role=switch] o [role=checkbox] (Biowel toggle components)
+        const role = el.getAttribute('role');
+        const isSwitch = role === 'switch' || role === 'checkbox' || el.tagName.toLowerCase() === 'button';
+        if (isSwitch) {
             const currentChecked = el.getAttribute('aria-checked') === 'true';
+            console.log(`[BVA-DOM] Switch/toggle: aria-checked=${currentChecked}, target=${boolVal}`);
             if (currentChecked !== boolVal) {
                 el.click();
                 this._highlight(el);
             }
             return true;
         }
+
+        console.warn(`[BVA-DOM] No se encontró checkbox ni switch en el elemento`);
         return false;
     }
 
     _setRadioValue(el, value) {
-        const name = el.name || el.querySelector('input')?.name;
-        if (!name) return false;
-        const target = document.querySelector(`input[name="${name}"][value="${value}"]`);
-        if (target) {
-            target.click();
-            this._highlight(target);
+        console.log(`[BVA-DOM] _setRadioValue called: tag=${el?.tagName}, value='${value}', outerHTML=${el?.outerHTML?.substring(0, 300)}`);
+        
+        // 1. Intento estándar: input[type=radio] con name/value
+        const name = el.name || el.querySelector('input[type="radio"]')?.name;
+        console.log(`[BVA-DOM] Radio name=${name}`);
+        if (name) {
+            const target = document.querySelector(`input[name="${name}"][value="${value}"]`);
+            if (target) {
+                target.click();
+                target.dispatchEvent(new Event('change', { bubbles: true }));
+                this._highlight(target);
+                console.log(`[BVA-DOM] Radio (standard name/value) clicked`);
+                return true;
+            }
+        }
+
+        // 2. Biowel: el elemento es un contenedor con input[type=radio] adentro → click al radio
+        const innerRadio = el.querySelector('input[type="radio"]');
+        console.log(`[BVA-DOM] innerRadio found:`, innerRadio, innerRadio?.checked);
+        if (innerRadio) {
+            if (!innerRadio.checked) {
+                innerRadio.click();
+                innerRadio.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            this._highlight(innerRadio.closest('[data-testid]') || innerRadio);
+            console.log(`[BVA-DOM] Radio (inner input) clicked, now checked=${innerRadio.checked}`);
             return true;
         }
+
+        // 3. Fallback: el contenedor mismo es clickeable (componente custom estilo botón)
+        const tag = el.tagName.toLowerCase();
+        console.log(`[BVA-DOM] Radio fallback: tag=${tag}`);
+        if (tag === 'div' || tag === 'span' || tag === 'label' || tag === 'button') {
+            el.click();
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            this._highlight(el);
+            console.log(`[BVA-DOM] Radio (container click) activated`);
+            return true;
+        }
+
+        console.warn(`[BVA-DOM] _setRadioValue: no se pudo activar el radio`);
         return false;
     }
 

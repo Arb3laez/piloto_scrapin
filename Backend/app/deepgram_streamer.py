@@ -36,6 +36,7 @@ class DeepgramStreamer:
         self.is_open = False
         self._loop: Optional[asyncio.AbstractEventLoop] = None
         self._transcript_queue: asyncio.Queue = asyncio.Queue()
+        self._keepalive_task: Optional[asyncio.Task] = None
 
     async def start(self) -> None:
         """Abre la conexión de streaming con Deepgram."""
@@ -44,15 +45,15 @@ class DeepgramStreamer:
         options = LiveOptions(
             model=settings.deepgram_model,
             language=settings.deepgram_language,
-            punctuate=True,
+            punctuate=False,  # Desactivado para evitar cortes por puntuación
             interim_results=True,
-            endpointing=200,
+            endpointing=2000,  # 2 segundos - valor seguro para evitar cortes prematuros
             smart_format=True,
             encoding="linear16",
             sample_rate=16000,
             channels=1,
             vad_events=True,
-            utterance_end_ms=1000,
+            utterance_end_ms=4000,  # 4 segundos - valor seguro para párrafos largos
             # Keywords médicos para mejorar precisión de transcripción en español
             keywords=[
                 "motivo de consulta:2",
@@ -82,6 +83,13 @@ class DeepgramStreamer:
                 "diagnóstico:1",
                 "tratamiento:1",
                 "antecedentes:1",
+                # Palabras para finalizar dictado
+                "listo:3",
+                "terminado:3",
+                "fin:3",
+                "finalizado:3",
+                "eso es todo:3",
+                "se acabó:3",
             ],
         )
 
@@ -96,23 +104,45 @@ class DeepgramStreamer:
 
         logger.info("Iniciando conexión con Deepgram streaming...")
 
-        # keepalive_options para mantener viva la conexión durante silencios
-        success = self.connection.start(options, addons={"keepalive": "true"})
+        try:
+            # FIX: El SDK de Deepgram start() NO soporta parámetro 'addons'
+            # Usar solo 'options' sin parámetro adicional
+            success = self.connection.start(options)
 
-        if success:
+            if not success:
+                raise RuntimeError("Connection.start() retornó False")
+
             self.is_open = True
-            logger.info("Conexión Deepgram streaming abierta exitosamente (con keepalive)")
-        else:
-            raise RuntimeError("No se pudo abrir la conexión de streaming con Deepgram")
+            logger.info("Conexión Deepgram streaming abierta exitosamente")
+            
+            # FIX: Iniciar tarea de keep-alive para prevenir timeout de inactividad
+            # Deepgram cierra la conexión si no recibe datos por ~10 segundos
+            # Enviamos audio vacío cada 5 segundos para mantener viva la conexión
+            self._keepalive_task = self._loop.create_task(self._keepalive_loop())
+            logger.info("[Deepgram] Keep-alive task iniciado")
+
+        except Exception as e:
+            self.is_open = False
+            logger.error(f"Error al inicializar conexión Deepgram: {e}")
+            raise RuntimeError(f"No se pudo abrir la conexión de streaming con Deepgram: {e}")
 
     async def send_audio(self, audio_bytes: bytes) -> None:
         """Envía bytes de audio PCM16 a Deepgram."""
-        if self.connection and self.is_open:
-            try:
-                self.connection.send(audio_bytes)
-            except Exception as e:
-                logger.warning(f"[Deepgram] Error enviando audio: {e}")
-                self.is_open = False
+        if not self.connection:
+            logger.warning("[Deepgram.send_audio] Connection es None, no se puede enviar audio")
+            self.is_open = False
+            return
+
+        if not self.is_open:
+            logger.warning("[Deepgram.send_audio] is_open=False, ignorando audio")
+            return
+
+        try:
+            self.connection.send(audio_bytes)
+            logger.debug(f"[Deepgram] Audio enviado: {len(audio_bytes)} bytes")
+        except Exception as e:
+            logger.error(f"[Deepgram.send_audio] Error enviando audio: {e}")
+            self.is_open = False
 
     async def consume_transcripts(self) -> None:
         """
@@ -141,6 +171,15 @@ class DeepgramStreamer:
 
     async def finish(self) -> str:
         """Cierra Deepgram y retorna la transcripción final completa."""
+        # Cancelar keep-alive task primero
+        if self._keepalive_task and not self._keepalive_task.done():
+            self._keepalive_task.cancel()
+            try:
+                await self._keepalive_task
+            except asyncio.CancelledError:
+                pass
+            logger.info("[Deepgram] Keep-alive task cancelado")
+        
         if self.connection and self.is_open:
             try:
                 self.connection.finish()
@@ -157,6 +196,39 @@ class DeepgramStreamer:
 
         return full_transcript
 
+    async def _keepalive_loop(self) -> None:
+        """
+        Envía datos periódicos a Deepgram para mantener viva la conexión.
+        
+        Deepgram cierra automáticamente la conexión si no recibe datos por ~10 segundos.
+        Este background task envía audio vacío (silencio) cada 4 segundos para mantener viva
+        la conexión mientras esperamos que el usuario hable.
+        """
+        try:
+            while self.is_open:
+                try:
+                    await asyncio.sleep(4.0)  # Esperar 4 segundos antes de enviar keep-alive
+                    if self.is_open and self.connection:
+                        # Enviar 320 bytes de silencio (0x0000) en PCM16
+                        # 320 bytes = 160 samples @ 16-bit = 10ms de audio @ 16kHz
+                        silence = b'\x00' * 320
+                        try:
+                            self.connection.send(silence)
+                            logger.debug("[Deepgram] Keep-alive enviado (silencio)")
+                        except Exception as e:
+                            logger.error(f"[Deepgram] Error enviando keep-alive: {e}")
+                            break
+                except asyncio.CancelledError:
+                    logger.info("[Deepgram] Keep-alive task cancelado")
+                    break
+                except Exception as e:
+                    logger.error(f"[Deepgram._keepalive_loop] Error: {e}")
+                    break
+        except Exception as e:
+            logger.error(f"[Deepgram._keepalive_loop] Error en loop: {e}")
+        finally:
+            logger.info("[Deepgram] Keep-alive loop terminado")
+
     # ==========================================
     # Handlers de eventos Deepgram (corren en thread del SDK)
     # ==========================================
@@ -171,6 +243,7 @@ class DeepgramStreamer:
             transcript = result.channel.alternatives[0].transcript
 
             if not transcript:
+                logger.debug("[Deepgram._on_transcript] Transcripción vacía, ignorando")
                 return
 
             is_final = result.is_final
@@ -184,19 +257,26 @@ class DeepgramStreamer:
             # THREAD-SAFE: usar call_soon_threadsafe para poner en el queue
             # try/except protege contra race condition si el loop cierra entre
             # el check is_running() y la llamada call_soon_threadsafe()
+            
+            if not self._loop:
+                logger.error("[Deepgram._on_transcript] _loop es None, no se puede encolar transcripción")
+                return
+            
+            if not self._loop.is_running():
+                logger.error("[Deepgram._on_transcript] Event loop no está corriendo, transcripción perdida")
+                return
+
             try:
-                if self._loop and self._loop.is_running():
-                    self._loop.call_soon_threadsafe(
-                        self._transcript_queue.put_nowait,
-                        (transcript, is_final)
-                    )
-                else:
-                    logger.warning("[Deepgram] Event loop no disponible, transcripción perdida")
-            except RuntimeError:
-                logger.warning("[Deepgram] Event loop cerrado durante enqueue, transcripción perdida")
+                self._loop.call_soon_threadsafe(
+                    self._transcript_queue.put_nowait,
+                    (transcript, is_final)
+                )
+                logger.debug(f"[Deepgram._on_transcript] Encolado exitosamente: {transcript[:50]}...")
+            except RuntimeError as e:
+                logger.error(f"[Deepgram._on_transcript] Error encolando transcripción: {e}")
 
         except Exception as e:
-            logger.error(f"Error procesando transcripción Deepgram: {e}")
+            logger.error(f"[Deepgram._on_transcript] Error procesando transcripción: {e}", exc_info=True)
 
     def _on_utterance_end(self, _self_client, utterance_end, **kwargs) -> None:
         """Handler para fin de utterance — confirma que un bloque de habla terminó."""

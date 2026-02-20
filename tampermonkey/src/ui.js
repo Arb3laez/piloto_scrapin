@@ -119,8 +119,8 @@ export function createWidget() {
 
     <div class="bva-panel" id="bvaPanel">
       <div class="bva-header">
-        <span class="bva-title">Dictado Medico</span>
-        <div class="bva-status">
+        <span class="bva-title">Streaming Bio</span>
+        <div class="bva-status"> 
           <div class="bva-dot" id="bvaDot"></div>
           <span id="bvaStatusText">Desconectado</span>
         </div>
@@ -138,7 +138,7 @@ export function createWidget() {
             <line x1="12" y1="19" x2="12" y2="23"/>
             <line x1="8" y1="23" x2="16" y2="23"/>
           </svg>
-          Iniciar Dictado
+          Iniciar 
         </button>
         <button class="bva-btn bva-btn-stop" id="bvaStopBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">

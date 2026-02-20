@@ -50,7 +50,7 @@ SECTION_FIELD_REGISTRY = {
                 "type": "textarea",
             },
             {
-                "key": "attention-origin-current-disease-badge-field",
+                "key": "badge-text-field-textarea",
                 "label": "Enfermedad actual",
                 "type": "textarea",
             },
@@ -83,7 +83,7 @@ SECTION_FIELD_REGISTRY = {
         ),
         "user_prompt_template": """Campos disponibles:
 - attention-origin-reason-for-consulting-badge-field (Motivo de consulta) [textarea]
-- attention-origin-current-disease-badge-field (Enfermedad actual) [textarea]
+- badge-text-field-textarea (Enfermedad actual) [textarea]
 
 Frase dictada: "{segment}"
 
@@ -180,7 +180,7 @@ REGLAS:
    - "enfermedad actual es el atigmatismo" → value="Atigmatismo" (NO "es el atigmatismo")
    - "la enfermedad actual es glaucoma" → value="Glaucoma"
 3. Si dice "motivo de consulta: X" → el valor es X, el campo es attention-origin-reason-for-consulting-badge-field
-4. Si dice "enfermedad actual: X" → el valor es X, el campo es attention-origin-current-disease-badge-field
+4. Si dice "enfermedad actual: X" → el valor es X, el campo es badge-text-field-textarea
 5. Si menciona enfermedad/diagnóstico, TAMBIÉN mapea al campo diagnostic-impression-diagnosis-select con el nombre de la enfermedad
 6. NUNCA mapees a campos que contengan "button", "btn", "link", "load-previous" en su nombre
 7. Si es conversación casual o instrucción al paciente → null

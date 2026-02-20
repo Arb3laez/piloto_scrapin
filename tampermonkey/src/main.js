@@ -121,7 +121,7 @@ function init() {
             case 'partial_autofill':
                 if (msg.items?.length) {
                     const filled = manipulator.applyAutofill(msg.items);
-                    if (filled.length > 0) addLog('fill', `${filled.join(', ')} ← "${(msg.source_text || '').substring(0, 40)}"`);
+                    if (filled.length > 0) addLog('fill', `${filled.join(', ')} ← "${(msg.source_text || '').substring(0, 100)}"`);
                 }
                 break;
             case 'autofill_data':
@@ -130,6 +130,13 @@ function init() {
                     const filled = manipulator.applyAutofill(items);
                     if (filled.length > 0) addLog('fill', `LLM final: ${filled.join(', ')}`);
                 }
+                break;
+            case 'info':
+                addLog('decision', msg.message || 'Info del servidor');
+                break;
+            case 'error':
+                addLog('ignore', `⚠ Error: ${msg.message || 'Error desconocido'}`);
+                console.error('[BVA] Error del backend:', msg.message);
                 break;
         }
     }
@@ -145,12 +152,46 @@ function init() {
     }
 
     startBtn.addEventListener('click', async () => {
-        if (!ws || ws.readyState !== WebSocket.OPEN) await connectWS();
-        const freshFields = scanner.scan();
-        ws.send(JSON.stringify({ type: 'biowel_form_structure', fields: freshFields, already_filled: manipulator.getFilledFields() }));
-        if (await recorder.start(sendAudioChunk)) {
-            startBtn.style.display = 'none'; stopBtn.style.display = 'flex';
-            panel.classList.add('recording'); setDot('recording');
+        try {
+            if (!ws || ws.readyState !== WebSocket.OPEN) await connectWS();
+            const freshFields = scanner.scan();
+            accumulatedText = '';
+            transcript.textContent = '';
+
+            // Esperar confirmación del backend antes de iniciar grabación
+            const ready = await new Promise((resolve) => {
+                const timeout = setTimeout(() => {
+                    addLog('ignore', '⚠ Timeout esperando backend (5s)');
+                    resolve(false);
+                }, 5000);
+                const origHandler = ws.onmessage;
+                ws.onmessage = (event) => {
+                    const msg = JSON.parse(event.data);
+                    if (msg.type === 'info' || msg.type === 'error') {
+                        clearTimeout(timeout);
+                        ws.onmessage = origHandler;
+                        handleMessage(msg);
+                        resolve(msg.type === 'info');
+                    } else {
+                        handleMessage(msg);
+                    }
+                };
+                ws.send(JSON.stringify({ type: 'biowel_form_structure', fields: freshFields, already_filled: manipulator.getFilledFields() }));
+            });
+
+            if (!ready) {
+                addLog('ignore', '⚠ No se pudo iniciar el streaming');
+                return;
+            }
+
+            if (await recorder.start(sendAudioChunk)) {
+                startBtn.style.display = 'none'; stopBtn.style.display = 'flex';
+                panel.classList.add('recording'); setDot('recording');
+            }
+        } catch (err) {
+            console.error('[BVA] Error iniciando:', err);
+            addLog('ignore', `⚠ Error: ${err.message}`);
+            setDot('disconnected');
         }
     });
 
