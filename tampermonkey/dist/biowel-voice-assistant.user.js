@@ -92,6 +92,67 @@
       section: "diagnostico",
       fieldType: "radio",
       keywords: ["diagnóstico ampliado", "diagnostico ampliado", "idx ampliada", "ampliada"]
+    },
+    // ============================================
+    // Preconsulta - Dropdown items (botones clickeables)
+    // ============================================
+    "header-preconsultation-dropdown-item-0": {
+      label: "Preconsulta Dilatación",
+      section: "preconsulta",
+      fieldType: "button",
+      keywords: ["preconsulta dilatación", "preconsulta dilatacion", "dilatación", "dilatacion"]
+    },
+    "header-preconsultation-dropdown-item-1": {
+      label: "Preconsulta Signos vitales",
+      section: "preconsulta",
+      fieldType: "button",
+      keywords: ["preconsulta signos vitales", "signos vitales"]
+    },
+    "header-preconsultation-dropdown-item-2": {
+      label: "Preconsulta Tamizaje ocular",
+      section: "preconsulta",
+      fieldType: "button",
+      keywords: ["preconsulta tamizaje ocular", "tamizaje ocular", "tamizaje"]
+    },
+    "header-preconsultation-dropdown-item-3": {
+      label: "Preconsulta Conciliación medicamentosa",
+      section: "preconsulta",
+      fieldType: "button",
+      keywords: ["preconsulta conciliación medicamentosa", "preconsulta conciliacion medicamentosa", "conciliación medicamentosa", "conciliacion medicamentosa"]
+    },
+    "header-preconsultation-dropdown-item-4": {
+      label: "Preconsulta Ortopédica",
+      section: "preconsulta",
+      fieldType: "button",
+      keywords: ["preconsulta ortopédica", "preconsulta ortopedica", "ortopédica", "ortopedica"]
+    },
+    // Preconsulta - Botón Atrás
+    "preconsultation-back-button": {
+      label: "Atrás (preconsulta)",
+      section: "preconsulta",
+      fieldType: "button",
+      keywords: ["atrás", "atras", "volver"]
+    },
+    // ============================================
+    // Dilatación - Radio buttons y botón
+    // ============================================
+    "dilatation-requires-yes-radio": {
+      label: "Dilatación Sí",
+      section: "dilatacion",
+      fieldType: "radio",
+      keywords: ["dilatación sí", "dilatacion si", "requiere dilatación"]
+    },
+    "dilatation-requires-no-radio": {
+      label: "Dilatación No",
+      section: "dilatacion",
+      fieldType: "radio",
+      keywords: ["dilatación no", "dilatacion no", "no requiere dilatación"]
+    },
+    "dilatation-add-record-button": {
+      label: "Agregar registro dilatación",
+      section: "dilatacion",
+      fieldType: "button",
+      keywords: ["agregar registro", "agregar dilatación", "agregar dilatacion"]
     }
   };
   class DOMScanner {
@@ -365,8 +426,11 @@
       let el = null;
       console.log(`[BVA-DOM] === fillField("${uniqueKey}", "${String(value).substring(0, 200)}") ===`);
       const keyLower = uniqueKey.toLowerCase();
-      if (keyLower.includes("-button") || keyLower.includes("-btn") || keyLower.includes("-link") || keyLower.includes("-load-previous")) {
-        console.warn(`[BVA-DOM] RECHAZADO: "${uniqueKey}" parece ser un botón/link, no un campo llenable`);
+      if (value === "click") {
+        return this._clickButton(uniqueKey);
+      }
+      if (keyLower.includes("-link") || keyLower.includes("-load-previous")) {
+        console.warn(`[BVA-DOM] RECHAZADO: "${uniqueKey}" parece ser un link, no un campo llenable`);
         return false;
       }
       if (uniqueKey.endsWith("-radio")) {
@@ -641,6 +705,23 @@
       }
       console.warn(`[BVA-DOM] _setRadioValue: no se pudo activar el radio`);
       return false;
+    }
+    /**
+     * Hace click directo en un botón/dropdown item por su data-testid.
+     * Usado para preconsulta dropdown items, botón atrás, agregar registro, etc.
+     */
+    _clickButton(uniqueKey) {
+      const el = document.querySelector(`[data-testid="${uniqueKey}"]`);
+      if (!el) {
+        console.warn(`[BVA-DOM] _clickButton: elemento '${uniqueKey}' NO encontrado en DOM`);
+        return false;
+      }
+      console.log(`[BVA-DOM] _clickButton: clicking '${uniqueKey}' (tag=${el.tagName})`);
+      const clickable = el.querySelector('button, a, [role="button"], [role="menuitem"]') || el;
+      clickable.click();
+      this._highlight(el);
+      console.log(`[BVA-DOM] _clickButton: '${uniqueKey}' clicked successfully`);
+      return true;
     }
     _findNearbyInput(container) {
       const INPUT_SELECTOR = 'textarea, input:not([type="hidden"]), select';

@@ -102,9 +102,51 @@ KEYWORD_TO_FIELD = {
     "valor": "attention-origin-evolution-time-input",
     "tiempo": "attention-origin-evolution-time-unit-select",
     "unidad": "attention-origin-evolution-time-unit-select",
-    
 
-    
+    # ============================================
+    # Preconsulta - Dropdown items (click directo)
+    # ============================================
+    "preconsulta dilatación": "header-preconsultation-dropdown-item-0",
+    "preconsulta dilatacion": "header-preconsultation-dropdown-item-0",
+    "dilatación": "header-preconsultation-dropdown-item-0",
+    "dilatacion": "header-preconsultation-dropdown-item-0",
+
+    "preconsulta signos vitales": "header-preconsultation-dropdown-item-1",
+    "signos vitales": "header-preconsultation-dropdown-item-1",
+
+    "preconsulta tamizaje ocular": "header-preconsultation-dropdown-item-2",
+    "tamizaje ocular": "header-preconsultation-dropdown-item-2",
+    "tamizaje": "header-preconsultation-dropdown-item-2",
+
+    "preconsulta conciliación medicamentosa": "header-preconsultation-dropdown-item-3",
+    "preconsulta conciliacion medicamentosa": "header-preconsultation-dropdown-item-3",
+    "conciliación medicamentosa": "header-preconsultation-dropdown-item-3",
+    "conciliacion medicamentosa": "header-preconsultation-dropdown-item-3",
+
+    "preconsulta ortopédica": "header-preconsultation-dropdown-item-4",
+    "preconsulta ortopedica": "header-preconsultation-dropdown-item-4",
+    "ortopédica": "header-preconsultation-dropdown-item-4",
+    "ortopedica": "header-preconsultation-dropdown-item-4",
+
+    # Botón Atrás (volver a pantalla principal)
+    "atrás": "preconsultation-back-button",
+    "atras": "preconsultation-back-button",
+    "volver": "preconsultation-back-button",
+
+    # ============================================
+    # Dilatación - Radio buttons y botón
+    # ============================================
+    "dilatación sí": "dilatation-requires-yes-radio",
+    "dilatacion si": "dilatation-requires-yes-radio",
+    "requiere dilatación": "dilatation-requires-yes-radio",
+
+    "dilatación no": "dilatation-requires-no-radio",
+    "dilatacion no": "dilatation-requires-no-radio",
+    "no requiere dilatación": "dilatation-requires-no-radio",
+
+    "agregar registro": "dilatation-add-record-button",
+    "agregar dilatación": "dilatation-add-record-button",
+    "agregar dilatacion": "dilatation-add-record-button",
 
 }
 
@@ -190,7 +232,8 @@ COMMAND_KEYWORDS = {
 EXCLUSIVE_FIELDS = {
     "attention-origin-reason-for-consulting-badge-field",
     "attention-origin-current-disease-badge-field",
-    "oftalmology-observations-textarea"
+    "oftalmology-observations-textarea",
+    "analysis-and-plan-textarea"
 }
 
 
@@ -212,16 +255,42 @@ class ActiveFieldTracker:
     
     def __init__(self):
         self.active_field: Optional[str] = None  # testid del campo activo
-        self.accumulated_text: str = ""  # texto acumulado para ese campo
         self.last_keyword: str = ""  # última palabra clave detectada
         self.min_chars_to_send: int = 5  # mínimo de caracteres para enviar
-        
-    def activate_field(self, testid: str, keyword: str) -> Optional[Tuple[str, str]]:
+
+        # Sistema de 2 capas para manejar utterances de Deepgram:
+        # _confirmed_base: texto de utterances ANTERIORES ya confirmados (is_final=True)
+        # _current_utterance: texto del utterance ACTUAL (parciales acumulativos)
+        # accumulated_text = _confirmed_base + " " + _current_utterance
+        self._confirmed_base: str = ""      # Texto confirmado de utterances previos
+        self._current_utterance: str = ""    # Utterance actual (parciales sobrescriben aquí)
+
+    @property
+    def accumulated_text(self) -> str:
+        """Texto completo = base confirmada + utterance actual."""
+        base = self._confirmed_base.strip()
+        current = self._current_utterance.strip()
+        if base and current:
+            return f"{base} {current}"
+        return base or current
+
+    @accumulated_text.setter
+    def accumulated_text(self, value: str):
+        """Setter para compatibilidad. Establece todo como base confirmada."""
+        self._confirmed_base = value.strip()
+        self._current_utterance = ""
+
+    def activate_field(self, testid: str, keyword: str, initial_text: str = "") -> Optional[Tuple[str, str]]:
         """
         Activa un nuevo campo y retorna el contenido del campo anterior si existe.
+
+        Args:
+            testid: data-testid del campo a activar
+            keyword: palabra clave que activó el campo
+            initial_text: texto inicial para el campo (ej: valor previo de already_filled
+                          para preservar contenido al re-entrar a un campo)
         """
         # Si es el MISMO campo que ya tenemos activo, no resetear acumulado
-        # a menos que la keyword sea nueva y esté en una posición diferente
         if testid == self.active_field:
             self.last_keyword = keyword
             return None
@@ -230,84 +299,96 @@ class ActiveFieldTracker:
         if self.active_field and self.accumulated_text.strip():
             previous_data = (self.active_field, self.accumulated_text.strip())
             logger.info(f"[ActiveField] Finalizando campo anterior '{self.active_field}'")
-        
+
         self.active_field = testid
-        self.accumulated_text = ""
+        self._confirmed_base = initial_text  # Preservar texto previo al re-entrar campo
+        self._current_utterance = ""
         self.last_keyword = keyword
-        # Limpiar último texto enviado para nuevo campo
         self._last_sent_text = ""
-        logger.info(f"[ActiveField] Nuevo campo activado: '{testid}' (keyword: '{keyword}')")
+        logger.info(f"[ActiveField] Nuevo campo activado: '{testid}' (keyword: '{keyword}', initial='{initial_text[:50]}')")
         return previous_data
-    
-    def set_text(self, text: str) -> None:
-        """Establece el texto del campo activo (sobrescribe para modo acumulativo)."""
+
+    def set_partial(self, text: str) -> None:
+        """
+        Establece el texto del utterance ACTUAL (parciales de Deepgram).
+
+        Los parciales son acumulativos: cada uno contiene TODO el texto del utterance.
+        Solo sobrescribe _current_utterance, preserva _confirmed_base intacta.
+
+        Ejemplo:
+            base = "dolor de cabeza"  (utterance 1, ya confirmado)
+            Parcial 1: "también tiene"      → current = "también tiene"
+            Parcial 2: "también tiene fiebre" → current = "también tiene fiebre"
+            accumulated = "dolor de cabeza también tiene fiebre"
+        """
         if self.active_field:
-            self.accumulated_text = text.strip()
+            self._current_utterance = text.strip()
+            logger.info(
+                f"[ActiveField] set_partial: current='{self._current_utterance[:60]}' "
+                f"| base='{self._confirmed_base[:60]}' "
+                f"| full='{self.accumulated_text[:80]}'"
+            )
+
+    def confirm_utterance(self, final_text: str) -> None:
+        """
+        Confirma el utterance actual y lo mueve a la base confirmada.
+
+        Se llama cuando llega is_final=True de Deepgram.
+        El texto final es la versión más precisa del utterance → reemplaza _current_utterance
+        y todo se fusiona en _confirmed_base.
+
+        Ejemplo:
+            base = "dolor de cabeza"
+            current = "también tiene fiebre" (último parcial)
+            confirm_utterance("también tiene fiebre")
+            → base = "dolor de cabeza también tiene fiebre"
+            → current = ""
+        """
+        if not self.active_field:
+            return
+
+        final_clean = final_text.strip()
+        if not final_clean:
+            return
+
+        # Mover utterance actual a base confirmada
+        base = self._confirmed_base.strip()
+        if base:
+            self._confirmed_base = f"{base} {final_clean}"
+        else:
+            self._confirmed_base = final_clean
+        self._current_utterance = ""
+
+        logger.info(
+            f"[ActiveField] confirm_utterance: base='{self._confirmed_base[:80]}' "
+            f"({len(self._confirmed_base)} chars)"
+        )
 
     def clear(self) -> None:
         """Limpia el contenido del campo activo."""
-        self.accumulated_text = ""
+        self._confirmed_base = ""
+        self._current_utterance = ""
 
     def append_text(self, text: str) -> None:
-        """Acumula texto en el campo activo evitando duplicaciones de parciales Deepgram."""
+        """Añade texto nuevo a la base confirmada (para nuevas oraciones tras pausa)."""
         if not self.active_field:
             return
-        
+
         text_clean = text.strip()
         if not text_clean:
             return
 
-        # Si no hay texto acumulado, establecerlo
-        if not self.accumulated_text:
-            self.accumulated_text = text_clean
-            return
+        base = self._confirmed_base.strip()
+        if base:
+            # Evitar duplicación: verificar que el texto no esté ya contenido
+            if text_clean.lower() in base.lower():
+                logger.info(f"[ActiveField] append_text: ignorado (ya contenido en base)")
+                return
+            self._confirmed_base = f"{base} {text_clean}"
+        else:
+            self._confirmed_base = text_clean
 
-        # Detectar solapamiento inteligente entre el acumulado y el nuevo texto
-        acc_lower = self.accumulated_text.lower()
-        new_lower = text_clean.lower()
-        
-        # Buscar el mayor solapamiento al final del acumulado con el inicio del nuevo texto
-        max_overlap = 0
-        acc_words = acc_lower.split()
-        new_words = new_lower.split()
-        
-        # Probar solapamientos de hasta 10 palabras
-        max_check = min(len(acc_words), len(new_words), 10)
-        for i in range(1, max_check + 1):
-            if acc_words[-i:] == new_words[:i]:
-                max_overlap = i
-        
-        # Si hay solapamiento significativo (3+ palabras), unir inteligentemente
-        if max_overlap >= 3:
-            # Tomar las palabras nuevas que no están solapadas
-            new_words_to_add = new_words[max_overlap:]
-            if new_words_to_add:
-                # Añadir espacio si es necesario
-                if not self.accumulated_text.endswith(" "):
-                    self.accumulated_text += " "
-                # Añadir solo las palabras nuevas (preservando caso del original)
-                new_part = " ".join(text_clean.split()[max_overlap:])
-                self.accumulated_text += new_part
-            return
-        
-        # Si el nuevo texto contiene completamente al acumulado, actualizar
-        if acc_lower in new_lower:
-            self.accumulated_text = text_clean
-            return
-        
-        # Si el acumulado contiene completamente al nuevo texto, ignorar
-        if new_lower in acc_lower:
-            return
-        
-        # Acumulación normal: añadir al final
-        if not self.accumulated_text.endswith(" "):
-            self.accumulated_text += " "
-        self.accumulated_text += text_clean
-        
-        logger.debug(
-            f"[ActiveField] Acumulado en '{self.active_field}': "
-            f"'{self.accumulated_text[:50]}...' ({len(self.accumulated_text)} chars)"
-        )
+        logger.info(f"[ActiveField] append_text: base='{self._confirmed_base[:80]}'")
     
     def get_current(self) -> Optional[Tuple[str, str]]:
         """
@@ -323,31 +404,33 @@ class ActiveFieldTracker:
     def get_and_clear(self) -> Optional[Tuple[str, str]]:
         """
         Retorna (testid, accumulated_text) del campo activo y limpia el estado.
-        
+
         Returns:
             (testid, accumulated_text) si hay campo activo con contenido, None si no
         """
         if not self.active_field or not self.accumulated_text.strip():
             return None
-        
+
         data = (self.active_field, self.accumulated_text.strip())
-        
+
         logger.info(
             f"[ActiveField] Limpiando campo '{self.active_field}' "
             f"({len(self.accumulated_text)} caracteres)"
         )
-        
+
         # Limpiar estado
         self.active_field = None
-        self.accumulated_text = ""
+        self._confirmed_base = ""
+        self._current_utterance = ""
         self.last_keyword = ""
-        
+
         return data
-    
+
     def reset(self) -> None:
         """Reinicia completamente el estado del tracker."""
         self.active_field = None
-        self.accumulated_text = ""
+        self._confirmed_base = ""
+        self._current_utterance = ""
         self.last_keyword = ""
         self._last_sent_text = ""
         logger.debug("[ActiveField] Estado reiniciado")
@@ -492,52 +575,42 @@ def clean_captured_value(value: str) -> str:
 
 def strip_keywords_and_commands(text: str, active_keyword: str = "") -> str:
     """
-    Elimina palabras clave conocidas y comandos del texto antes de acumularlo en un campo.
-    
-    Esto previene que:
-    - "Listo" aparezca como contenido del campo
-    - "motivo de consulta" se duplique dentro del texto acumulado
-    - "enfermedad actual" aparezca como parte del valor clínico
-    
+    Limpia SOLO la keyword activadora del INICIO del texto y comandos de control.
+
+    IMPORTANTE: NO elimina keywords del medio/final del texto para preservar
+    el contenido completo del doctor. Si el doctor dice:
+    "Motivo de consulta paciente tiene dolor y necesita tratamiento"
+    Solo elimina "Motivo de consulta" del inicio, preserva todo lo demás intacto.
+
     Args:
         text: Texto a limpiar
-        active_keyword: La keyword que activó el campo actual (se elimina primero)
-    
+        active_keyword: La keyword que activó el campo actual (se elimina del inicio)
+
     Returns:
-        Texto limpio sin keywords ni comandos
+        Texto con la keyword activadora removida del inicio
     """
     if not text:
         return text
-    
+
     val = text.strip()
-    val_lower = val.lower()
-    
-    # 1. Eliminar comandos (listo, borrar, etc.)
-    for cmd in COMMAND_KEYWORDS:
-        pattern = re.compile(r"\b" + re.escape(cmd) + r"\b[.,;:\s]*", re.IGNORECASE)
-        val = pattern.sub(" ", val)
-    
-    # 2. Eliminar la keyword activa que activó el campo
+
+    # 1. Eliminar la keyword activa SOLO del INICIO del texto
+    # Esto es lo único que debemos quitar: "motivo de consulta dolor de ojos" → "dolor de ojos"
     if active_keyword:
-        pattern = re.compile(r"\b" + re.escape(active_keyword) + r"\b[.,;:\s]*", re.IGNORECASE)
-        val = pattern.sub(" ", val)
-    
-    # 3. Eliminar frases de desmarcar checkbox (las más largas primero)
-    sorted_uncheck = sorted(KEYWORD_TO_UNCHECK.keys(), key=len, reverse=True)
-    for phrase in sorted_uncheck:
-        pattern = re.compile(r"\b" + re.escape(phrase) + r"\b[.,;:\s]*", re.IGNORECASE)
-        val = pattern.sub(" ", val)
-    
-    # 4. Eliminar keywords conocidas de KEYWORD_TO_FIELD (las más largas primero)
-    sorted_kws = sorted(KEYWORD_TO_FIELD.keys(), key=len, reverse=True)
-    for kw in sorted_kws:
-        pattern = re.compile(r"\b" + re.escape(kw) + r"\b[.,;:\s]*", re.IGNORECASE)
-        val = pattern.sub(" ", val)
-    
-    # 4. Limpiar espacios múltiples y conectores residuales
+        pattern = re.compile(
+            r"^" + re.escape(active_keyword) + r"\b[.,;:\s]*",
+            re.IGNORECASE
+        )
+        val = pattern.sub("", val).strip()
+
+    # 2. Eliminar SOLO comandos de control (listo, borrar, etc.) - estos nunca son contenido clínico
+    for cmd in COMMAND_KEYWORDS:
+        pattern = re.compile(r"\b" + re.escape(cmd) + r"\b[.,;:\s]*$", re.IGNORECASE)
+        val = pattern.sub("", val).strip()
+
+    # 3. Limpiar espacios múltiples
     val = re.sub(r"\s{2,}", " ", val).strip()
-    val = clean_captured_value(val)
-    
+
     return val
 
 # Patrones para "normal" en contexto específico de ojo/sección.
@@ -1452,7 +1525,9 @@ class RealtimeExtractor:
             return "textarea"
         if "radio" in unique_key:
             return "radio"
-            
+        if "button" in unique_key or "dropdown-item" in unique_key:
+            return "button"
+
         if self.biowel_fields:
             for field in self.biowel_fields:
                 if field.unique_key == unique_key:

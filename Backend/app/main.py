@@ -209,6 +209,14 @@ async def voice_stream_endpoint(websocket: WebSocket):
 
                     if testid == "cmd_stop":
                         # Finalizar campo actual sin activar uno nuevo
+                        # PRIMERO: Confirmar el texto del utterance actual antes de cerrar
+                        if active_field_tracker.active_field:
+                            cleaned_text = strip_keywords_and_commands(
+                                text, active_field_tracker.last_keyword
+                            )
+                            if cleaned_text:
+                                active_field_tracker.confirm_utterance(cleaned_text)
+
                         previous_field = active_field_tracker.activate_field(None, keyword)
                         if previous_field:
                             prev_testid, prev_text = previous_field
@@ -219,6 +227,8 @@ async def voice_stream_endpoint(websocket: WebSocket):
                                 "items": [{"unique_key": prev_testid, "value": normalized, "confidence": 1.0}],
                                 "source_text": f"[Finalizado por comando: {keyword}]"
                             })
+                            realtime_extractor.already_filled[prev_testid] = normalized
+                            logger.info(f"[cmd_stop FINAL] Campo '{prev_testid}' cerrado con: '{prev_text[:60]}'")
                         session_keyword_buffer = ""
                         return
 
@@ -358,6 +368,35 @@ async def voice_stream_endpoint(websocket: WebSocket):
                         session_keyword_buffer = ""
                         return
 
+                    elif ftype_candidate == "button":
+                        testid, keyword, content_after = keyword_match
+                        # Finalizar campo anterior si existe
+                        previous_field = active_field_tracker.activate_field(None, keyword)
+                        if previous_field:
+                            prev_testid, prev_text = previous_field
+                            prev_ftype = realtime_extractor.get_field_type(prev_testid)
+                            normalized = normalize_value(prev_text, prev_ftype)
+                            await websocket.send_json({
+                                "type": "partial_autofill",
+                                "items": [{"unique_key": prev_testid, "value": normalized, "confidence": 0.95}],
+                                "source_text": f"[Finalizado por button: {keyword}]"
+                            })
+                            realtime_extractor.already_filled[prev_testid] = normalized
+
+                        # Botones se activan con "click" (el frontend hace click directo)
+                        await websocket.send_json({
+                            "type": "partial_autofill",
+                            "items": [{"unique_key": testid, "value": "click", "confidence": 1.0}],
+                            "source_text": f"[Botón clickeado: {keyword}]"
+                        })
+                        # NO guardar en already_filled — los botones pueden clickearse múltiples veces
+                        # (a diferencia de checkboxes/selects que solo se llenan una vez)
+                        active_field_tracker.active_field = None
+                        active_field_tracker.accumulated_text = ""
+                        logger.info(f"[Button] '{testid}' clickeado por keyword '{keyword}'")
+                        session_keyword_buffer = ""
+                        return
+
                 # =============================================
                 # PRIORIDAD 4: Patrones directos (si NO hay campo activo)
                 # =============================================
@@ -385,17 +424,28 @@ async def voice_stream_endpoint(websocket: WebSocket):
                     if ftype in ("checkbox", "select", "radio"):
                         pass
                     # [MODIFICACIÓN LOCK EXCLUSIVO]
-                    elif active_field_tracker.active_field in EXCLUSIVE_FIELDS:
+                    # Solo bloquear si:
+                    # 1. El campo activo es exclusivo
+                    # 2. La keyword detectada NO apunta a otro campo exclusivo/textarea
+                    # Esto permite cambiar entre campos principales ("motivo" → "enfermedad actual")
+                    # pero bloquea que keywords cortas ("normal", "tratamiento") interrumpan el dictado
+                    elif (active_field_tracker.active_field in EXCLUSIVE_FIELDS
+                          and testid not in EXCLUSIVE_FIELDS
+                          and testid != active_field_tracker.active_field):
                         logger.info(
                             f"[Lock] Campo exclusivo '{active_field_tracker.active_field}' activo. "
-                            f"Ignorando keyword '{keyword}'."
+                            f"Ignorando keyword no-exclusiva '{keyword}' → '{testid}'."
                         )
-                        pass
-                    
+                        # Limpiar buffer para evitar que keywords viejas se acumulen
+                        session_keyword_buffer = ""
+
                     else:
                         keyword_handled = True
-                        
-                        previous_field = active_field_tracker.activate_field(testid, keyword)
+
+                        # Preservar texto previo del campo si el doctor re-entra
+                        # (ej: "Motivo de consulta dolor" → "Listo" → "Motivo de consulta más info")
+                        initial = realtime_extractor.already_filled.get(testid, "")
+                        previous_field = active_field_tracker.activate_field(testid, keyword, initial_text=initial)
 
                         if previous_field:
                             prev_testid, prev_text = previous_field
@@ -421,17 +471,36 @@ async def voice_stream_endpoint(websocket: WebSocket):
                 # =============================================
                 if active_field_tracker.active_field and not keyword_handled:
                     # PRIMERO: Detectar palabras de finalización ANTES de limpiar
-                    finalization_words = ["listo", "terminado", "fin", "finalizado", "eso es todo", "se acabó"]
+                    # NOTA: "fin" eliminado porque es substring de "definido", "fino", "confinar", etc.
+                    # Los comandos ya se manejan en COMMAND_KEYWORDS (Prioridad 1 como cmd_stop)
+                    finalization_words = ["listo", "terminado", "finalizado", "eso es todo", "se acabó"]
                     text_lower = text.lower().strip()
-                    
-                    # Verificar si el texto contiene alguna palabra de finalización
-                    is_finalization = any(word in text_lower for word in finalization_words)
+
+                    # Usar word boundary (\b) para evitar falsos positivos
+                    # Ej: "definido" NO debe matchear "fin", "terminador" NO debe matchear "terminado"
+                    is_finalization = any(
+                        re.search(r"\b" + re.escape(word) + r"\b", text_lower)
+                        for word in finalization_words
+                    )
                     
                     if is_finalization:
+                        # PRIMERO: Confirmar el texto del utterance actual antes de cerrar
+                        cleaned_text = strip_keywords_and_commands(
+                            text, active_field_tracker.last_keyword
+                        )
+                        if cleaned_text:
+                            active_field_tracker.confirm_utterance(cleaned_text)
+
                         # Finalizar el campo actual automáticamente
-                        current_testid, accumulated_text = active_field_tracker.current_field
+                        current_data = active_field_tracker.get_current()
+                        if not current_data:
+                            # No hay contenido suficiente, solo desactivar
+                            active_field_tracker.activate_field(None, None)
+                            session_keyword_buffer = ""
+                            return
+                        current_testid, accumulated_text = current_data
                         ftype = realtime_extractor.get_field_type(current_testid)
-                        
+
                         # Eliminar palabra de finalización del texto acumulado
                         clean_text = accumulated_text
                         for word in finalization_words:
@@ -455,22 +524,14 @@ async def voice_stream_endpoint(websocket: WebSocket):
                         text, active_field_tracker.last_keyword
                     )
                     if cleaned_text:
-                        # Acumular texto en lugar de sobrescribir
-                        # Los parciales de Deepgram pueden venir fragmentados
-                        # pero necesitamos acumular todo el contenido
-                        active_field_tracker.append_text(cleaned_text)
-                
-                # Enviar actualización persistente para campo activo
-                current_data = active_field_tracker.get_current()
-                if current_data:
-                    curr_testid, curr_text = current_data
-                    ftype = realtime_extractor.get_field_type(curr_testid)
-                    normalized = normalize_value(curr_text, ftype)
-                    await websocket.send_json({
-                        "type": "partial_autofill",
-                        "items": [{"unique_key": curr_testid, "value": normalized, "confidence": 0.95}],
-                        "source_text": text
-                    })
+                        # is_final=True confirma un utterance completo.
+                        # confirm_utterance() mueve el utterance actual a la base confirmada.
+                        # Si el doctor pausó y esto es un nuevo utterance, se añade a la base.
+                        logger.info(f"[FINAL] Confirmando utterance: '{cleaned_text[:80]}'")
+                        active_field_tracker.confirm_utterance(cleaned_text)
+
+                    # Limpiar buffer — el texto ya fue procesado/acumulado al campo activo
+                    session_keyword_buffer = ""
                     # No lanzar LLM si ya hay campo activo por keyword
                     return
 
@@ -501,6 +562,17 @@ async def voice_stream_endpoint(websocket: WebSocket):
                     elif testid == "cmd_stop":
                         # Finalizar campo activo en PARCIAL para respuesta rápida
                         if active_field_tracker.active_field:
+                            # PRIMERO: Capturar el texto del parcial actual (sin "listo")
+                            # El parcial contiene TODO el utterance actual (acumulativo)
+                            cleaned_text = strip_keywords_and_commands(
+                                text, active_field_tracker.last_keyword
+                            )
+                            if cleaned_text:
+                                # Actualizar el utterance actual con el texto completo
+                                active_field_tracker.set_partial(cleaned_text)
+                                # Confirmar el utterance antes de cerrar
+                                active_field_tracker.confirm_utterance(cleaned_text)
+
                             previous_field = active_field_tracker.activate_field(None, keyword)
                             if previous_field:
                                 prev_testid, prev_text = previous_field
@@ -512,8 +584,8 @@ async def voice_stream_endpoint(websocket: WebSocket):
                                     "source_text": f"[Finalizado por comando parcial: {keyword}]"
                                 })
                                 realtime_extractor.already_filled[prev_testid] = normalized
+                                logger.info(f"[cmd_stop PARCIAL] Campo '{prev_testid}' cerrado con: '{prev_text[:60]}'")
                             session_keyword_buffer = ""
-                            logger.info(f"[cmd_stop PARCIAL] Campo cerrado")
                 
                 # =============================================
                 # PRIORIDAD 2: Patrones anclados (tiempo evolución) en tiempo real
@@ -542,20 +614,84 @@ async def voice_stream_endpoint(websocket: WebSocket):
                 # Continuar con acumulación normal del campo activo incluso si hay patrones anclados
                 
                 # =============================================
+                # PRIORIDAD 2.5: BOTONES y CAMBIO ENTRE CAMPOS EXCLUSIVOS
+                # Tienen prioridad sobre acumulación de texto al campo activo
+                # =============================================
+                _prio25_handled = False
+                if keyword_match and keyword_match[0] not in ("cmd_stop", "cmd_clear") and not keyword_match[0].startswith("cmd_uncheck::"):
+                    prio_testid = keyword_match[0]
+                    prio_ftype = realtime_extractor.get_field_type(prio_testid)
+
+                    # 2.5a: Botones siempre tienen prioridad
+                    if prio_ftype == "button":
+                        _prio25_handled = True
+                        if active_field_tracker.active_field:
+                            cleaned = strip_keywords_and_commands(text, active_field_tracker.last_keyword)
+                            if cleaned:
+                                active_field_tracker.confirm_utterance(cleaned)
+                            prev = active_field_tracker.activate_field(None, keyword_match[1])
+                            if prev:
+                                p_testid, p_text = prev
+                                p_ftype = realtime_extractor.get_field_type(p_testid)
+                                p_norm = normalize_value(p_text, p_ftype)
+                                await websocket.send_json({
+                                    "type": "partial_autofill",
+                                    "items": [{"unique_key": p_testid, "value": p_norm, "confidence": 0.95}],
+                                    "source_text": f"[Finalizado por button parcial: {keyword_match[1]}]"
+                                })
+                                realtime_extractor.already_filled[p_testid] = p_norm
+
+                        await websocket.send_json({
+                            "type": "partial_autofill",
+                            "items": [{"unique_key": prio_testid, "value": "click", "confidence": 1.0}],
+                            "source_text": f"[Botón clickeado parcial: {keyword_match[1]}]"
+                        })
+                        logger.info(f"[Button PARCIAL PRIO] '{prio_testid}' clickeado por '{keyword_match[1]}'")
+                        session_keyword_buffer = ""
+
+                    # 2.5b: Cambio entre campos exclusivos en parciales
+                    # Si el campo activo es exclusivo y la keyword apunta a OTRO campo exclusivo,
+                    # cerrar el actual y activar el nuevo inmediatamente
+                    elif (active_field_tracker.active_field
+                          and active_field_tracker.active_field in EXCLUSIVE_FIELDS
+                          and prio_testid in EXCLUSIVE_FIELDS
+                          and prio_testid != active_field_tracker.active_field):
+                        _prio25_handled = True
+                        # Confirmar texto actual antes de cambiar
+                        cleaned = strip_keywords_and_commands(text, active_field_tracker.last_keyword)
+                        # NO confirmar el texto limpio aquí porque contiene la keyword del nuevo campo
+                        # Solo cerrar el campo anterior
+                        initial = realtime_extractor.already_filled.get(prio_testid, "")
+                        prev = active_field_tracker.activate_field(prio_testid, keyword_match[1], initial_text=initial)
+                        if prev:
+                            p_testid, p_text = prev
+                            p_ftype = realtime_extractor.get_field_type(p_testid)
+                            p_norm = normalize_value(p_text, p_ftype)
+                            await websocket.send_json({
+                                "type": "partial_autofill",
+                                "items": [{"unique_key": p_testid, "value": p_norm, "confidence": 0.95}],
+                                "source_text": f"[Cambio exclusivo parcial: {keyword_match[1]}]"
+                            })
+                            realtime_extractor.already_filled[p_testid] = p_norm
+                        logger.info(f"[Exclusive SWITCH PARCIAL] '{active_field_tracker.active_field}' activado, anterior cerrado")
+                        session_keyword_buffer = ""
+
+                # =============================================
                 # PRIORIDAD 3: ACUMULAR PARCIALES AL CAMPO ACTIVO
                 # =============================================
-                if active_field_tracker.active_field:
+                if not _prio25_handled and active_field_tracker.active_field:
                     # Parciales de Deepgram son ACUMULATIVOS (cada parcial contiene todo
-                    # el texto desde el inicio de la utterance). Usar set_text para reemplazar,
-                    # NO append_text que duplicaría el contenido.
-                    # Eliminar keywords y comandos (listo, borrar, motivo de consulta, etc.)
-                    # para que no aparezcan como contenido del campo.
+                    # el texto del utterance actual). set_partial() sobrescribe SOLO el
+                    # utterance actual, preservando texto de utterances anteriores.
+                    # Solo eliminar la keyword activadora del inicio del texto.
                     cleaned_text = strip_keywords_and_commands(
                         text, active_field_tracker.last_keyword
                     )
                     if cleaned_text:
-                        # Acumular texto en lugar de sobrescribir para evitar pérdida en pausas
-                        active_field_tracker.append_text(cleaned_text)
+                        # Parciales de Deepgram son ACUMULATIVOS: cada parcial contiene
+                        # TODO el texto del utterance actual. set_partial() sobrescribe SOLO
+                        # el utterance actual, preservando la base confirmada de utterances previos.
+                        active_field_tracker.set_partial(cleaned_text)
                     
                     # Enviar preview actualizado solo si no tenemos command o patrón anclado
                     if keyword_match and (keyword_match[0] in ("cmd_stop", "cmd_clear") or keyword_match[0].startswith("cmd_uncheck::")):
@@ -579,10 +715,10 @@ async def voice_stream_endpoint(websocket: WebSocket):
                                 })
                                 # Guardar el último texto enviado
                                 active_field_tracker._last_sent_text = curr_text
-                elif keyword_match and keyword_match[0] not in ("cmd_stop", "cmd_clear") and not keyword_match[0].startswith("cmd_uncheck::"):
+                elif not _prio25_handled and keyword_match and keyword_match[0] not in ("cmd_stop", "cmd_clear") and not keyword_match[0].startswith("cmd_uncheck::"):
                     testid, keyword, content_after = keyword_match
                     ftype = realtime_extractor.get_field_type(testid)
-                    
+
                     # Activar radio/checkbox/select INMEDIATAMENTE en parciales
                     # No esperar a is_final porque el usuario puede parar el dictado antes
                     if ftype == "radio" and testid not in realtime_extractor.already_filled:
@@ -604,8 +740,38 @@ async def voice_stream_endpoint(websocket: WebSocket):
                         realtime_extractor.already_filled[testid] = checkbox_value
                         logger.info(f"[Checkbox PARCIAL] '{testid}' activado por '{keyword}'")
                         session_keyword_buffer = ""
+                    elif ftype == "button":
+                        # Botones siempre se pueden clickear (no usar already_filled)
+                        await websocket.send_json({
+                            "type": "partial_autofill",
+                            "items": [{"unique_key": testid, "value": "click", "confidence": 1.0}],
+                            "source_text": f"[Botón clickeado parcial: {keyword}]"
+                        })
+                        logger.info(f"[Button PARCIAL] '{testid}' clickeado por '{keyword}'")
+                        session_keyword_buffer = ""
+                    elif ftype in ("textarea", "text", "number"):
+                        # ACTIVAR campos de texto también en parciales para respuesta inmediata
+                        # Esto permite que el doctor empiece a dictar sin esperar al FINAL
+                        initial = realtime_extractor.already_filled.get(testid, "")
+                        previous_field = active_field_tracker.activate_field(testid, keyword, initial_text=initial)
+                        if previous_field:
+                            p_testid, p_text = previous_field
+                            p_ftype = realtime_extractor.get_field_type(p_testid)
+                            p_norm = normalize_value(p_text, p_ftype)
+                            await websocket.send_json({
+                                "type": "partial_autofill",
+                                "items": [{"unique_key": p_testid, "value": p_norm, "confidence": 0.95}],
+                                "source_text": f"[Finalizado por keyword parcial: {keyword}]"
+                            })
+                            realtime_extractor.already_filled[p_testid] = p_norm
+                        if content_after:
+                            clean_after = strip_keywords_and_commands(content_after, keyword)
+                            if clean_after:
+                                active_field_tracker.set_partial(clean_after)
+                        logger.info(f"[Textarea PARCIAL] Campo '{testid}' activado por '{keyword}'")
+                        session_keyword_buffer = ""
                     else:
-                        # Preview normal para campos de texto
+                        # Preview normal para otros campos de texto
                         normalized = normalize_value(content_after, ftype) if content_after else ""
                         await websocket.send_json({
                             "type": "partial_autofill",
@@ -776,8 +942,8 @@ async def voice_stream_endpoint(websocket: WebSocket):
                                 "type": "info",
                                 "message": "Reconectado a Deepgram"
                             })
-                        except Exception as re:
-                            logger.error(f"[Audio] Error reconectando Deepgram: {re}")
+                        except Exception as reconn_err:
+                            logger.error(f"[Audio] Error reconectando Deepgram: {reconn_err}")
                             continue
 
                     if voice_stream_endpoint._chunk_count % AUDIO_DEBUG_LOG_INTERVAL == 1:

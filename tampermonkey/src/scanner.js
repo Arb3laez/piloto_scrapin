@@ -78,6 +78,70 @@ const REGISTERED_FIELDS = {
         keywords: ['diagnóstico ampliado', 'diagnostico ampliado', 'idx ampliada', 'ampliada'],
     },
 
+    // ============================================
+    // Preconsulta - Dropdown items (botones clickeables)
+    // ============================================
+    'header-preconsultation-dropdown-item-0': {
+        label: 'Preconsulta Dilatación',
+        section: 'preconsulta',
+        fieldType: 'button',
+        keywords: ['preconsulta dilatación', 'preconsulta dilatacion', 'dilatación', 'dilatacion'],
+    },
+    'header-preconsultation-dropdown-item-1': {
+        label: 'Preconsulta Signos vitales',
+        section: 'preconsulta',
+        fieldType: 'button',
+        keywords: ['preconsulta signos vitales', 'signos vitales'],
+    },
+    'header-preconsultation-dropdown-item-2': {
+        label: 'Preconsulta Tamizaje ocular',
+        section: 'preconsulta',
+        fieldType: 'button',
+        keywords: ['preconsulta tamizaje ocular', 'tamizaje ocular', 'tamizaje'],
+    },
+    'header-preconsultation-dropdown-item-3': {
+        label: 'Preconsulta Conciliación medicamentosa',
+        section: 'preconsulta',
+        fieldType: 'button',
+        keywords: ['preconsulta conciliación medicamentosa', 'preconsulta conciliacion medicamentosa', 'conciliación medicamentosa', 'conciliacion medicamentosa'],
+    },
+    'header-preconsultation-dropdown-item-4': {
+        label: 'Preconsulta Ortopédica',
+        section: 'preconsulta',
+        fieldType: 'button',
+        keywords: ['preconsulta ortopédica', 'preconsulta ortopedica', 'ortopédica', 'ortopedica'],
+    },
+
+    // Preconsulta - Botón Atrás
+    'preconsultation-back-button': {
+        label: 'Atrás (preconsulta)',
+        section: 'preconsulta',
+        fieldType: 'button',
+        keywords: ['atrás', 'atras', 'volver'],
+    },
+
+    // ============================================
+    // Dilatación - Radio buttons y botón
+    // ============================================
+    'dilatation-requires-yes-radio': {
+        label: 'Dilatación Sí',
+        section: 'dilatacion',
+        fieldType: 'radio',
+        keywords: ['dilatación sí', 'dilatacion si', 'requiere dilatación'],
+    },
+    'dilatation-requires-no-radio': {
+        label: 'Dilatación No',
+        section: 'dilatacion',
+        fieldType: 'radio',
+        keywords: ['dilatación no', 'dilatacion no', 'no requiere dilatación'],
+    },
+    'dilatation-add-record-button': {
+        label: 'Agregar registro dilatación',
+        section: 'dilatacion',
+        fieldType: 'button',
+        keywords: ['agregar registro', 'agregar dilatación', 'agregar dilatacion'],
+    },
+
 };
 
 export class DOMScanner {

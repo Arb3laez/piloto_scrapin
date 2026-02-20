@@ -55,9 +55,16 @@ class DeepgramStreamer:
             vad_events=True,
             utterance_end_ms=4000,  # 4 segundos - valor seguro para párrafos largos
             # Keywords médicos para mejorar precisión de transcripción en español
+            # Boost máximo (5) para palabras clave de activación de campos principales
+            # Esto ayuda a que Deepgram transcriba "motivo de consulta" en vez de "o dio consulta"
             keywords=[
-                "motivo de consulta:2",
-                "enfermedad actual:2",
+                "motivo de consulta:5",
+                "enfermedad actual:5",
+                "observaciones:5",
+                "análisis y plan:5",
+                "análisis:4",
+                "motivo:4",
+                "consulta:3",
                 "visión borrosa:2",
                 "visión:2",
                 "agudeza visual:2",
@@ -84,12 +91,15 @@ class DeepgramStreamer:
                 "tratamiento:1",
                 "antecedentes:1",
                 # Palabras para finalizar dictado
-                "listo:3",
+                "listo:5",
                 "terminado:3",
-                "fin:3",
                 "finalizado:3",
                 "eso es todo:3",
                 "se acabó:3",
+                # Preconsulta
+                "dilatación:3",
+                "signos vitales:3",
+                "tamizaje:3",
             ],
         )
 

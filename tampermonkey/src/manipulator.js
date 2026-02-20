@@ -36,9 +36,16 @@ export class DOMManipulator {
         console.log(`[BVA-DOM] === fillField("${uniqueKey}", "${String(value).substring(0, 200)}") ===`);
 
         const keyLower = uniqueKey.toLowerCase();
-        if (keyLower.includes('-button') || keyLower.includes('-btn') ||
-            keyLower.includes('-link') || keyLower.includes('-load-previous')) {
-            console.warn(`[BVA-DOM] RECHAZADO: "${uniqueKey}" parece ser un botón/link, no un campo llenable`);
+
+        // Fast-path para BOTONES clickeables (preconsulta dropdown items, atrás, agregar registro)
+        // Valor "click" indica que el backend quiere hacer click directo en el elemento
+        if (value === 'click') {
+            return this._clickButton(uniqueKey);
+        }
+
+        // Rechazar botones/links NO registrados (que no vengan con value="click")
+        if (keyLower.includes('-link') || keyLower.includes('-load-previous')) {
+            console.warn(`[BVA-DOM] RECHAZADO: "${uniqueKey}" parece ser un link, no un campo llenable`);
             return false;
         }
 
@@ -364,6 +371,28 @@ export class DOMManipulator {
 
         console.warn(`[BVA-DOM] _setRadioValue: no se pudo activar el radio`);
         return false;
+    }
+
+    /**
+     * Hace click directo en un botón/dropdown item por su data-testid.
+     * Usado para preconsulta dropdown items, botón atrás, agregar registro, etc.
+     */
+    _clickButton(uniqueKey) {
+        const el = document.querySelector(`[data-testid="${uniqueKey}"]`);
+        if (!el) {
+            console.warn(`[BVA-DOM] _clickButton: elemento '${uniqueKey}' NO encontrado en DOM`);
+            return false;
+        }
+
+        console.log(`[BVA-DOM] _clickButton: clicking '${uniqueKey}' (tag=${el.tagName})`);
+
+        // Buscar el elemento clickeable: puede ser el propio, un botón interno, o un anchor
+        const clickable = el.querySelector('button, a, [role="button"], [role="menuitem"]') || el;
+        clickable.click();
+        this._highlight(el);
+
+        console.log(`[BVA-DOM] _clickButton: '${uniqueKey}' clicked successfully`);
+        return true;
     }
 
     _findNearbyInput(container) {
