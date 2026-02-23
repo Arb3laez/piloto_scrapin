@@ -41,6 +41,10 @@ KEYWORD_TO_FIELD = {
     "origen de la atención": "attention-origin-select",
     "origen de atención": "attention-origin-select",
     "origen de atencion": "attention-origin-select",
+    "Origen de atencion": "attention-origin-select",
+    "Origen de atención": "attention-origin-select",
+
+
     
     "general": "attention-origin-select",
     "enfermedad general": "attention-origin-select",
@@ -123,10 +127,103 @@ KEYWORD_TO_FIELD = {
     "conciliación medicamentosa": "header-preconsultation-dropdown-item-3",
     "conciliacion medicamentosa": "header-preconsultation-dropdown-item-3",
 
-    "preconsulta ortopédica": "header-preconsultation-dropdown-item-4",
-    "preconsulta ortopedica": "header-preconsultation-dropdown-item-4",
-    "ortopédica": "header-preconsultation-dropdown-item-4",
-    "ortopedica": "header-preconsultation-dropdown-item-4",
+    "preconsulta ortoptica": "header-preconsultation-dropdown-item-4",
+    "preconsulta ortóptica": "header-preconsultation-dropdown-item-4",
+    "ortóptica": "header-preconsultation-dropdown-item-4",
+    "ortoptica": "header-preconsultation-dropdown-item-4",
+    "Ortóptica": "header-preconsultation-dropdown-item-4",
+
+    # ============================================
+    # Preconsulta - Tabs (dentro de pantalla preconsulta)
+    # ============================================
+    "tab dilatación": "preconsultation-tab-dilatation",
+    "tab dilatacion": "preconsultation-tab-dilatation",
+
+    "tab signos vitales": "preconsultation-tab-vitalSigns",
+
+    "tab tamizaje ocular": "preconsultation-tab-eyescreening",
+    "tab tamizaje": "preconsultation-tab-eyescreening",
+
+    "tab conciliación medicamentosa": "preconsultation-tab-medicines",
+    "tab conciliacion medicamentosa": "preconsultation-tab-medicines",
+    "tab medicamentos": "preconsultation-tab-medicines",
+
+    "clasificación del riesgo": "preconsultation-tab-fallRiskAssessment",
+    "clasificacion del riesgo": "preconsultation-tab-fallRiskAssessment",
+    "riesgo de caída": "preconsultation-tab-fallRiskAssessment",
+    "riesgo de caida": "preconsultation-tab-fallRiskAssessment",
+    "tab clasificación del riesgo": "preconsultation-tab-fallRiskAssessment",
+    "tab clasificacion del riesgo": "preconsultation-tab-fallRiskAssessment",
+
+    # ============================================
+    # Clasificación del Riesgo - Radio buttons
+    # ============================================
+    # Caídas previas
+    "caídas previas sí": "fall-risk-previousFalls-yes-radio",
+    "caidas previas si": "fall-risk-previousFalls-yes-radio",
+    "caídas previas no": "fall-risk-previousFalls-no-radio",
+    "caidas previas no": "fall-risk-previousFalls-no-radio",
+
+    # Déficit sensorial
+    "déficit sensorial sí": "fall-risk-sensoryDeficit-yes-radio",
+    "deficit sensorial si": "fall-risk-sensoryDeficit-yes-radio",
+    "déficit sensorial no": "fall-risk-sensoryDeficit-no-radio",
+    "deficit sensorial no": "fall-risk-sensoryDeficit-no-radio",
+
+    # Estado mental
+    "estado mental sí": "fall-risk-mentalState-yes-radio",
+    "estado mental si": "fall-risk-mentalState-yes-radio",
+    "estado mental no": "fall-risk-mentalState-no-radio",
+    "estado mental no": "fall-risk-mentalState-no-radio",
+
+    # Marcha actual
+    "marcha actual sí": "fall-risk-gaitAndMobility-yes-radio",
+    "marcha actual si": "fall-risk-gaitAndMobility-yes-radio",
+    "marcha actual no": "fall-risk-gaitAndMobility-no-radio",
+    "marcha actual no": "fall-risk-gaitAndMobility-no-radio",
+
+    # Medicación actual
+    "medicación actual sí": "fall-risk-medication-yes-radio",
+    "medicacion actual si": "fall-risk-medication-yes-radio",
+    "medicación actual no": "fall-risk-medication-no-radio",
+    "medicacion actual no": "fall-risk-medication-no-radio",
+
+    # Formas cortas (cuando el doctor omite calificador)
+    "caídas sí": "fall-risk-previousFalls-yes-radio",
+    "caidas si": "fall-risk-previousFalls-yes-radio",
+    "caídas no": "fall-risk-previousFalls-no-radio",
+    "caidas no": "fall-risk-previousFalls-no-radio",
+
+    "sensorial sí": "fall-risk-sensoryDeficit-yes-radio",
+    "sensorial si": "fall-risk-sensoryDeficit-yes-radio",
+    "sensorial no": "fall-risk-sensoryDeficit-no-radio",
+    "sensorial no": "fall-risk-sensoryDeficit-no-radio",
+
+    # Deepgram transcribe "déficit" como "difícil"
+    "difícil sensorial sí": "fall-risk-sensoryDeficit-yes-radio",
+    "dificil sensorial si": "fall-risk-sensoryDeficit-yes-radio",
+    "difícil sensorial no": "fall-risk-sensoryDeficit-no-radio",
+    "dificil sensorial no": "fall-risk-sensoryDeficit-no-radio",
+
+    "mental sí": "fall-risk-mentalState-yes-radio",
+    "mental si": "fall-risk-mentalState-yes-radio",
+    "mental no": "fall-risk-mentalState-no-radio",
+    "mental no": "fall-risk-mentalState-no-radio",
+
+    "marcha sí": "fall-risk-gaitAndMobility-yes-radio",
+    "marcha si": "fall-risk-gaitAndMobility-yes-radio",
+    "marcha no": "fall-risk-gaitAndMobility-no-radio",
+    "marcha no": "fall-risk-gaitAndMobility-no-radio",
+
+    "medicación sí": "fall-risk-medication-yes-radio",
+    "medicacion si": "fall-risk-medication-yes-radio",
+    "medicación no": "fall-risk-medication-no-radio",
+    "medicacion no": "fall-risk-medication-no-radio",
+
+    "tab ortopédica": "preconsultation-tab-orthoptic",
+    "tab ortopedica": "preconsultation-tab-orthoptic",
+    "tab ortóptica": "preconsultation-tab-orthoptic",
+    "tab ortoptica": "preconsultation-tab-orthoptic",
 
     # Botón Atrás (volver a pantalla principal)
     "atrás": "preconsultation-back-button",
@@ -147,6 +244,67 @@ KEYWORD_TO_FIELD = {
     "agregar registro": "dilatation-add-record-button",
     "agregar dilatación": "dilatation-add-record-button",
     "agregar dilatacion": "dilatation-add-record-button",
+
+    # Switch: Paciente dilatado
+    "paciente dilatado": "dilatation-patient-dilated-switch",
+    "ya dilatado": "dilatation-patient-dilated-switch",
+    "dilatado": "dilatation-patient-dilated-switch",
+
+    # ============================================
+    # Oftalmología - OD Externo (Ojo Derecho Externo)
+    # ============================================
+    # Paso 1: Abrir panel de hallazgos OD Externo
+    "ojo derecho externo": "ophtalmology-justification-textfield",
+    "od externo": "ophtalmology-justification-textfield",
+    "derecho externo": "ophtalmology-justification-textfield",
+    "externo derecho": "ophtalmology-justification-textfield",
+    "externo od": "ophtalmology-justification-textfield",
+
+    # Paso 2: Abrir dropdown de hallazgos (dentro del panel)
+    "hallazgo": "text-config-findings-select",
+    "hallazgos": "text-config-findings-select",
+    "buscar hallazgo": "text-config-findings-select",
+    "buscar hallazgos": "text-config-findings-select",
+    "seleccionar hallazgo": "text-config-findings-select",
+
+    # Opciones del dropdown de hallazgos OD Externo
+    "párpados simétricos": "select-option-0",
+    "parpados simetricos": "select-option-0",
+    "párpados": "select-option-0",
+
+    "ausencia de edema palpebral": "select-option-1",
+    "ausencia de edema": "select-option-1",
+    "sin edema palpebral": "select-option-1",
+    "ausencia edema": "select-option-1",
+
+    "distribución uniforme de las pestañas": "select-option-2",
+    "distribucion uniforme de las pestanas": "select-option-2",
+    "pestañas uniformes": "select-option-2",
+    "pestañas": "select-option-2",
+
+    "movimientos oculares conjugados y simétricos": "select-option-3",
+    "movimientos oculares": "select-option-3",
+    "movimientos conjugados": "select-option-3",
+
+    "lesiones": "select-option-4",
+    "lesión": "select-option-4",
+    "lesion": "select-option-4",
+
+    "rosácea": "select-option-5",
+    "rosacea": "select-option-5",
+
+    # Paso 3: Textarea de justificación (dentro del panel)
+    "justificación": "text-config-justification-textarea",
+    "justificacion": "text-config-justification-textarea",
+
+    # Paso 4: Buscar texto predefinido (dentro del panel)
+    "buscar texto": "text-config-search-field",
+    "texto predefinido": "text-config-search-field",
+    "texto no institucional": "text-config-search-field",
+
+    # Paso 5: Guardar hallazgo
+    "guardar hallazgo": "text-config-save-button",
+    "guardar": "text-config-save-button",
 
 }
 
@@ -210,6 +368,14 @@ KEYWORD_TO_UNCHECK = {
     "quitar evento adverso": "attention-origin-adverse-event-checkbox",
     "borrar adverso": "attention-origin-adverse-event-checkbox",
     "desmarcar adverso": "attention-origin-adverse-event-checkbox",
+    # Desmarcar "Paciente dilatado" (switch)
+    "paciente no dilatado": "dilatation-patient-dilated-switch",
+    "no dilatado": "dilatation-patient-dilated-switch",
+    "borrar paciente dilatado": "dilatation-patient-dilated-switch",
+    "desmarcar paciente dilatado": "dilatation-patient-dilated-switch",
+    "quitar paciente dilatado": "dilatation-patient-dilated-switch",
+    "borrar dilatado": "dilatation-patient-dilated-switch",
+    "desmarcar dilatado": "dilatation-patient-dilated-switch",
 }
 
 # Palabras clave para fuinalizar campo
@@ -225,6 +391,20 @@ COMMAND_KEYWORDS = {
     "borrar": "cmd_clear",
     "limpiar": "cmd_clear",
     "deshacer": "cmd_clear",
+    "borrar todo": "cmd_clear",
+    "limpiar todo": "cmd_clear",
+    "borrar campo": "cmd_clear",
+    "limpiar campo": "cmd_clear",
+}
+
+# Override explícito para campos cuyo data-testid engaña la heurística de tipo
+# Se verifica PRIMERO en get_field_type() antes de la heurística por substring
+FIELD_TYPE_OVERRIDES = {
+    "ophtalmology-justification-textfield": "button",  # Click abre panel hallazgos
+    "text-config-findings-select": "button",            # Click abre dropdown hallazgos
+    "text-config-search-field": "button",               # Click enfoca búsqueda
+    # text-config-justification-textarea → "textarea" (se detecta con nueva regla)
+    # text-config-save-button → "button" (ya se detecta correctamente)
 }
 
 # Campos que requieren flujo "exclusivo" (lock)
@@ -233,7 +413,8 @@ EXCLUSIVE_FIELDS = {
     "attention-origin-reason-for-consulting-badge-field",
     "attention-origin-current-disease-badge-field",
     "oftalmology-observations-textarea",
-    "analysis-and-plan-textarea"
+    "analysis-and-plan-textarea",
+    "text-config-justification-textarea",  # Justificación hallazgo oftalmológico
 }
 
 
@@ -760,7 +941,26 @@ CLINICAL_KEYWORDS = re.compile(
     r"padecimiento|cuadro\s+clínico|cuadro\s+clinico|"
     r"antecedente|alergia|medicamento|cirugía|cirugia|"
     r"evolución|evolucion|tiempo|cantidad|valor|unidad|"
-    r"segundos?|minutos?|horas?|días?|dias?|semanas?|meses|mes|años?|anios?"
+    r"segundos?|minutos?|horas?|días?|dias?|semanas?|meses|mes|años?|anios?|"
+    # Preconsulta - clasificación del riesgo
+    r"clasificación|clasificacion|riesgo\s+de\s+caída|riesgo\s+de\s+caida|"
+    # Clasificación del riesgo - campos
+    r"caídas?\s+previas?|caidas?\s+previas?|déficit\s+sensorial|deficit\s+sensorial|"
+    r"estado\s+mental|marcha\s+actual|medicación\s+actual|medicacion\s+actual|"
+    # Clasificación del riesgo - formas cortas y variantes Deepgram
+    r"difícil\s+sensorial|dificil\s+sensorial|sensorial|mental|marcha|caídas|caidas|medicación|medicacion|"
+    # Preconsulta - navegación
+    r"signos\s+vitales|tamizaje|conciliación|conciliacion|medicamentosa|dilatado|"
+    r"ortopédica|ortopedica|ortóptica|ortoptica|preconsulta|"
+    # Comandos de borrado (safety net)
+    r"borrar|limpiar|deshacer|"
+    # Oftalmología - hallazgos
+    r"externo|hallazgo|hallazgos|justificación|justificacion|guardar|"
+    r"texto\s+predefinido|buscar\s+texto|"
+    # Opciones de hallazgo OD Externo
+    r"párpados|parpados|simétricos|simetricos|edema\s+palpebral|"
+    r"pestañas|pestanas|distribución|distribucion|uniformes?|"
+    r"movimientos\s+oculares|conjugados|lesiones|lesión|lesion|rosácea|rosacea|"
     # Condiciones
     r"sin\s+alteraciones|sin\s+hallazgos|sin\s+lesiones|sano"
     r")\b",
@@ -1237,6 +1437,13 @@ class RealtimeExtractor:
         sobreescriban frases específicas (ej: "ojos normales", "examen normal").
         """
         text_lower = text.lower()
+        # Strip puntuación que Deepgram smart_format agrega (comas, puntos, etc.)
+        # Convierte "caídas previas, sí." → "caídas previas sí"
+        text_lower = re.sub(r'[,.\!¿?\¡;:\-]+', ' ', text_lower)
+        text_lower = re.sub(r'\s+', ' ', text_lower).strip()
+        # Versión limpia del texto original (preserva mayúsculas) para content_after
+        text_for_content = re.sub(r'[,.\!¿?\¡;:\-]+', ' ', text)
+        text_for_content = re.sub(r'\s+', ' ', text_for_content).strip()
         best_match = None
         best_kw_len = -1
         best_idx = -1
@@ -1260,20 +1467,20 @@ class RealtimeExtractor:
             if kw_len > best_kw_len or (kw_len == best_kw_len and idx > best_idx):
                 best_kw_len = kw_len
                 best_idx = idx
-                content_after = text[idx + kw_len:].strip()
+                content_after = text_for_content[idx + kw_len:].strip()
                 best_match = (testid, kw_for_return, content_after)
             
             # Guardar mejor comando y mejor campo por separado
             if is_command:
                 if idx > best_cmd_idx:
                     best_cmd_idx = idx
-                    content_after = text[idx + kw_len:].strip()
+                    content_after = text_for_content[idx + kw_len:].strip()
                     best_cmd_match = (testid, kw_for_return, content_after)
             else:
                 kw_end = idx + kw_len
                 if kw_end > best_field_idx:
                     best_field_idx = kw_end
-                    content_after = text[idx + kw_len:].strip()
+                    content_after = text_for_content[idx + kw_len:].strip()
                     best_field_match = (testid, kw_for_return, content_after)
         
         # 0. Buscar frases de DESMARCAR checkbox (ej: "borrar ojos normales")
@@ -1513,7 +1720,15 @@ class RealtimeExtractor:
         """Retorna el tipo de campo para un unique_key dado."""
         if not unique_key:
             return "text"
-            
+
+        # Override explícito (máxima prioridad)
+        if unique_key in FIELD_TYPE_OVERRIDES:
+            return FIELD_TYPE_OVERRIDES[unique_key]
+
+        # Opciones de dropdown (select-option-X) son clickeables, no selects
+        if unique_key.startswith("select-option"):
+            return "button"
+
         # Fallback para campos de producción conocidos si biowel_fields está vacío
         if "select" in unique_key:
             return "select"
@@ -1523,9 +1738,11 @@ class RealtimeExtractor:
             return "number"
         if "badge-field" in unique_key or "history" in unique_key:
             return "textarea"
+        if "textarea" in unique_key:
+            return "textarea"
         if "radio" in unique_key:
             return "radio"
-        if "button" in unique_key or "dropdown-item" in unique_key:
+        if "button" in unique_key or "dropdown-item" in unique_key or unique_key.startswith("preconsultation-tab"):
             return "button"
 
         if self.biowel_fields:

@@ -134,6 +134,108 @@
       keywords: ["atrás", "atras", "volver"]
     },
     // ============================================
+    // Preconsulta - Tabs (dentro de pantalla preconsulta)
+    // ============================================
+    "preconsultation-tab-dilatation": {
+      label: "Tab Dilatación",
+      section: "preconsulta",
+      fieldType: "button",
+      keywords: ["tab dilatación", "tab dilatacion"]
+    },
+    "preconsultation-tab-vitalSigns": {
+      label: "Tab Signos Vitales",
+      section: "preconsulta",
+      fieldType: "button",
+      keywords: ["tab signos vitales"]
+    },
+    "preconsultation-tab-eyescreening": {
+      label: "Tab Tamizaje Ocular",
+      section: "preconsulta",
+      fieldType: "button",
+      keywords: ["tab tamizaje ocular", "tab tamizaje"]
+    },
+    "preconsultation-tab-medicines": {
+      label: "Tab Conciliación Medicamentosa",
+      section: "preconsulta",
+      fieldType: "button",
+      keywords: ["tab conciliación medicamentosa", "tab conciliacion medicamentosa", "tab medicamentos"]
+    },
+    "preconsultation-tab-fallRiskAssessment": {
+      label: "Clasificación del Riesgo",
+      section: "preconsulta",
+      fieldType: "button",
+      keywords: ["clasificación del riesgo", "clasificacion del riesgo", "riesgo de caída", "riesgo de caida"]
+    },
+    // ============================================
+    // Clasificación del Riesgo - Radio buttons
+    // ============================================
+    "fall-risk-previousFalls-yes-radio": {
+      label: "Caídas previas Sí",
+      section: "clasificacion_riesgo",
+      fieldType: "radio",
+      keywords: ["caídas previas sí", "caidas previas si"]
+    },
+    "fall-risk-previousFalls-no-radio": {
+      label: "Caídas previas No",
+      section: "clasificacion_riesgo",
+      fieldType: "radio",
+      keywords: ["caídas previas no", "caidas previas no"]
+    },
+    "fall-risk-sensoryDeficit-yes-radio": {
+      label: "Déficit sensorial Sí",
+      section: "clasificacion_riesgo",
+      fieldType: "radio",
+      keywords: ["déficit sensorial sí", "deficit sensorial si"]
+    },
+    "fall-risk-sensoryDeficit-no-radio": {
+      label: "Déficit sensorial No",
+      section: "clasificacion_riesgo",
+      fieldType: "radio",
+      keywords: ["déficit sensorial no", "deficit sensorial no"]
+    },
+    "fall-risk-mentalState-yes-radio": {
+      label: "Estado mental Sí",
+      section: "clasificacion_riesgo",
+      fieldType: "radio",
+      keywords: ["estado mental sí", "estado mental si"]
+    },
+    "fall-risk-mentalState-no-radio": {
+      label: "Estado mental No",
+      section: "clasificacion_riesgo",
+      fieldType: "radio",
+      keywords: ["estado mental no", "estado mental no"]
+    },
+    "fall-risk-gaitAndMobility-yes-radio": {
+      label: "Marcha actual Sí",
+      section: "clasificacion_riesgo",
+      fieldType: "radio",
+      keywords: ["marcha actual sí", "marcha actual si"]
+    },
+    "fall-risk-gaitAndMobility-no-radio": {
+      label: "Marcha actual No",
+      section: "clasificacion_riesgo",
+      fieldType: "radio",
+      keywords: ["marcha actual no", "marcha actual no"]
+    },
+    "fall-risk-medication-yes-radio": {
+      label: "Medicación actual Sí",
+      section: "clasificacion_riesgo",
+      fieldType: "radio",
+      keywords: ["medicación actual sí", "medicacion actual si"]
+    },
+    "fall-risk-medication-no-radio": {
+      label: "Medicación actual No",
+      section: "clasificacion_riesgo",
+      fieldType: "radio",
+      keywords: ["medicación actual no", "medicacion actual no"]
+    },
+    "preconsultation-tab-orthoptic": {
+      label: "Tab Ortóptica",
+      section: "preconsulta",
+      fieldType: "button",
+      keywords: ["tab ortopédica", "tab ortopedica", "tab ortóptica", "tab ortoptica"]
+    },
+    // ============================================
     // Dilatación - Radio buttons y botón
     // ============================================
     "dilatation-requires-yes-radio": {
@@ -153,6 +255,82 @@
       section: "dilatacion",
       fieldType: "button",
       keywords: ["agregar registro", "agregar dilatación", "agregar dilatacion"]
+    },
+    "dilatation-patient-dilated-switch": {
+      label: "Paciente dilatado",
+      section: "dilatacion",
+      fieldType: "checkbox",
+      keywords: ["paciente dilatado", "ya dilatado", "dilatado"]
+    },
+    // ============================================
+    // Oftalmología - OD Externo (Ojo Derecho Externo)
+    // ============================================
+    "ophtalmology-justification-textfield": {
+      label: "OD Externo (abrir panel)",
+      section: "oftalmologia_externo",
+      fieldType: "button",
+      keywords: ["ojo derecho externo", "od externo", "derecho externo"]
+    },
+    "text-config-findings-select": {
+      label: "Hallazgos (dropdown)",
+      section: "oftalmologia_externo",
+      fieldType: "button",
+      keywords: ["hallazgo", "hallazgos", "buscar hallazgo"]
+    },
+    "text-config-justification-textarea": {
+      label: "Justificación hallazgo",
+      section: "oftalmologia_externo",
+      fieldType: "textarea",
+      keywords: ["justificación", "justificacion"]
+    },
+    "text-config-search-field": {
+      label: "Buscar texto predefinido",
+      section: "oftalmologia_externo",
+      fieldType: "button",
+      keywords: ["buscar texto", "texto predefinido"]
+    },
+    "text-config-save-button": {
+      label: "Guardar hallazgo",
+      section: "oftalmologia_externo",
+      fieldType: "button",
+      keywords: ["guardar hallazgo", "guardar"]
+    },
+    // Opciones del dropdown de hallazgos OD Externo
+    "select-option-0": {
+      label: "Párpados simétricos",
+      section: "oftalmologia_externo",
+      fieldType: "button",
+      keywords: ["párpados simétricos", "parpados simetricos", "párpados"]
+    },
+    "select-option-1": {
+      label: "Ausencia de edema palpebral",
+      section: "oftalmologia_externo",
+      fieldType: "button",
+      keywords: ["ausencia de edema", "sin edema palpebral", "ausencia edema"]
+    },
+    "select-option-2": {
+      label: "Distribución uniforme de las pestañas",
+      section: "oftalmologia_externo",
+      fieldType: "button",
+      keywords: ["distribución uniforme", "pestañas uniformes", "pestañas"]
+    },
+    "select-option-3": {
+      label: "Movimientos oculares conjugados y simétricos",
+      section: "oftalmologia_externo",
+      fieldType: "button",
+      keywords: ["movimientos oculares", "movimientos conjugados"]
+    },
+    "select-option-4": {
+      label: "Lesiones",
+      section: "oftalmologia_externo",
+      fieldType: "button",
+      keywords: ["lesiones", "lesión", "lesion"]
+    },
+    "select-option-5": {
+      label: "Rosácea",
+      section: "oftalmologia_externo",
+      fieldType: "button",
+      keywords: ["rosácea", "rosacea"]
     }
   };
   class DOMScanner {
@@ -396,6 +574,44 @@
     constructor(scanner) {
       this.scanner = scanner;
       this.filledFields = /* @__PURE__ */ new Map();
+      this._initSwal2Observer();
+    }
+    /**
+     * Polling que auto-cierra popups SweetAlert2 ("Aceptar").
+     * Busca el botón .swal2-confirm O cualquier botón visible "Aceptar" dentro de un dialog.
+     * Usa getBoundingClientRect para visibilidad (offsetParent falla con position:fixed).
+     */
+    _initSwal2Observer() {
+      setInterval(() => {
+        let btn = document.querySelector(".swal2-confirm");
+        if (!btn) {
+          const candidates = document.querySelectorAll('[role="dialog"] button, .swal2-actions button, .modal-content button');
+          for (const b of candidates) {
+            if (b.textContent.trim() === "Aceptar") {
+              btn = b;
+              break;
+            }
+          }
+        }
+        if (!btn) {
+          const allBtns = document.querySelectorAll("button");
+          for (const b of allBtns) {
+            if (b.textContent.trim() === "Aceptar") {
+              const r = b.getBoundingClientRect();
+              if (r.width > 0 && r.height > 0) {
+                btn = b;
+                break;
+              }
+            }
+          }
+        }
+        if (!btn) return;
+        const rect = btn.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return;
+        console.log(`[BVA-DOM] >>> Swal2 auto-dismiss: "${btn.textContent.trim()}" class="${btn.className}"`);
+        btn.click();
+      }, 400);
+      console.log(`[BVA-DOM] >>> Swal2 auto-dismiss polling ACTIVE`);
     }
     /**
      * Retorna un objeto plano con los campos ya llenados.
@@ -671,27 +887,34 @@
     }
     _setRadioValue(el, value) {
       console.log(`[BVA-DOM] _setRadioValue called: tag=${el?.tagName}, value='${value}', outerHTML=${el?.outerHTML?.substring(0, 300)}`);
-      const name = el.name || el.querySelector('input[type="radio"]')?.name;
-      console.log(`[BVA-DOM] Radio name=${name}`);
-      if (name) {
-        const target = document.querySelector(`input[name="${name}"][value="${value}"]`);
-        if (target) {
-          target.click();
-          target.dispatchEvent(new Event("change", { bubbles: true }));
-          this._highlight(target);
-          console.log(`[BVA-DOM] Radio (standard name/value) clicked`);
-          return true;
-        }
+      let radioInput = null;
+      if (el.tagName === "INPUT" && el.type === "radio") {
+        radioInput = el;
+      } else {
+        radioInput = el.querySelector('input[type="radio"]');
       }
-      const innerRadio = el.querySelector('input[type="radio"]');
-      console.log(`[BVA-DOM] innerRadio found:`, innerRadio, innerRadio?.checked);
-      if (innerRadio) {
-        if (!innerRadio.checked) {
-          innerRadio.click();
-          innerRadio.dispatchEvent(new Event("change", { bubbles: true }));
+      if (radioInput) {
+        console.log(`[BVA-DOM] Radio input found: name=${radioInput.name}, checked=${radioInput.checked}`);
+        const parentLabel = radioInput.closest("label");
+        if (parentLabel) {
+          console.log(`[BVA-DOM] Clicking parent label`);
+          parentLabel.click();
         }
-        this._highlight(innerRadio.closest("[data-testid]") || innerRadio);
-        console.log(`[BVA-DOM] Radio (inner input) clicked, now checked=${innerRadio.checked}`);
+        const nativeSetter = Object.getOwnPropertyDescriptor(
+          window.HTMLInputElement.prototype,
+          "checked"
+        )?.set;
+        if (nativeSetter) {
+          nativeSetter.call(radioInput, true);
+          console.log(`[BVA-DOM] Native setter applied, checked=${radioInput.checked}`);
+        } else {
+          radioInput.checked = true;
+        }
+        radioInput.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+        radioInput.dispatchEvent(new Event("input", { bubbles: true }));
+        radioInput.dispatchEvent(new Event("change", { bubbles: true }));
+        this._highlight(radioInput.closest("[data-testid]") || radioInput);
+        console.log(`[BVA-DOM] Radio activated, final checked=${radioInput.checked}`);
         return true;
       }
       const tag = el.tagName.toLowerCase();
@@ -709,9 +932,31 @@
     /**
      * Hace click directo en un botón/dropdown item por su data-testid.
      * Usado para preconsulta dropdown items, botón atrás, agregar registro, etc.
+     * Incluye fallback bidireccional dropdown ↔ tab para preconsulta.
      */
     _clickButton(uniqueKey) {
-      const el = document.querySelector(`[data-testid="${uniqueKey}"]`);
+      const PRECONSULTA_FALLBACK = {
+        // Dropdown → Tab (para cuando estamos EN la pantalla de preconsulta)
+        "header-preconsultation-dropdown-item-0": "preconsultation-tab-dilatation",
+        "header-preconsultation-dropdown-item-1": "preconsultation-tab-vitalSigns",
+        "header-preconsultation-dropdown-item-2": "preconsultation-tab-eyescreening",
+        "header-preconsultation-dropdown-item-3": "preconsultation-tab-medicines",
+        "header-preconsultation-dropdown-item-4": "preconsultation-tab-orthoptic",
+        // Tab → Dropdown (para cuando estamos EN la pantalla principal)
+        "preconsultation-tab-dilatation": "header-preconsultation-dropdown-item-0",
+        "preconsultation-tab-vitalSigns": "header-preconsultation-dropdown-item-1",
+        "preconsultation-tab-eyescreening": "header-preconsultation-dropdown-item-2",
+        "preconsultation-tab-medicines": "header-preconsultation-dropdown-item-3",
+        "preconsultation-tab-orthoptic": "header-preconsultation-dropdown-item-4"
+      };
+      let el = document.querySelector(`[data-testid="${uniqueKey}"]`);
+      if (!el && PRECONSULTA_FALLBACK[uniqueKey]) {
+        const fallbackKey = PRECONSULTA_FALLBACK[uniqueKey];
+        el = document.querySelector(`[data-testid="${fallbackKey}"]`);
+        if (el) {
+          console.log(`[BVA-DOM] _clickButton: fallback '${uniqueKey}' → '${fallbackKey}'`);
+        }
+      }
       if (!el) {
         console.warn(`[BVA-DOM] _clickButton: elemento '${uniqueKey}' NO encontrado en DOM`);
         return false;

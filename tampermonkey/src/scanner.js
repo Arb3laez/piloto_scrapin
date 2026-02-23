@@ -121,6 +121,110 @@ const REGISTERED_FIELDS = {
     },
 
     // ============================================
+    // Preconsulta - Tabs (dentro de pantalla preconsulta)
+    // ============================================
+    'preconsultation-tab-dilatation': {
+        label: 'Tab Dilatación',
+        section: 'preconsulta',
+        fieldType: 'button',
+        keywords: ['tab dilatación', 'tab dilatacion'],
+    },
+    'preconsultation-tab-vitalSigns': {
+        label: 'Tab Signos Vitales',
+        section: 'preconsulta',
+        fieldType: 'button',
+        keywords: ['tab signos vitales'],
+    },
+    'preconsultation-tab-eyescreening': {
+        label: 'Tab Tamizaje Ocular',
+        section: 'preconsulta',
+        fieldType: 'button',
+        keywords: ['tab tamizaje ocular', 'tab tamizaje'],
+    },
+    'preconsultation-tab-medicines': {
+        label: 'Tab Conciliación Medicamentosa',
+        section: 'preconsulta',
+        fieldType: 'button',
+        keywords: ['tab conciliación medicamentosa', 'tab conciliacion medicamentosa', 'tab medicamentos'],
+    },
+    'preconsultation-tab-fallRiskAssessment': {
+        label: 'Clasificación del Riesgo',
+        section: 'preconsulta',
+        fieldType: 'button',
+        keywords: ['clasificación del riesgo', 'clasificacion del riesgo', 'riesgo de caída', 'riesgo de caida'],
+    },
+    // ============================================
+    // Clasificación del Riesgo - Radio buttons
+    // ============================================
+    'fall-risk-previousFalls-yes-radio': {
+        label: 'Caídas previas Sí',
+        section: 'clasificacion_riesgo',
+        fieldType: 'radio',
+        keywords: ['caídas previas sí', 'caidas previas si'],
+    },
+    'fall-risk-previousFalls-no-radio': {
+        label: 'Caídas previas No',
+        section: 'clasificacion_riesgo',
+        fieldType: 'radio',
+        keywords: ['caídas previas no', 'caidas previas no'],
+    },
+    'fall-risk-sensoryDeficit-yes-radio': {
+        label: 'Déficit sensorial Sí',
+        section: 'clasificacion_riesgo',
+        fieldType: 'radio',
+        keywords: ['déficit sensorial sí', 'deficit sensorial si'],
+    },
+    'fall-risk-sensoryDeficit-no-radio': {
+        label: 'Déficit sensorial No',
+        section: 'clasificacion_riesgo',
+        fieldType: 'radio',
+        keywords: ['déficit sensorial no', 'deficit sensorial no'],
+    },
+    'fall-risk-mentalState-yes-radio': {
+        label: 'Estado mental Sí',
+        section: 'clasificacion_riesgo',
+        fieldType: 'radio',
+        keywords: ['estado mental sí', 'estado mental si'],
+    },
+    'fall-risk-mentalState-no-radio': {
+        label: 'Estado mental No',
+        section: 'clasificacion_riesgo',
+        fieldType: 'radio',
+        keywords: ['estado mental no', 'estado mental no'],
+    },
+    'fall-risk-gaitAndMobility-yes-radio': {
+        label: 'Marcha actual Sí',
+        section: 'clasificacion_riesgo',
+        fieldType: 'radio',
+        keywords: ['marcha actual sí', 'marcha actual si'],
+    },
+    'fall-risk-gaitAndMobility-no-radio': {
+        label: 'Marcha actual No',
+        section: 'clasificacion_riesgo',
+        fieldType: 'radio',
+        keywords: ['marcha actual no', 'marcha actual no'],
+    },
+    'fall-risk-medication-yes-radio': {
+        label: 'Medicación actual Sí',
+        section: 'clasificacion_riesgo',
+        fieldType: 'radio',
+        keywords: ['medicación actual sí', 'medicacion actual si'],
+    },
+    'fall-risk-medication-no-radio': {
+        label: 'Medicación actual No',
+        section: 'clasificacion_riesgo',
+        fieldType: 'radio',
+        keywords: ['medicación actual no', 'medicacion actual no'],
+    },
+
+    'preconsultation-tab-orthoptic': {
+        label: 'Tab Ortóptica',
+        section: 'preconsulta',
+        fieldType: 'button',
+        keywords: ['tab ortopédica', 'tab ortopedica', 'tab ortóptica', 'tab ortoptica'],
+    },
+
+    // ============================================
     // Dilatación - Radio buttons y botón
     // ============================================
     'dilatation-requires-yes-radio': {
@@ -140,6 +244,84 @@ const REGISTERED_FIELDS = {
         section: 'dilatacion',
         fieldType: 'button',
         keywords: ['agregar registro', 'agregar dilatación', 'agregar dilatacion'],
+    },
+    'dilatation-patient-dilated-switch': {
+        label: 'Paciente dilatado',
+        section: 'dilatacion',
+        fieldType: 'checkbox',
+        keywords: ['paciente dilatado', 'ya dilatado', 'dilatado'],
+    },
+
+    // ============================================
+    // Oftalmología - OD Externo (Ojo Derecho Externo)
+    // ============================================
+    'ophtalmology-justification-textfield': {
+        label: 'OD Externo (abrir panel)',
+        section: 'oftalmologia_externo',
+        fieldType: 'button',
+        keywords: ['ojo derecho externo', 'od externo', 'derecho externo'],
+    },
+    'text-config-findings-select': {
+        label: 'Hallazgos (dropdown)',
+        section: 'oftalmologia_externo',
+        fieldType: 'button',
+        keywords: ['hallazgo', 'hallazgos', 'buscar hallazgo'],
+    },
+    'text-config-justification-textarea': {
+        label: 'Justificación hallazgo',
+        section: 'oftalmologia_externo',
+        fieldType: 'textarea',
+        keywords: ['justificación', 'justificacion'],
+    },
+    'text-config-search-field': {
+        label: 'Buscar texto predefinido',
+        section: 'oftalmologia_externo',
+        fieldType: 'button',
+        keywords: ['buscar texto', 'texto predefinido'],
+    },
+    'text-config-save-button': {
+        label: 'Guardar hallazgo',
+        section: 'oftalmologia_externo',
+        fieldType: 'button',
+        keywords: ['guardar hallazgo', 'guardar'],
+    },
+
+    // Opciones del dropdown de hallazgos OD Externo
+    'select-option-0': {
+        label: 'Párpados simétricos',
+        section: 'oftalmologia_externo',
+        fieldType: 'button',
+        keywords: ['párpados simétricos', 'parpados simetricos', 'párpados'],
+    },
+    'select-option-1': {
+        label: 'Ausencia de edema palpebral',
+        section: 'oftalmologia_externo',
+        fieldType: 'button',
+        keywords: ['ausencia de edema', 'sin edema palpebral', 'ausencia edema'],
+    },
+    'select-option-2': {
+        label: 'Distribución uniforme de las pestañas',
+        section: 'oftalmologia_externo',
+        fieldType: 'button',
+        keywords: ['distribución uniforme', 'pestañas uniformes', 'pestañas'],
+    },
+    'select-option-3': {
+        label: 'Movimientos oculares conjugados y simétricos',
+        section: 'oftalmologia_externo',
+        fieldType: 'button',
+        keywords: ['movimientos oculares', 'movimientos conjugados'],
+    },
+    'select-option-4': {
+        label: 'Lesiones',
+        section: 'oftalmologia_externo',
+        fieldType: 'button',
+        keywords: ['lesiones', 'lesión', 'lesion'],
+    },
+    'select-option-5': {
+        label: 'Rosácea',
+        section: 'oftalmologia_externo',
+        fieldType: 'button',
+        keywords: ['rosácea', 'rosacea'],
     },
 
 };

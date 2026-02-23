@@ -2,6 +2,43 @@ export class DOMManipulator {
     constructor(scanner) {
         this.scanner = scanner;
         this.filledFields = new Map();
+        this._initSwal2Observer();
+    }
+
+    /**
+     * Polling que auto-cierra popups SweetAlert2 ("Aceptar").
+     * Busca el botón .swal2-confirm O cualquier botón visible "Aceptar" dentro de un dialog.
+     * Usa getBoundingClientRect para visibilidad (offsetParent falla con position:fixed).
+     */
+    _initSwal2Observer() {
+        setInterval(() => {
+            // Estrategia 1: buscar por clase swal2
+            let btn = document.querySelector('.swal2-confirm');
+            // Estrategia 2: buscar botón "Aceptar" en dialogs/modals
+            if (!btn) {
+                const candidates = document.querySelectorAll('[role="dialog"] button, .swal2-actions button, .modal-content button');
+                for (const b of candidates) {
+                    if (b.textContent.trim() === 'Aceptar') { btn = b; break; }
+                }
+            }
+            // Estrategia 3: buscar cualquier botón visible con texto "Aceptar"
+            if (!btn) {
+                const allBtns = document.querySelectorAll('button');
+                for (const b of allBtns) {
+                    if (b.textContent.trim() === 'Aceptar') {
+                        const r = b.getBoundingClientRect();
+                        if (r.width > 0 && r.height > 0) { btn = b; break; }
+                    }
+                }
+            }
+            if (!btn) return;
+            // Verificar visibilidad con getBoundingClientRect (funciona con position:fixed)
+            const rect = btn.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return;
+            console.log(`[BVA-DOM] >>> Swal2 auto-dismiss: "${btn.textContent.trim()}" class="${btn.className}"`);
+            btn.click();
+        }, 400);
+        console.log(`[BVA-DOM] >>> Swal2 auto-dismiss polling ACTIVE`);
     }
 
     /**
@@ -330,35 +367,47 @@ export class DOMManipulator {
 
     _setRadioValue(el, value) {
         console.log(`[BVA-DOM] _setRadioValue called: tag=${el?.tagName}, value='${value}', outerHTML=${el?.outerHTML?.substring(0, 300)}`);
-        
-        // 1. Intento estándar: input[type=radio] con name/value
-        const name = el.name || el.querySelector('input[type="radio"]')?.name;
-        console.log(`[BVA-DOM] Radio name=${name}`);
-        if (name) {
-            const target = document.querySelector(`input[name="${name}"][value="${value}"]`);
-            if (target) {
-                target.click();
-                target.dispatchEvent(new Event('change', { bubbles: true }));
-                this._highlight(target);
-                console.log(`[BVA-DOM] Radio (standard name/value) clicked`);
-                return true;
-            }
+
+        // Resolver el input radio real (puede ser el elemento directo o estar dentro de un contenedor)
+        let radioInput = null;
+        if (el.tagName === 'INPUT' && el.type === 'radio') {
+            radioInput = el;
+        } else {
+            radioInput = el.querySelector('input[type="radio"]');
         }
 
-        // 2. Biowel: el elemento es un contenedor con input[type=radio] adentro → click al radio
-        const innerRadio = el.querySelector('input[type="radio"]');
-        console.log(`[BVA-DOM] innerRadio found:`, innerRadio, innerRadio?.checked);
-        if (innerRadio) {
-            if (!innerRadio.checked) {
-                innerRadio.click();
-                innerRadio.dispatchEvent(new Event('change', { bubbles: true }));
+        if (radioInput) {
+            console.log(`[BVA-DOM] Radio input found: name=${radioInput.name}, checked=${radioInput.checked}`);
+
+            // Estrategia 1: Click en el label padre (la forma más natural y compatible con React)
+            const parentLabel = radioInput.closest('label');
+            if (parentLabel) {
+                console.log(`[BVA-DOM] Clicking parent label`);
+                parentLabel.click();
             }
-            this._highlight(innerRadio.closest('[data-testid]') || innerRadio);
-            console.log(`[BVA-DOM] Radio (inner input) clicked, now checked=${innerRadio.checked}`);
+
+            // Estrategia 2: Native setter de React (fuerza el estado interno)
+            const nativeSetter = Object.getOwnPropertyDescriptor(
+                window.HTMLInputElement.prototype, 'checked'
+            )?.set;
+            if (nativeSetter) {
+                nativeSetter.call(radioInput, true);
+                console.log(`[BVA-DOM] Native setter applied, checked=${radioInput.checked}`);
+            } else {
+                radioInput.checked = true;
+            }
+
+            // Estrategia 3: Dispatch eventos completos para React
+            radioInput.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+            radioInput.dispatchEvent(new Event('input', { bubbles: true }));
+            radioInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+            this._highlight(radioInput.closest('[data-testid]') || radioInput);
+            console.log(`[BVA-DOM] Radio activated, final checked=${radioInput.checked}`);
             return true;
         }
 
-        // 3. Fallback: el contenedor mismo es clickeable (componente custom estilo botón)
+        // Fallback: el contenedor mismo es clickeable (componente custom estilo botón)
         const tag = el.tagName.toLowerCase();
         console.log(`[BVA-DOM] Radio fallback: tag=${tag}`);
         if (tag === 'div' || tag === 'span' || tag === 'label' || tag === 'button') {
@@ -376,9 +425,36 @@ export class DOMManipulator {
     /**
      * Hace click directo en un botón/dropdown item por su data-testid.
      * Usado para preconsulta dropdown items, botón atrás, agregar registro, etc.
+     * Incluye fallback bidireccional dropdown ↔ tab para preconsulta.
      */
     _clickButton(uniqueKey) {
-        const el = document.querySelector(`[data-testid="${uniqueKey}"]`);
+        // Mapa de fallback: dropdown ↔ tab (misma pantalla, diferente contexto)
+        const PRECONSULTA_FALLBACK = {
+            // Dropdown → Tab (para cuando estamos EN la pantalla de preconsulta)
+            'header-preconsultation-dropdown-item-0': 'preconsultation-tab-dilatation',
+            'header-preconsultation-dropdown-item-1': 'preconsultation-tab-vitalSigns',
+            'header-preconsultation-dropdown-item-2': 'preconsultation-tab-eyescreening',
+            'header-preconsultation-dropdown-item-3': 'preconsultation-tab-medicines',
+            'header-preconsultation-dropdown-item-4': 'preconsultation-tab-orthoptic',
+            // Tab → Dropdown (para cuando estamos EN la pantalla principal)
+            'preconsultation-tab-dilatation': 'header-preconsultation-dropdown-item-0',
+            'preconsultation-tab-vitalSigns': 'header-preconsultation-dropdown-item-1',
+            'preconsultation-tab-eyescreening': 'header-preconsultation-dropdown-item-2',
+            'preconsultation-tab-medicines': 'header-preconsultation-dropdown-item-3',
+            'preconsultation-tab-orthoptic': 'header-preconsultation-dropdown-item-4',
+        };
+
+        let el = document.querySelector(`[data-testid="${uniqueKey}"]`);
+
+        // Fallback: si no se encontró, buscar equivalente dropdown↔tab
+        if (!el && PRECONSULTA_FALLBACK[uniqueKey]) {
+            const fallbackKey = PRECONSULTA_FALLBACK[uniqueKey];
+            el = document.querySelector(`[data-testid="${fallbackKey}"]`);
+            if (el) {
+                console.log(`[BVA-DOM] _clickButton: fallback '${uniqueKey}' → '${fallbackKey}'`);
+            }
+        }
+
         if (!el) {
             console.warn(`[BVA-DOM] _clickButton: elemento '${uniqueKey}' NO encontrado en DOM`);
             return false;
