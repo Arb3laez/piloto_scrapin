@@ -39,7 +39,6 @@ export class VoiceRecorder {
             this.processorNode = this.audioContext.createScriptProcessor(bufferSize, 1, 1);
 
             // Handler para procesar audio capturado
-            let chunkCount = 0;
             this.processorNode.onaudioprocess = (event) => {
                 if (!this.isRecording) return;
 
@@ -76,10 +75,7 @@ export class VoiceRecorder {
             // ScriptProcessorNode REQUIERE conexión a destination para que onaudioprocess se dispare
             // GainNode con gain=0 evita que el audio se reproduzca por los altavoces (sin eco)
             this.sourceNode.connect(this.processorNode);
-            this.muteNode = this.audioContext.createGain();
-            this.muteNode.gain.value = 0;
-            this.processorNode.connect(this.muteNode);
-            this.muteNode.connect(this.audioContext.destination);
+            this.processorNode.connect(this.audioContext.destination);
             
             this.isRecording = true;
             console.log('[BVA-Recorder] Grabación iniciada');
@@ -97,13 +93,12 @@ export class VoiceRecorder {
         console.log('[BVA-Recorder] Grabación detenida');
         
         try { this.processorNode?.disconnect(); } catch (e) { console.debug(e); }
-        try { this.muteNode?.disconnect(); } catch (e) { console.debug(e); }
+        try { this.processorNode?.disconnect(); } catch (e) { console.debug(e); }
         try { this.sourceNode?.disconnect(); } catch (e) { console.debug(e); }
         try { this.audioContext?.close(); } catch (e) { console.debug(e); }
         try { this.stream?.getTracks().forEach(t => t.stop()); } catch (e) { console.debug(e); }
         
         this.processorNode = null;
-        this.muteNode = null;
         this.sourceNode = null;
         this.audioContext = null;
         this.stream = null;

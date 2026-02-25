@@ -33,7 +33,8 @@ from app.realtime_extractor import (
     strip_keywords_and_commands,
     get_select_value_for_keyword,
     EVOLUTION_TIME_ANCHORED_RE,
-    EXCLUSIVE_FIELDS
+    EXCLUSIVE_FIELDS,
+    CHECKBOX_WITH_INPUT,
 )
 
 # Configurar logging
@@ -247,23 +248,23 @@ async def voice_stream_endpoint(websocket: WebSocket):
                 
                 # =============================================
                 # PRIORIDAD 2: Patrones anclados específicos (tiempo evolución, etc.)
-                # Estos se ejecutan INCLUSO si hay campo activo porque son muy específicos
+                # NO ejecutar si hay un campo exclusivo activo (el texto es contenido del campo)
                 # =============================================
-                # Ejecutar solo para detectar patrones "2 semanas", "3 días", etc.
                 anchored_items = []
-                for match in EVOLUTION_TIME_ANCHORED_RE.finditer(text.lower()):
-                    val_num, val_unit = match.groups()
-                    normalized_unit = normalize_value(val_unit, "select")
-                    anchored_items.append({
-                        "unique_key": "attention-origin-evolution-time-input",
-                        "value": val_num.replace(",", "."),
-                        "confidence": 0.98
-                    })
-                    anchored_items.append({
-                        "unique_key": "attention-origin-evolution-time-unit-select",
-                        "value": normalized_unit,
-                        "confidence": 0.98
-                    })
+                if active_field_tracker.active_field not in EXCLUSIVE_FIELDS:
+                    for match in EVOLUTION_TIME_ANCHORED_RE.finditer(text.lower()):
+                        val_num, val_unit = match.groups()
+                        normalized_unit = normalize_value(val_unit, "select")
+                        anchored_items.append({
+                            "unique_key": "attention-origin-evolution-time-input",
+                            "value": val_num.replace(",", "."),
+                            "confidence": 0.98
+                        })
+                        anchored_items.append({
+                            "unique_key": "attention-origin-evolution-time-unit-select",
+                            "value": normalized_unit,
+                            "confidence": 0.98
+                        })
                 
                 if anchored_items:
                     await websocket.send_json({
@@ -305,9 +306,17 @@ async def voice_stream_endpoint(websocket: WebSocket):
                             "source_text": f"[Checkbox activado: {keyword}]"
                         })
                         realtime_extractor.already_filled[testid] = checkbox_value
-                        active_field_tracker.active_field = None
-                        active_field_tracker.accumulated_text = ""
-                        logger.info(f"[Checkbox] '{testid}' activado inmediatamente por keyword '{keyword}'")
+
+                        # HYBRID: Si el checkbox tiene companion input, activar para dictado
+                        companion_input = CHECKBOX_WITH_INPUT.get(testid)
+                        if companion_input:
+                            initial = realtime_extractor.already_filled.get(companion_input, "")
+                            active_field_tracker.activate_field(companion_input, keyword, initial_text=initial)
+                            logger.info(f"[Checkbox+Input] '{testid}' marcado, input '{companion_input}' activado para dictado")
+                        else:
+                            active_field_tracker.active_field = None
+                            active_field_tracker.accumulated_text = ""
+                            logger.info(f"[Checkbox] '{testid}' activado inmediatamente por keyword '{keyword}'")
                         session_keyword_buffer = ""
                         return
                     
@@ -389,12 +398,37 @@ async def voice_stream_endpoint(websocket: WebSocket):
                             "items": [{"unique_key": testid, "value": "click", "confidence": 1.0}],
                             "source_text": f"[Botón clickeado: {keyword}]"
                         })
-                        # NO guardar en already_filled — los botones pueden clickearse múltiples veces
-                        # (a diferencia de checkboxes/selects que solo se llenan una vez)
+                        # Limpiar campo activo y buffer para evitar que se siga llenando textarea
                         active_field_tracker.active_field = None
                         active_field_tracker.accumulated_text = ""
-                        logger.info(f"[Button] '{testid}' clickeado por keyword '{keyword}'")
                         session_keyword_buffer = ""
+                        logger.info(f"[Button] '{testid}' clickeado por keyword '{keyword}' (flujo limpio)")
+                        return
+
+                    elif ftype_candidate in ("textarea", "text"):
+                        testid, keyword, content_after = keyword_match
+                        # Finalizar campo anterior si existe
+                        previous_field = active_field_tracker.activate_field(None, keyword)
+                        if previous_field:
+                            prev_testid, prev_text = previous_field
+                            prev_ftype = realtime_extractor.get_field_type(prev_testid)
+                            normalized = normalize_value(prev_text, prev_ftype)
+                            await websocket.send_json({
+                                "type": "partial_autofill",
+                                "items": [{"unique_key": prev_testid, "value": normalized, "confidence": 0.95}],
+                                "source_text": f"[Finalizado por textarea: {keyword}]"
+                            })
+                            realtime_extractor.already_filled[prev_testid] = normalized
+
+                        # Activar campo de texto inmediatamente
+                        initial = realtime_extractor.already_filled.get(testid, "")
+                        active_field_tracker.activate_field(testid, keyword, initial_text=initial)
+                        if content_after:
+                            clean_after = strip_keywords_and_commands(content_after, keyword)
+                            if clean_after:
+                                active_field_tracker.append_text(clean_after)
+                        session_keyword_buffer = ""
+                        logger.info(f"[Textarea PRIO3] Campo '{testid}' activado por '{keyword}' (rápido)")
                         return
 
                 # =============================================
@@ -464,12 +498,22 @@ async def voice_stream_endpoint(websocket: WebSocket):
                                 active_field_tracker.append_text(clean_after)
                         
                         session_keyword_buffer = ""
+                        # FIX BUG 3: Retornar después de activar campo por keyword
+                        # para evitar que el LLM se ejecute innecesariamente
+                        return
 
                 # =============================================
                 # PRIORIDAD 5: ACUMULAR AL CAMPO ACTIVO
                 # Solo si NO se acaba de activar un campo nuevo (evitar doble acumulación)
                 # =============================================
                 if active_field_tracker.active_field and not keyword_handled:
+                    # FIX BUG 4 (FINAL): Actualizar last_keyword si se detectó variante más larga del mismo campo
+                    if (keyword_match
+                        and keyword_match[0] == active_field_tracker.active_field
+                        and len(keyword_match[1]) > len(active_field_tracker.last_keyword)):
+                        active_field_tracker.last_keyword = keyword_match[1]
+                        logger.info(f"[FINAL] last_keyword actualizado a '{keyword_match[1]}' (más largo, mismo campo)")
+
                     # PRIMERO: Detectar palabras de finalización ANTES de limpiar
                     # NOTA: "fin" eliminado porque es substring de "definido", "fino", "confinar", etc.
                     # Los comandos ya se manejan en COMMAND_KEYWORDS (Prioridad 1 como cmd_stop)
@@ -535,6 +579,9 @@ async def voice_stream_endpoint(websocket: WebSocket):
                     # No lanzar LLM si ya hay campo activo por keyword
                     return
 
+                # FIX BUG 6: Limpiar buffer antes de lanzar LLM
+                # para evitar que keywords viejas se acumulen y causen falsos positivos
+                session_keyword_buffer = ""
                 asyncio.create_task(process_segment_with_llm(text))
 
             else:
@@ -589,21 +636,23 @@ async def voice_stream_endpoint(websocket: WebSocket):
                 
                 # =============================================
                 # PRIORIDAD 2: Patrones anclados (tiempo evolución) en tiempo real
+                # NO ejecutar si hay un campo exclusivo activo (el texto es contenido del campo)
                 # =============================================
                 anchored_items = []
-                for match in EVOLUTION_TIME_ANCHORED_RE.finditer(text.lower()):
-                    val_num, val_unit = match.groups()
-                    normalized_unit = normalize_value(val_unit, "select")
-                    anchored_items.append({
-                        "unique_key": "attention-origin-evolution-time-input",
-                        "value": val_num.replace(",", "."),
-                        "confidence": 0.90
-                    })
-                    anchored_items.append({
-                        "unique_key": "attention-origin-evolution-time-unit-select",
-                        "value": normalized_unit,
-                        "confidence": 0.90
-                    })
+                if active_field_tracker.active_field not in EXCLUSIVE_FIELDS:
+                    for match in EVOLUTION_TIME_ANCHORED_RE.finditer(text.lower()):
+                        val_num, val_unit = match.groups()
+                        normalized_unit = normalize_value(val_unit, "select")
+                        anchored_items.append({
+                            "unique_key": "attention-origin-evolution-time-input",
+                            "value": val_num.replace(",", "."),
+                            "confidence": 0.90
+                        })
+                        anchored_items.append({
+                            "unique_key": "attention-origin-evolution-time-unit-select",
+                            "value": normalized_unit,
+                            "confidence": 0.90
+                        })
                 
                 if anchored_items:
                     await websocket.send_json({
@@ -680,6 +729,17 @@ async def voice_stream_endpoint(websocket: WebSocket):
                 # PRIORIDAD 3: ACUMULAR PARCIALES AL CAMPO ACTIVO
                 # =============================================
                 if not _prio25_handled and active_field_tracker.active_field:
+                    # FIX BUG 4: Si detect_keyword encontró un keyword más largo
+                    # que apunta al MISMO campo activo, actualizar last_keyword
+                    # para que strip_keywords_and_commands limpie correctamente.
+                    # Ej: "enfermedad" activó el campo, luego llega "enfermedad actual dolor"
+                    #     → actualizar last_keyword a "enfermedad actual" para no dejar "actual" como contenido
+                    if (keyword_match
+                        and keyword_match[0] == active_field_tracker.active_field
+                        and len(keyword_match[1]) > len(active_field_tracker.last_keyword)):
+                        active_field_tracker.last_keyword = keyword_match[1]
+                        logger.info(f"[PARCIAL] last_keyword actualizado a '{keyword_match[1]}' (más largo, mismo campo)")
+
                     # Parciales de Deepgram son ACUMULATIVOS (cada parcial contiene todo
                     # el texto del utterance actual). set_partial() sobrescribe SOLO el
                     # utterance actual, preservando texto de utterances anteriores.
@@ -738,7 +798,15 @@ async def voice_stream_endpoint(websocket: WebSocket):
                             "source_text": f"[Checkbox activado parcial: {keyword}]"
                         })
                         realtime_extractor.already_filled[testid] = checkbox_value
-                        logger.info(f"[Checkbox PARCIAL] '{testid}' activado por '{keyword}'")
+
+                        # HYBRID: Si el checkbox tiene companion input, activar para dictado
+                        companion_input = CHECKBOX_WITH_INPUT.get(testid)
+                        if companion_input:
+                            initial = realtime_extractor.already_filled.get(companion_input, "")
+                            active_field_tracker.activate_field(companion_input, keyword, initial_text=initial)
+                            logger.info(f"[Checkbox+Input PARCIAL] '{testid}' marcado, input '{companion_input}' activado")
+                        else:
+                            logger.info(f"[Checkbox PARCIAL] '{testid}' activado por '{keyword}'")
                         session_keyword_buffer = ""
                     elif ftype == "button":
                         # Botones siempre se pueden clickear (no usar already_filled)

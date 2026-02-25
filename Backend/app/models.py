@@ -44,7 +44,7 @@ class WebSocketMessage(BaseModel):
 # Modelos para Biowel (HU-009)
 # ============================================
 
-VALID_FIELD_TYPES = {"text", "select", "checkbox", "radio", "textarea", "number"}
+VALID_FIELD_TYPES = {"text", "select", "checkbox", "radio", "textarea", "number", "button"}
 VALID_EYE_VALUES = {"OD", "OI", "AO"}
 
 

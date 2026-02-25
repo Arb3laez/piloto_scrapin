@@ -164,7 +164,17 @@
       label: "Clasificación del Riesgo",
       section: "preconsulta",
       fieldType: "button",
-      keywords: ["clasificación del riesgo", "clasificacion del riesgo", "riesgo de caída", "riesgo de caida"]
+      keywords: [
+        "clasificación del riesgo",
+        "clasificacion del riesgo",
+        "clasificacion de riego",
+        "clasificación de riego",
+        "clasificacion riesgo",
+        "clasificación riesgo",
+        "del riesgo",
+        "riesgo de caída",
+        "riesgo de caida"
+      ]
     },
     // ============================================
     // Clasificación del Riesgo - Radio buttons
@@ -209,7 +219,7 @@
       label: "Marcha actual Sí",
       section: "clasificacion_riesgo",
       fieldType: "radio",
-      keywords: ["marcha actual sí", "marcha actual si"]
+      keywords: ["marcha actual sí", "marcha actual si", "marcha y movilidad"]
     },
     "fall-risk-gaitAndMobility-no-radio": {
       label: "Marcha actual No",
@@ -331,6 +341,441 @@
       section: "oftalmologia_externo",
       fieldType: "button",
       keywords: ["rosácea", "rosacea"]
+    },
+    // ============================================
+    // Antecedentes - Botón principal
+    // ============================================
+    "header-antecedents-button": {
+      label: "Antecedentes",
+      section: "antecedentes",
+      fieldType: "button",
+      keywords: ["antecedentes", "abrir antecedentes", "ver antecedentes"]
+    },
+    // ============================================
+    // Antecedentes Generales - Checkboxes + Inputs
+    // ============================================
+    "antecedents-arterialHypertension-checkbox": {
+      label: "Hipertensión arterial",
+      section: "antecedentes_generales",
+      fieldType: "checkbox",
+      keywords: ["hipertensión arterial", "hipertension arterial"]
+    },
+    "antecedents-arterialHypertensioninput": {
+      label: "Comentario Hipertensión arterial",
+      section: "antecedentes_generales",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-diabetesGeneral-checkbox": {
+      label: "Diabetes",
+      section: "antecedentes_generales",
+      fieldType: "checkbox",
+      keywords: ["diabetes", "diabetes general"]
+    },
+    "antecedents-diabetesGeneralinput": {
+      label: "Comentario Diabetes",
+      section: "antecedentes_generales",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-asthmaGeneral-checkbox": {
+      label: "Asma",
+      section: "antecedentes_generales",
+      fieldType: "checkbox",
+      keywords: ["asma", "asma general"]
+    },
+    "antecedents-asthmaGeneralinput": {
+      label: "Comentario Asma",
+      section: "antecedentes_generales",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-cancerGeneral-checkbox": {
+      label: "Cáncer",
+      section: "antecedentes_generales",
+      fieldType: "checkbox",
+      keywords: ["cáncer", "cancer"]
+    },
+    "antecedents-cancerGeneralinput": {
+      label: "Comentario Cáncer",
+      section: "antecedentes_generales",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-coronaryHeartDiseaseGeneral-checkbox": {
+      label: "Cardiopatía coronaria",
+      section: "antecedentes_generales",
+      fieldType: "checkbox",
+      keywords: ["cardiopatía coronaria", "cardiopatia coronaria", "cardiopatía", "cardiopatia"]
+    },
+    "antecedents-coronaryHeartDiseaseGeneralinput": {
+      label: "Comentario Cardiopatía coronaria",
+      section: "antecedentes_generales",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-tuberculosisGeneral-checkbox": {
+      label: "Tuberculosis",
+      section: "antecedentes_generales",
+      fieldType: "checkbox",
+      keywords: ["tuberculosis", "tbc"]
+    },
+    "antecedents-tuberculosisGeneralinput": {
+      label: "Comentario Tuberculosis",
+      section: "antecedentes_generales",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-rheumatoidArthritisGeneral-checkbox": {
+      label: "Artritis reumatoide",
+      section: "antecedentes_generales",
+      fieldType: "checkbox",
+      keywords: ["artritis reumatoide", "artritis"]
+    },
+    "antecedents-rheumatoidArthritisGeneralinput": {
+      label: "Comentario Artritis reumatoide",
+      section: "antecedentes_generales",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-copdGeneral-checkbox": {
+      label: "EPOC",
+      section: "antecedentes_generales",
+      fieldType: "checkbox",
+      keywords: ["epoc", "enfermedad pulmonar obstructiva"]
+    },
+    "antecedents-copdGeneralinput": {
+      label: "Comentario EPOC",
+      section: "antecedentes_generales",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-previousSurgeriesGeneral-checkbox": {
+      label: "Cirugías previas",
+      section: "antecedentes_generales",
+      fieldType: "checkbox",
+      keywords: ["cirugías previas", "cirugias previas", "cirugías", "cirugias"]
+    },
+    "antecedents-previousSurgeriesGeneralinput": {
+      label: "Comentario Cirugías previas",
+      section: "antecedentes_generales",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-allergiesGeneral-checkbox": {
+      label: "Alergias",
+      section: "antecedentes_generales",
+      fieldType: "checkbox",
+      keywords: ["alergias", "alergia", "alérgico", "alergico"]
+    },
+    "antecedents-allergiesGeneralinput": {
+      label: "Comentario Alergias",
+      section: "antecedentes_generales",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-useMedicationsGeneral-checkbox": {
+      label: "Uso de medicamentos",
+      section: "antecedentes_generales",
+      fieldType: "checkbox",
+      keywords: ["uso de medicamentos", "medicamentos", "usa medicamentos"]
+    },
+    "antecedents-useMedicationsGeneralinput": {
+      label: "Comentario Uso de medicamentos",
+      section: "antecedentes_generales",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-othersGeneral-checkbox": {
+      label: "Otros (Generales)",
+      section: "antecedentes_generales",
+      fieldType: "checkbox",
+      keywords: ["otros generales", "otro general", "otros antecedentes generales"]
+    },
+    "antecedents-othersGeneralinput": {
+      label: "Comentario Otros (Generales)",
+      section: "antecedentes_generales",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-generalNotes-textarea": {
+      label: "Notas generales antecedentes",
+      section: "antecedentes_generales",
+      fieldType: "textarea",
+      keywords: ["notas generales", "notas antecedentes generales"]
+    },
+    // ============================================
+    // Antecedentes Oculares - Checkboxes + Inputs
+    // ============================================
+    "antecedents-glaucomaOcular-checkbox": {
+      label: "Glaucoma",
+      section: "antecedentes_oculares",
+      fieldType: "checkbox",
+      keywords: ["glaucoma", "glaucoma ocular"]
+    },
+    "antecedents-glaucomaOcularinput": {
+      label: "Comentario Glaucoma",
+      section: "antecedentes_oculares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-ropOcular-checkbox": {
+      label: "ROP",
+      section: "antecedentes_oculares",
+      fieldType: "checkbox",
+      keywords: ["rop", "retinopatía del prematuro", "retinopatia del prematuro"]
+    },
+    "antecedents-ropOcularinput": {
+      label: "Comentario ROP",
+      section: "antecedentes_oculares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-dmreOcular-checkbox": {
+      label: "DMRE",
+      section: "antecedentes_oculares",
+      fieldType: "checkbox",
+      keywords: ["dmre", "degeneración macular", "degeneracion macular"]
+    },
+    "antecedents-dmreOcularinput": {
+      label: "Comentario DMRE",
+      section: "antecedentes_oculares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-glassesOcular-checkbox": {
+      label: "Uso de gafas",
+      section: "antecedentes_oculares",
+      fieldType: "checkbox",
+      keywords: ["uso de gafas", "gafas", "usa gafas", "lentes"]
+    },
+    "antecedents-glassesOcularinput": {
+      label: "Comentario Uso de gafas",
+      section: "antecedentes_oculares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-dryEyeOcular-checkbox": {
+      label: "Ojo seco",
+      section: "antecedentes_oculares",
+      fieldType: "checkbox",
+      keywords: ["ojo seco", "síndrome de ojo seco", "sindrome de ojo seco"]
+    },
+    "antecedents-dryEyeOcularinput": {
+      label: "Comentario Ojo seco",
+      section: "antecedentes_oculares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-diabeticRetinoPathyOcular-checkbox": {
+      label: "Retinopatía diabética",
+      section: "antecedentes_oculares",
+      fieldType: "checkbox",
+      keywords: ["retinopatía diabética", "retinopatia diabetica"]
+    },
+    "antecedents-diabeticRetinoPathyOcularinput": {
+      label: "Comentario Retinopatía diabética",
+      section: "antecedentes_oculares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-uveitisOcular-checkbox": {
+      label: "Uveítis",
+      section: "antecedentes_oculares",
+      fieldType: "checkbox",
+      keywords: ["uveítis", "uveitis"]
+    },
+    "antecedents-uveitisOcularinput": {
+      label: "Comentario Uveítis",
+      section: "antecedentes_oculares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-contactLensesOcular-checkbox": {
+      label: "Lentes de contacto",
+      section: "antecedentes_oculares",
+      fieldType: "checkbox",
+      keywords: ["lentes de contacto", "usa lentes de contacto"]
+    },
+    "antecedents-contactLensesOcularinput": {
+      label: "Comentario Lentes de contacto",
+      section: "antecedentes_oculares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-traumasOcular-checkbox": {
+      label: "Traumas oculares",
+      section: "antecedentes_oculares",
+      fieldType: "checkbox",
+      keywords: ["traumas oculares", "trauma ocular", "traumas"]
+    },
+    "antecedents-traumasOcularinput": {
+      label: "Comentario Traumas oculares",
+      section: "antecedentes_oculares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-surgeriesOcular-checkbox": {
+      label: "Cirugías oculares",
+      section: "antecedentes_oculares",
+      fieldType: "checkbox",
+      keywords: ["cirugías oculares", "cirugias oculares", "cirugía ocular", "cirugia ocular"]
+    },
+    "antecedents-surgeriesOcularinput": {
+      label: "Comentario Cirugías oculares",
+      section: "antecedentes_oculares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-alertsOcular-checkbox": {
+      label: "Alertas oculares",
+      section: "antecedentes_oculares",
+      fieldType: "checkbox",
+      keywords: ["alertas oculares", "alerta ocular", "alertas"]
+    },
+    "antecedents-alertsOcularinput": {
+      label: "Comentario Alertas oculares",
+      section: "antecedentes_oculares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-othersOcular-checkbox": {
+      label: "Otros (Oculares)",
+      section: "antecedentes_oculares",
+      fieldType: "checkbox",
+      keywords: ["otros oculares", "otro ocular", "otros antecedentes oculares"]
+    },
+    "antecedents-othersOcularinput": {
+      label: "Comentario Otros (Oculares)",
+      section: "antecedentes_oculares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-ocularNotes-textarea": {
+      label: "Notas oculares antecedentes",
+      section: "antecedentes_oculares",
+      fieldType: "textarea",
+      keywords: ["notas oculares", "notas antecedentes oculares"]
+    },
+    // ============================================
+    // Antecedentes Familiares - Checkboxes + Inputs
+    // ============================================
+    "antecedents-ahtFamiliar-checkbox": {
+      label: "HTA familiar",
+      section: "antecedentes_familiares",
+      fieldType: "checkbox",
+      keywords: ["hipertensión familiar", "hipertension familiar", "hta familiar"]
+    },
+    "antecedents-ahtFamiliarinput": {
+      label: "Comentario HTA familiar",
+      section: "antecedentes_familiares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-diabetesFamiliar-checkbox": {
+      label: "Diabetes familiar",
+      section: "antecedentes_familiares",
+      fieldType: "checkbox",
+      keywords: ["diabetes familiar"]
+    },
+    "antecedents-diabetesFamiliarinput": {
+      label: "Comentario Diabetes familiar",
+      section: "antecedentes_familiares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-asthmaFamiliar-checkbox": {
+      label: "Asma familiar",
+      section: "antecedentes_familiares",
+      fieldType: "checkbox",
+      keywords: ["asma familiar"]
+    },
+    "antecedents-asthmaFamiliarinput": {
+      label: "Comentario Asma familiar",
+      section: "antecedentes_familiares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-coronaryHeartDiseaseFamiliar-checkbox": {
+      label: "Cardiopatía coronaria familiar",
+      section: "antecedentes_familiares",
+      fieldType: "checkbox",
+      keywords: ["cardiopatía familiar", "cardiopatia familiar", "cardiopatía coronaria familiar", "cardiopatia coronaria familiar"]
+    },
+    "antecedents-coronaryHeartDiseaseFamiliarinput": {
+      label: "Comentario Cardiopatía coronaria familiar",
+      section: "antecedentes_familiares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-collagenDiseaseFamiliar-checkbox": {
+      label: "Enfermedad del colágeno familiar",
+      section: "antecedentes_familiares",
+      fieldType: "checkbox",
+      keywords: ["enfermedad del colágeno", "enfermedad del colageno", "colágeno familiar", "colageno familiar"]
+    },
+    "antecedents-collagenDiseaseFamiliarinput": {
+      label: "Comentario Enfermedad del colágeno familiar",
+      section: "antecedentes_familiares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-glaucomaFamiliar-checkbox": {
+      label: "Glaucoma familiar",
+      section: "antecedentes_familiares",
+      fieldType: "checkbox",
+      keywords: ["glaucoma familiar"]
+    },
+    "antecedents-glaucomaFamiliarinput": {
+      label: "Comentario Glaucoma familiar",
+      section: "antecedentes_familiares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-keratoconusFamiliar-checkbox": {
+      label: "Queratocono familiar",
+      section: "antecedentes_familiares",
+      fieldType: "checkbox",
+      keywords: ["queratocono familiar", "queratocono", "keratocono familiar"]
+    },
+    "antecedents-keratoconusFamiliarinput": {
+      label: "Comentario Queratocono familiar",
+      section: "antecedentes_familiares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-othersFamiliar-checkbox": {
+      label: "Otros (Familiares)",
+      section: "antecedentes_familiares",
+      fieldType: "checkbox",
+      keywords: ["otros familiares", "otro familiar", "otros antecedentes familiares"]
+    },
+    "antecedents-othersFamiliarinput": {
+      label: "Comentario Otros (Familiares)",
+      section: "antecedentes_familiares",
+      fieldType: "text",
+      keywords: []
+    },
+    "antecedents-familiarNotes-textarea": {
+      label: "Notas familiares antecedentes",
+      section: "antecedentes_familiares",
+      fieldType: "textarea",
+      keywords: ["notas familiares", "notas antecedentes familiares"]
+    },
+    // ============================================
+    // Antecedentes - Botones guardar/cancelar
+    // ============================================
+    "antecedents-save-button": {
+      label: "Guardar antecedentes",
+      section: "antecedentes",
+      fieldType: "button",
+      keywords: ["guardar antecedentes", "salvar antecedentes"]
+    },
+    "antecedents-cancel-button": {
+      label: "Cancelar antecedentes",
+      section: "antecedentes",
+      fieldType: "button",
+      keywords: ["cancelar antecedentes"]
     }
   };
   class DOMScanner {
@@ -1028,7 +1473,6 @@
         this.sourceNode = this.audioContext.createMediaStreamSource(this.stream);
         const bufferSize = 4096;
         this.processorNode = this.audioContext.createScriptProcessor(bufferSize, 1, 1);
-        let chunkCount = 0;
         this.processorNode.onaudioprocess = (event) => {
           if (!this.isRecording) return;
           const float32Input = event.inputBuffer.getChannelData(0);
@@ -1052,10 +1496,7 @@
           this.onDataAvailable(blob);
         };
         this.sourceNode.connect(this.processorNode);
-        this.muteNode = this.audioContext.createGain();
-        this.muteNode.gain.value = 0;
-        this.processorNode.connect(this.muteNode);
-        this.muteNode.connect(this.audioContext.destination);
+        this.processorNode.connect(this.audioContext.destination);
         this.isRecording = true;
         console.log("[BVA-Recorder] Grabación iniciada");
         return true;
@@ -1074,7 +1515,7 @@
         console.debug(e);
       }
       try {
-        this.muteNode?.disconnect();
+        this.processorNode?.disconnect();
       } catch (e) {
         console.debug(e);
       }
@@ -1094,7 +1535,6 @@
         console.debug(e);
       }
       this.processorNode = null;
-      this.muteNode = null;
       this.sourceNode = null;
       this.audioContext = null;
       this.stream = null;

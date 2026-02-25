@@ -28,14 +28,17 @@ logger = logging.getLogger(__name__)
 KEYWORD_TO_FIELD = {
     # Historia clínica básica - Origen de atención
     "motivo de consulta": "attention-origin-reason-for-consulting-badge-field",
-    "motivo": "attention-origin-reason-for-consulting-badge-field",
+    "motivo de la consulta": "attention-origin-reason-for-consulting-badge-field",
+    "el motivo de consulta": "attention-origin-reason-for-consulting-badge-field",
     "consulta por": "attention-origin-reason-for-consulting-badge-field",
-    
+    # NOTA: "motivo" suelto ELIMINADO — causaba cambios accidentales de campo
+
     "enfermedad actual": "attention-origin-current-disease-badge-field",
+    "la enfermedad actual": "attention-origin-current-disease-badge-field",
     "padecimiento actual": "attention-origin-current-disease-badge-field",
     "cuadro clínico": "attention-origin-current-disease-badge-field",
     "cuadro clinico": "attention-origin-current-disease-badge-field",
-    "enfermedad": "attention-origin-current-disease-badge-field",
+    # NOTA: "enfermedad" suelto ELIMINADO — causaba cambios accidentales de campo
     
 
     "origen de la atención": "attention-origin-select",
@@ -93,6 +96,16 @@ KEYWORD_TO_FIELD = {
     "ampliado": "diagnostic-impression-type-extended-radio",
     "amplio": "diagnostic-impression-type-extended-radio",
     
+    # Observaciones del examen físico
+    "observaciones del examen físico": "oftalmology-observations-textarea",
+    "observaciones del examen fisico": "oftalmology-observations-textarea",
+    "observaciones de examen": "oftalmology-observations-textarea",
+    "observaciones de examen físico": "oftalmology-observations-textarea",
+    "observaciones de examen fisico": "oftalmology-observations-textarea",
+    "observaciones examen": "oftalmology-observations-textarea",
+    "observaciones": "oftalmology-observations-textarea",
+    "observacion": "oftalmology-observations-textarea",
+
     # Análisis y plan
     "análisis y plan": "analysis-and-plan-textarea",
     "analisis y plan": "analysis-and-plan-textarea",
@@ -100,6 +113,9 @@ KEYWORD_TO_FIELD = {
     "analisis plan": "analysis-and-plan-textarea",
     "análisis": "analysis-and-plan-textarea",
     "analisis": "analysis-and-plan-textarea",
+    "análisis y plan de tratamiento": "analysis-and-plan-textarea",
+    "analisis y plan de tratamiento": "analysis-and-plan-textarea",
+    "plan": "analysis-and-plan-textarea",
     
     # Tiempo de evolución
     "cantidad": "attention-origin-evolution-time-input",
@@ -306,6 +322,17 @@ KEYWORD_TO_FIELD = {
     "guardar hallazgo": "text-config-save-button",
     "guardar": "text-config-save-button",
 
+    # ============================================
+    # Antecedentes - Botón principal y acciones
+    # ============================================
+    "antecedentes": "header-antecedents-button",
+    "antecedente": "header-antecedents-button",
+    "abrir antecedentes": "header-antecedents-button",
+    "ver antecedentes": "header-antecedents-button",
+    "guardar antecedentes": "antecedents-save-button",
+    "salvar antecedentes": "antecedents-save-button",
+    "cancelar antecedentes": "antecedents-cancel-button",
+
 }
 
 # Mapeo de keywords de select → valor REAL que el select espera mostrar
@@ -354,8 +381,18 @@ KEYWORD_TO_UNCHECK = {
     "borrar examen de ambos ojos": "oftalmology-all-normal-checkbox",
     "desmarcar examen de ambos ojos": "oftalmology-all-normal-checkbox",
     "quitar examen de ambos ojos": "oftalmology-all-normal-checkbox",
+    "eliminar examen de ambos ojos": "oftalmology-all-normal-checkbox",
+    "deshacer examen de ambos ojos": "oftalmology-all-normal-checkbox",
     "borrar ambos ojos normales": "oftalmology-all-normal-checkbox",
     "desmarcar ambos ojos normales": "oftalmology-all-normal-checkbox",
+    "eliminar ambos ojos normales": "oftalmology-all-normal-checkbox",
+    "deshacer ambos ojos normales": "oftalmology-all-normal-checkbox",
+    "eliminar ojos normales": "oftalmology-all-normal-checkbox",
+    "deshacer ojos normales": "oftalmology-all-normal-checkbox",
+    "eliminar examen normal": "oftalmology-all-normal-checkbox",
+    "deshacer examen normal": "oftalmology-all-normal-checkbox",
+    "eliminar examen ocular": "oftalmology-all-normal-checkbox",
+    "deshacer examen ocular": "oftalmology-all-normal-checkbox",
     "borrar examen ojos": "oftalmology-all-normal-checkbox",
     "borrar examen ocular": "oftalmology-all-normal-checkbox",
     "desmarcar examen ocular": "oftalmology-all-normal-checkbox",
@@ -376,6 +413,112 @@ KEYWORD_TO_UNCHECK = {
     "quitar paciente dilatado": "dilatation-patient-dilated-switch",
     "borrar dilatado": "dilatation-patient-dilated-switch",
     "desmarcar dilatado": "dilatation-patient-dilated-switch",
+
+    # ============================================
+    # Antecedentes Generales - Checkboxes
+    # ============================================
+    "hipertension arterial": "antecedents-arterialHypertension-checkbox",
+    "hipertensión arterial": "antecedents-arterialHypertension-checkbox",
+    "diabetes": "antecedents-diabetesGeneral-checkbox",
+    "diabetes general": "antecedents-diabetesGeneral-checkbox",
+    "asma": "antecedents-asthmaGeneral-checkbox",
+    "asma general": "antecedents-asthmaGeneral-checkbox",
+    "cancer": "antecedents-cancerGeneral-checkbox",
+    "cáncer": "antecedents-cancerGeneral-checkbox",
+    "cardiopatía coronaria": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
+    "cardiopatia coronaria": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
+    "cardiopatía": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
+    "cardiopatia": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
+    "tuberculosis": "antecedents-tuberculosisGeneral-checkbox",
+    "tbc": "antecedents-tuberculosisGeneral-checkbox",
+    "artritis reumatoide": "antecedents-rheumatoidArthritisGeneral-checkbox",
+    "artritis": "antecedents-rheumatoidArthritisGeneral-checkbox",
+    "epoc": "antecedents-copdGeneral-checkbox",
+    "enfermedad pulmonar obstructiva": "antecedents-copdGeneral-checkbox",
+    "cirugías previas": "antecedents-previousSurgeriesGeneral-checkbox",
+    "cirugias previas": "antecedents-previousSurgeriesGeneral-checkbox",
+    "alergias": "antecedents-allergiesGeneral-checkbox",
+    "alergia": "antecedents-allergiesGeneral-checkbox",
+    "alérgico": "antecedents-allergiesGeneral-checkbox",
+    "alergico": "antecedents-allergiesGeneral-checkbox",
+    "uso de medicamentos": "antecedents-useMedicationsGeneral-checkbox",
+    "medicamentos": "antecedents-useMedicationsGeneral-checkbox",
+    "usa medicamentos": "antecedents-useMedicationsGeneral-checkbox",
+    "otros generales": "antecedents-othersGeneral-checkbox",
+    "otro general": "antecedents-othersGeneral-checkbox",
+    "otros antecedentes generales": "antecedents-othersGeneral-checkbox",
+
+    # Antecedentes Generales - Textarea notas
+    "notas generales": "antecedents-generalNotes-textarea",
+    "notas antecedentes generales": "antecedents-generalNotes-textarea",
+
+    # ============================================
+    # Antecedentes Oculares - Checkboxes
+    # ============================================
+    "glaucoma": "antecedents-glaucomaOcular-checkbox",
+    "glaucoma ocular": "antecedents-glaucomaOcular-checkbox",
+    "rop": "antecedents-ropOcular-checkbox",
+    "retinopatía del prematuro": "antecedents-ropOcular-checkbox",
+    "retinopatia del prematuro": "antecedents-ropOcular-checkbox",
+    "dmre": "antecedents-dmreOcular-checkbox",
+    "degeneración macular": "antecedents-dmreOcular-checkbox",
+    "degeneracion macular": "antecedents-dmreOcular-checkbox",
+    "uso de gafas": "antecedents-glassesOcular-checkbox",
+    "gafas": "antecedents-glassesOcular-checkbox",
+    "usa gafas": "antecedents-glassesOcular-checkbox",
+    "lentes": "antecedents-glassesOcular-checkbox",
+    "ojo seco": "antecedents-dryEyeOcular-checkbox",
+    "síndrome de ojo seco": "antecedents-dryEyeOcular-checkbox",
+    "sindrome de ojo seco": "antecedents-dryEyeOcular-checkbox",
+    "retinopatía diabética": "antecedents-diabeticRetinoPathyOcular-checkbox",
+    "retinopatia diabetica": "antecedents-diabeticRetinoPathyOcular-checkbox",
+    "uveítis": "antecedents-uveitisOcular-checkbox",
+    "uveitis": "antecedents-uveitisOcular-checkbox",
+    "lentes de contacto": "antecedents-contactLensesOcular-checkbox",
+    "usa lentes de contacto": "antecedents-contactLensesOcular-checkbox",
+    "traumas oculares": "antecedents-traumasOcular-checkbox",
+    "trauma ocular": "antecedents-traumasOcular-checkbox",
+    "cirugías oculares": "antecedents-surgeriesOcular-checkbox",
+    "cirugias oculares": "antecedents-surgeriesOcular-checkbox",
+    "cirugía ocular": "antecedents-surgeriesOcular-checkbox",
+    "cirugia ocular": "antecedents-surgeriesOcular-checkbox",
+    "alertas oculares": "antecedents-alertsOcular-checkbox",
+    "alerta ocular": "antecedents-alertsOcular-checkbox",
+    "otros oculares": "antecedents-othersOcular-checkbox",
+    "otro ocular": "antecedents-othersOcular-checkbox",
+    "otros antecedentes oculares": "antecedents-othersOcular-checkbox",
+
+    # Antecedentes Oculares - Textarea notas
+    "notas oculares": "antecedents-ocularNotes-textarea",
+    "notas antecedentes oculares": "antecedents-ocularNotes-textarea",
+
+    # ============================================
+    # Antecedentes Familiares - Checkboxes
+    # ============================================
+    "hipertensión familiar": "antecedents-ahtFamiliar-checkbox",
+    "hipertension familiar": "antecedents-ahtFamiliar-checkbox",
+    "hta familiar": "antecedents-ahtFamiliar-checkbox",
+    "diabetes familiar": "antecedents-diabetesFamiliar-checkbox",
+    "asma familiar": "antecedents-asthmaFamiliar-checkbox",
+    "cardiopatía familiar": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
+    "cardiopatia familiar": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
+    "cardiopatía coronaria familiar": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
+    "cardiopatia coronaria familiar": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
+    "enfermedad del colágeno": "antecedents-collagenDiseaseFamiliar-checkbox",
+    "enfermedad del colageno": "antecedents-collagenDiseaseFamiliar-checkbox",
+    "colágeno familiar": "antecedents-collagenDiseaseFamiliar-checkbox",
+    "colageno familiar": "antecedents-collagenDiseaseFamiliar-checkbox",
+    "glaucoma familiar": "antecedents-glaucomaFamiliar-checkbox",
+    "queratocono familiar": "antecedents-keratoconusFamiliar-checkbox",
+    "queratocono": "antecedents-keratoconusFamiliar-checkbox",
+    "keratocono familiar": "antecedents-keratoconusFamiliar-checkbox",
+    "otros familiares": "antecedents-othersFamiliar-checkbox",
+    "otro familiar": "antecedents-othersFamiliar-checkbox",
+    "otros antecedentes familiares": "antecedents-othersFamiliar-checkbox",
+
+    # Antecedentes Familiares - Textarea notas
+    "notas familiares": "antecedents-familiarNotes-textarea",
+    "notas antecedentes familiares": "antecedents-familiarNotes-textarea",
 }
 
 # Palabras clave para fuinalizar campo
@@ -415,6 +558,52 @@ EXCLUSIVE_FIELDS = {
     "oftalmology-observations-textarea",
     "analysis-and-plan-textarea",
     "text-config-justification-textarea",  # Justificación hallazgo oftalmológico
+    ""
+}
+
+# ============================================
+# Mapeo checkbox → input companion (flujo HYBRID)
+# Cuando el doctor dice una keyword de antecedente:
+#   1. Se marca el checkbox
+#   2. Se activa el input companion para dictado
+#   3. El doctor dicta el comentario hasta "listo"
+# ============================================
+CHECKBOX_WITH_INPUT = {
+    # Generales (12)
+    "antecedents-arterialHypertension-checkbox": "antecedents-arterialHypertensioninput",
+    "antecedents-diabetesGeneral-checkbox": "antecedents-diabetesGeneralinput",
+    "antecedents-asthmaGeneral-checkbox": "antecedents-asthmaGeneralinput",
+    "antecedents-cancerGeneral-checkbox": "antecedents-cancerGeneralinput",
+    "antecedents-coronaryHeartDiseaseGeneral-checkbox": "antecedents-coronaryHeartDiseaseGeneralinput",
+    "antecedents-tuberculosisGeneral-checkbox": "antecedents-tuberculosisGeneralinput",
+    "antecedents-rheumatoidArthritisGeneral-checkbox": "antecedents-rheumatoidArthritisGeneralinput",
+    "antecedents-copdGeneral-checkbox": "antecedents-copdGeneralinput",
+    "antecedents-previousSurgeriesGeneral-checkbox": "antecedents-previousSurgeriesGeneralinput",
+    "antecedents-allergiesGeneral-checkbox": "antecedents-allergiesGeneralinput",
+    "antecedents-useMedicationsGeneral-checkbox": "antecedents-useMedicationsGeneralinput",
+    "antecedents-othersGeneral-checkbox": "antecedents-othersGeneralinput",
+    # Oculares (12)
+    "antecedents-glaucomaOcular-checkbox": "antecedents-glaucomaOcularinput",
+    "antecedents-ropOcular-checkbox": "antecedents-ropOcularinput",
+    "antecedents-dmreOcular-checkbox": "antecedents-dmreOcularinput",
+    "antecedents-glassesOcular-checkbox": "antecedents-glassesOcularinput",
+    "antecedents-dryEyeOcular-checkbox": "antecedents-dryEyeOcularinput",
+    "antecedents-diabeticRetinoPathyOcular-checkbox": "antecedents-diabeticRetinoPathyOcularinput",
+    "antecedents-uveitisOcular-checkbox": "antecedents-uveitisOcularinput",
+    "antecedents-contactLensesOcular-checkbox": "antecedents-contactLensesOcularinput",
+    "antecedents-traumasOcular-checkbox": "antecedents-traumasOcularinput",
+    "antecedents-surgeriesOcular-checkbox": "antecedents-surgeriesOcularinput",
+    "antecedents-alertsOcular-checkbox": "antecedents-alertsOcularinput",
+    "antecedents-othersOcular-checkbox": "antecedents-othersOcularinput",
+    # Familiares (8)
+    "antecedents-ahtFamiliar-checkbox": "antecedents-ahtFamiliarinput",
+    "antecedents-diabetesFamiliar-checkbox": "antecedents-diabetesFamiliarinput",
+    "antecedents-asthmaFamiliar-checkbox": "antecedents-asthmaFamiliarinput",
+    "antecedents-coronaryHeartDiseaseFamiliar-checkbox": "antecedents-coronaryHeartDiseaseFamiliarinput",
+    "antecedents-collagenDiseaseFamiliar-checkbox": "antecedents-collagenDiseaseFamiliarinput",
+    "antecedents-glaucomaFamiliar-checkbox": "antecedents-glaucomaFamiliarinput",
+    "antecedents-keratoconusFamiliar-checkbox": "antecedents-keratoconusFamiliarinput",
+    "antecedents-othersFamiliar-checkbox": "antecedents-othersFamiliarinput",
 }
 
 
@@ -1258,6 +1447,19 @@ class RealtimeExtractor:
             self.dynamic_keyword_map[k.strip().lower()] = v.strip()
         logger.info(f"Se agregaron {len(mappings)} mapeos manuales al dynamic_keyword_map")
 
+    # Keywords demasiado genéricas que aparecen naturalmente en dictado clínico.
+    # NO deben usarse como activadores de campos desde el dynamic_keyword_map.
+    _DYNAMIC_KW_BLACKLIST = {
+        "ambos ojos", "ambos", "ojos", "normal", "examen", "examen normal",
+        "normal en", "en ambos", "en ambos ojos", "normal en ambos",
+        "ojo", "derecho", "izquierdo", "ojo derecho", "ojo izquierdo",
+        "bilateral", "los dos",
+        # Preconsulta — solo frases completas deben activar estos botones
+        "ocular", "preconsulta", "signos", "vitales", "signos vitales",
+        "medicamentosa", "conciliación", "conciliacion",
+        "ortopédica", "ortopedica",
+    }
+
     def _generate_keywords_from_label(self, label: str) -> List[str]:
         """Genera variantes de keywords a partir de un label."""
         parts = label.split()
@@ -1280,6 +1482,9 @@ class RealtimeExtractor:
         for kw in list(keywords):
             sin_acento = ''.join(c for c in unicodedata.normalize('NFD', kw) if unicodedata.category(c) != 'Mn')
             keywords.add(sin_acento)
+
+        # Filtrar keywords genéricas que causan falsos positivos en dictado clínico
+        keywords = {k for k in keywords if k.strip().lower() not in self._DYNAMIC_KW_BLACKLIST}
 
         # Filtrar muy cortitos: mínimo 3 caracteres para palabras aisladas, 5 para frases
         return [k for k in keywords if len(k.strip()) >= 3]
@@ -1721,7 +1926,17 @@ class RealtimeExtractor:
         if not unique_key:
             return "text"
 
-        # Override explícito (máxima prioridad)
+        # PRIMERO: Buscar en biowel_fields (si existe) - máxima prioridad
+        # Esto garantiza que el scanner (frontend) está en control del tipo
+        if self.biowel_fields:
+            for field in self.biowel_fields:
+                if getattr(field, 'unique_key', None) == unique_key or (isinstance(field, dict) and field.get('unique_key') == unique_key):
+                    # Manejar tanto objetos como dicts
+                    field_type = getattr(field, 'field_type', None) or (isinstance(field, dict) and field.get('field_type'))
+                    if field_type:
+                        return field_type
+
+        # Override explícito (máxima prioridad después de biowel_fields)
         if unique_key in FIELD_TYPE_OVERRIDES:
             return FIELD_TYPE_OVERRIDES[unique_key]
 
@@ -1745,9 +1960,4 @@ class RealtimeExtractor:
         if "button" in unique_key or "dropdown-item" in unique_key or unique_key.startswith("preconsultation-tab"):
             return "button"
 
-        if self.biowel_fields:
-            for field in self.biowel_fields:
-                if field.unique_key == unique_key:
-                    return field.field_type
-                    
         return "text"

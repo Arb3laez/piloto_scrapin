@@ -44,69 +44,66 @@ def _extract_json(text: str) -> str:
 SECTION_FIELD_REGISTRY = {
     "attention-origin": {
         "fields": [
-            {
-                "key": "attention-origin-reason-for-consulting-badge-field",
-                "label": "Motivo de consulta",
-                "type": "textarea",
-            },
-            {
-                "key": "badge-text-field-textarea",
-                "label": "Enfermedad actual",
-                "type": "textarea",
-            },
-            {
-                "key": "attention-origin-select",
-                "label": "Origen de la atención",
-                "type": "select",
-            },
-            {
-                "key": "attention-origin-adverse-event-checkbox",
-                "label": "Evento adverso",
-                "type": "checkbox",
-            },
-            {
-                "key": "attention-origin-evolution-time-input",
-                "label": "Cantidad de evolución",
-                "type": "number",
-            },
-            {
-                "key": "attention-origin-evolution-time-unit-select",
-                "label": "Unidad de tiempo de evolución",
-                "type": "select",
-            },
+            {"key": "attention-origin-reason-for-consulting-badge-field", "label": "Motivo de consulta", "type": "textarea"},
+            {"key": "badge-text-field-textarea", "label": "Enfermedad actual", "type": "textarea"},
+            {"key": "attention-origin-select", "label": "Origen de la atención", "type": "select"},
+            {"key": "attention-origin-adverse-event-checkbox", "label": "Evento adverso", "type": "checkbox"},
+            {"key": "attention-origin-evolution-time-input", "label": "Cantidad de evolución", "type": "number"},
+            {"key": "attention-origin-evolution-time-unit-select", "label": "Unidad de tiempo de evolución", "type": "select"},
         ],
         "system_prompt": (
-            "Eres un asistente médico oftalmológico. Mapeas frases dictadas "
-            "a campos de historia clínica. Respondes SOLO JSON válido.\n"
-            "La transcripción viene de voz y puede tener errores fonéticos. "
-            "Interpreta la intención del doctor."
+            "Eres un asistente médico oftalmológico.\n"
+            "Objetivo: mapear una frase dictada por voz a campos PERMITIDOS.\n"
+            "Salida: SOLO JSON válido, sin texto extra.\n"
+            "Reglas críticas: NO inventes datos. NO inventes campos.\n"
+            "Si no hay evidencia suficiente, responde {\"mappings\": null}.\n"
+            "La transcripción puede tener errores fonéticos; interpreta intención clínica sin suponer."
         ),
-        "user_prompt_template": """Campos disponibles:
+        "user_prompt_template": """CAMPOS PERMITIDOS (solo puedes usar estos field_name):
 - attention-origin-reason-for-consulting-badge-field (Motivo de consulta) [textarea]
 - badge-text-field-textarea (Enfermedad actual) [textarea]
+- attention-origin-select (Origen de la atención) [select]
+- attention-origin-adverse-event-checkbox (Evento adverso) [checkbox]
+- attention-origin-evolution-time-input (Cantidad de evolución) [number]
+- attention-origin-evolution-time-unit-select (Unidad de tiempo de evolución) [select]
 
-Frase dictada: "{segment}"
+FRASE DICTADA:
+"{segment}"
 
-REGLAS:
-1. Si menciona "motivo de consulta" seguido de texto → campo motivo de consulta, el valor es el texto DESPUÉS de "motivo de consulta".
-2. Si menciona "enfermedad actual" o "padecimiento" seguido de texto → campo enfermedad actual, el valor es el texto DESPUÉS.
-3. El "value" es SOLO el contenido clínico, SIN la etiqueta del campo ni conectores.
-   ELIMINA siempre: "es el", "es la", "es", "son", "tiene", artículos iniciales.
-   Ej: "motivo de consulta el paciente tiene dolor de cabeza" → value="Paciente tiene dolor de cabeza"
-   Ej: "enfermedad actual es el atigmatismo" → value="Atigmatismo"
-   Ej: "motivo de consulta visión borrosa" → value="Visión borrosa"
-4. Si no hay info clínica para estos 2 campos → null
-5. NUNCA inventes campos que no estén en la lista.
+REGLAS DURAS:
+1) SOLO usa field_name de la lista anterior (exacto).
+2) No inventes información clínica.
+3) Si no hay evidencia clara para llenar algún campo → {"mappings": null}.
+4) No incluyas saludos, cortesía o instrucciones al paciente como contenido clínico.
 
-JSON:
-{{"mappings": [{{"field_name": "unique_key", "value": "texto_clinico", "confidence": 0.9}}]}}
-o {{"mappings": null}}""",
-        "max_tokens": 150,
+REGLAS DE EXTRACCIÓN DEL VALUE:
+- value debe ser SOLO contenido clínico (sin mencionar la etiqueta del campo).
+- Elimina conectores iniciales si aparecen: "es", "es el", "es la", "son", "tiene", "presenta", "refiere", artículos.
+Ejemplos:
+- "motivo de consulta visión borrosa" → "Visión borrosa"
+- "enfermedad actual es el astigmatismo" → "Astigmatismo"
+
+REGLAS POR TIPO:
+A) textarea:
+- Extrae texto clínico limpio.
+B) number:
+- Extrae solo el número (ej: "3"). Si no hay número claro, no llenar.
+C) checkbox:
+- Si afirma evento adverso → true
+- Si niega evento adverso → false
+- Si no es claro → no llenar
+D) select:
+- Solo llena si la frase indica claramente una opción conocida (sin inventar).
+- Si no es claro → no llenar.
+
+FORMATO DE SALIDA (solo JSON, sin markdown):
+{"mappings":[{"field_name":"<field_name_permitido>","value":"<valor>","confidence":0.0}]}
+o
+{"mappings": null}""",
+        "max_tokens": 220,
     },
-    # Futuras secciones:
-    # "physical-exam": { "fields": [...], "system_prompt": "...", ... },
-    # "diagnostic-impression": { "fields": [...], "system_prompt": "...", ... },
 }
+
 
 
 class VoiceProcessor:
@@ -165,29 +162,42 @@ class VoiceProcessor:
         if not fields_compact:
             return []
 
-        prompt = f"""Campos disponibles en la historia clínica (identificador → descripción):
+        prompt = f"""Tu tarea es mapear UNA frase dictada por un médico a UNO o MÁS campos del formulario.
+Solo puedes usar los campos listados abajo. Si no hay evidencia clínica clara, devuelve null.
+
+CAMPOS PERMITIDOS (field_name válidos):
 {chr(10).join(fields_compact)}
 
-Frase dictada por el doctor: "{segment}"
+FRASE:
+"{segment}"
 
-REGLAS:
-1. Si la frase contiene info clínica para algún campo, responde con el mapeo.
-2. El "value" debe ser SOLO el CONTENIDO clínico, SIN la etiqueta del campo ni conectores.
-   ELIMINA siempre: "es el", "es la", "es", "son los", "fue el", artículos iniciales.
-   Ejemplos:
-   - "motivo de consulta visión borrosa" → value="Visión borrosa"
-   - "motivo de consulta dolor de ojos" → value="Dolor de ojos"
-   - "enfermedad actual es el atigmatismo" → value="Atigmatismo" (NO "es el atigmatismo")
-   - "la enfermedad actual es glaucoma" → value="Glaucoma"
-3. Si dice "motivo de consulta: X" → el valor es X, el campo es attention-origin-reason-for-consulting-badge-field
-4. Si dice "enfermedad actual: X" → el valor es X, el campo es badge-text-field-textarea
-5. Si menciona enfermedad/diagnóstico, TAMBIÉN mapea al campo diagnostic-impression-diagnosis-select con el nombre de la enfermedad
-6. NUNCA mapees a campos que contengan "button", "btn", "link", "load-previous" en su nombre
-7. Si es conversación casual o instrucción al paciente → null
+REGLAS DURAS (OBLIGATORIAS):
+1) SOLO puedes devolver mappings cuyos field_name estén EXACTAMENTE en "CAMPOS PERMITIDOS".
+2) Si la frase es saludo, cortesía, instrucción al paciente, conversación casual o procedimiento sin dato clínico → {{"mappings": null}}
+3) Si NO hay evidencia clínica clara para un campo → NO lo incluyas.
+4) NO inventes diagnósticos, números, ni opciones.
+5) PROHIBIDO mapear a campos que contengan: "button", "btn", "link", "load-previous".
+6) No repitas campos ya llenos (si un campo no aparece en CAMPOS PERMITIDOS, se asume NO disponible).
 
-Responde SOLO JSON:
-{{"mappings": [{{"field_name": "unique_key_del_campo", "value": "texto_clinico", "confidence": 0.9}}]}}
-o {{"mappings": null}}"""
+REGLAS DE EXTRACCIÓN DEL VALUE:
+- value debe ser SOLO contenido clínico, sin etiqueta del campo.
+- Quita conectores iniciales si aparecen: "es", "es el", "es la", "son", "tiene", "presenta", "refiere", artículos iniciales.
+
+REGLAS PARA CAMPOS CON OPCIONES:
+- Si un campo en la lista incluye "opciones:", el value DEBE ser EXACTAMENTE una de esas opciones mostradas.
+- Si no hay coincidencia clara con las opciones mostradas, NO llenes ese campo.
+
+REGLAS ESPECIALES (si aplica):
+- Si el doctor dice explícitamente "motivo de consulta: X" o "consulta por X" → usa attention-origin-reason-for-consulting-badge-field con value=X (limpio)
+- Si dice "enfermedad actual: X" o "padecimiento X" → usa badge-text-field-textarea con value=X (limpio)
+
+SALIDA:
+Responde SOLO JSON válido (sin markdown):
+{{"mappings":[{{"field_name":"<field_name_permitido>","value":"<valor>","confidence":0.0}}]}}
+o
+{{"mappings": null}}
+"""
+
 
         try:
             response = self.groq_client.chat.completions.create(
