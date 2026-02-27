@@ -13,7 +13,11 @@
   ;
   const CONFIG = {
     BACKEND_WS: "ws://localhost:8000/ws/voice-stream",
-    MIN_DATA_TESTID_COUNT: 3
+    BACKEND_HTTP: "http://localhost:8000",
+    BATCH_ENDPOINT: "/api/biowel/audio/process",
+    MIN_DATA_TESTID_COUNT: 3,
+    HIGHLIGHT_COLOR: "#6e22c5",
+    HIGHLIGHT_DURATION: 1e3
   };
   function escapeHtml(text) {
     const div = document.createElement("div");
@@ -275,7 +279,7 @@
     // ============================================
     // Oftalmología - OD Externo (Ojo Derecho Externo)
     // ============================================
-    "ophtalmology-justification-textfield": {
+    "oftalmology-external-od-justification-textfield": {
       label: "OD Externo (abrir panel)",
       section: "oftalmologia_externo",
       fieldType: "button",
@@ -305,43 +309,390 @@
       fieldType: "button",
       keywords: ["guardar hallazgo", "guardar"]
     },
-    // Opciones del dropdown de hallazgos OD Externo
-    "select-option-0": {
-      label: "Párpados simétricos",
-      section: "oftalmologia_externo",
-      fieldType: "button",
-      keywords: ["párpados simétricos", "parpados simetricos", "párpados"]
+    // OD Externo - Normal checkbox
+    "oftalmology-external-od-normal-checkbox": {
+      label: "OD Externo Normal",
+      section: "oftalmologia_od",
+      fieldType: "checkbox",
+      keywords: ["externo normal od", "od externo normal", "externo normal ojo derecho"]
     },
-    "select-option-1": {
-      label: "Ausencia de edema palpebral",
-      section: "oftalmologia_externo",
+    // ============================================
+    // Oftalmología - OD Balance Muscular
+    // ============================================
+    "oftalmology-muscle_balance-od-justification-textfield": {
+      label: "OD Balance Muscular (abrir panel)",
+      section: "oftalmologia_od",
       fieldType: "button",
-      keywords: ["ausencia de edema", "sin edema palpebral", "ausencia edema"]
+      keywords: ["balance muscular ojo derecho", "balance muscular od", "od balance muscular"]
     },
-    "select-option-2": {
-      label: "Distribución uniforme de las pestañas",
-      section: "oftalmologia_externo",
+    "oftalmology-muscle_balance-od-normal-checkbox": {
+      label: "OD Balance Muscular Normal",
+      section: "oftalmologia_od",
+      fieldType: "checkbox",
+      keywords: ["balance muscular normal od", "od balance muscular normal", "muscular normal od"]
+    },
+    // ============================================
+    // Oftalmología - OD P/P/L
+    // ============================================
+    "oftalmology-ppl-od-justification-textfield": {
+      label: "OD P/P/L (abrir panel)",
+      section: "oftalmologia_od",
       fieldType: "button",
-      keywords: ["distribución uniforme", "pestañas uniformes", "pestañas"]
+      keywords: ["ppl ojo derecho", "ppl od", "od ppl", "pe pe ele od"]
     },
-    "select-option-3": {
-      label: "Movimientos oculares conjugados y simétricos",
-      section: "oftalmologia_externo",
+    "oftalmology-ppl-od-normal-checkbox": {
+      label: "OD P/P/L Normal",
+      section: "oftalmologia_od",
+      fieldType: "checkbox",
+      keywords: ["ppl normal od", "od ppl normal", "ppl normal ojo derecho"]
+    },
+    // ============================================
+    // Oftalmología - OD Conjuntiva Esclera
+    // ============================================
+    "oftalmology-screra_conjunctiva-od-justification-textfield": {
+      label: "OD Conjuntiva Esclera (abrir panel)",
+      section: "oftalmologia_od",
       fieldType: "button",
-      keywords: ["movimientos oculares", "movimientos conjugados"]
+      keywords: ["conjuntiva esclera ojo derecho", "conjuntiva esclera od", "conjuntiva od", "esclera od"]
     },
-    "select-option-4": {
-      label: "Lesiones",
-      section: "oftalmologia_externo",
+    "oftalmology-screra_conjunctiva-od-normal-checkbox": {
+      label: "OD Conjuntiva Esclera Normal",
+      section: "oftalmologia_od",
+      fieldType: "checkbox",
+      keywords: ["conjuntiva esclera normal od", "conjuntiva normal od", "esclera normal od"]
+    },
+    // ============================================
+    // Oftalmología - OD Córnea
+    // ============================================
+    "oftalmology-cornea-od-justification-textfield": {
+      label: "OD Córnea (abrir panel)",
+      section: "oftalmologia_od",
       fieldType: "button",
-      keywords: ["lesiones", "lesión", "lesion"]
+      keywords: ["córnea ojo derecho", "cornea ojo derecho", "córnea od", "cornea od"]
     },
-    "select-option-5": {
-      label: "Rosácea",
-      section: "oftalmologia_externo",
+    "oftalmology-cornea-od-normal-checkbox": {
+      label: "OD Córnea Normal",
+      section: "oftalmologia_od",
+      fieldType: "checkbox",
+      keywords: ["córnea normal od", "cornea normal od", "córnea od normal", "cornea od normal"]
+    },
+    // ============================================
+    // Oftalmología - OD Cámara Anterior
+    // ============================================
+    "oftalmology-previous_chamber-od-justification-textfield": {
+      label: "OD Cámara Anterior (abrir panel)",
+      section: "oftalmologia_od",
       fieldType: "button",
-      keywords: ["rosácea", "rosacea"]
+      keywords: ["cámara anterior ojo derecho", "camara anterior od", "cámara anterior od"]
     },
+    "oftalmology-previous_chamber-od-normal-checkbox": {
+      label: "OD Cámara Anterior Normal",
+      section: "oftalmologia_od",
+      fieldType: "checkbox",
+      keywords: ["cámara anterior normal od", "camara anterior normal od", "cámara anterior od normal"]
+    },
+    // ============================================
+    // Oftalmología - OD Iris
+    // ============================================
+    "oftalmology-iris-od-justification-textfield": {
+      label: "OD Iris (abrir panel)",
+      section: "oftalmologia_od",
+      fieldType: "button",
+      keywords: ["iris ojo derecho", "iris od", "od iris"]
+    },
+    "oftalmology-iris-od-normal-checkbox": {
+      label: "OD Iris Normal",
+      section: "oftalmologia_od",
+      fieldType: "checkbox",
+      keywords: ["iris normal od", "od iris normal", "iris od normal"]
+    },
+    // ============================================
+    // Oftalmología - OD Cristalino
+    // ============================================
+    "oftalmology-crystalline-od-justification-textfield": {
+      label: "OD Cristalino (abrir panel)",
+      section: "oftalmologia_od",
+      fieldType: "button",
+      keywords: ["cristalino ojo derecho", "cristalino od", "od cristalino"]
+    },
+    "oftalmology-crystalline-od-normal-checkbox": {
+      label: "OD Cristalino Normal",
+      section: "oftalmologia_od",
+      fieldType: "checkbox",
+      keywords: ["cristalino normal od", "od cristalino normal", "cristalino od normal"]
+    },
+    // ============================================
+    // Oftalmología - OD Retina / Vítreo
+    // ============================================
+    "oftalmology-retina_vitreous-od-justification-textfield": {
+      label: "OD Retina/Vítreo (abrir panel)",
+      section: "oftalmologia_od",
+      fieldType: "button",
+      keywords: ["retina vítreo ojo derecho", "retina vitreo od", "retina od", "vítreo od"]
+    },
+    "oftalmology-retina_vitreous-od-normal-checkbox": {
+      label: "OD Retina/Vítreo Normal",
+      section: "oftalmologia_od",
+      fieldType: "checkbox",
+      keywords: ["retina vítreo normal od", "retina vitreo normal od", "retina normal od"]
+    },
+    // ============================================
+    // Oftalmología - OD Nervio Óptico
+    // ============================================
+    "oftalmology-optic_nerve-od-justification-textfield": {
+      label: "OD Nervio Óptico (abrir panel)",
+      section: "oftalmologia_od",
+      fieldType: "button",
+      keywords: ["nervio óptico ojo derecho", "nervio optico od", "nervio óptico od"]
+    },
+    "oftalmology-optic_nerve-od-normal-checkbox": {
+      label: "OD Nervio Óptico Normal",
+      section: "oftalmologia_od",
+      fieldType: "checkbox",
+      keywords: ["nervio óptico normal od", "nervio optico normal od", "nervio óptico od normal"]
+    },
+    // ============================================
+    // Oftalmología - OD Pupilometría
+    // ============================================
+    "oftalmology-pupillometry-od-justification-textfield": {
+      label: "OD Pupilometría (abrir panel)",
+      section: "oftalmologia_od",
+      fieldType: "button",
+      keywords: ["pupilometría ojo derecho", "pupilometria od", "pupilometría od"]
+    },
+    "oftalmology-pupillometry-od-normal-checkbox": {
+      label: "OD Pupilometría Normal",
+      section: "oftalmologia_od",
+      fieldType: "checkbox",
+      keywords: ["pupilometría normal od", "pupilometria normal od", "pupilometría od normal"]
+    },
+    // ============================================
+    // Oftalmología - OD Gonioscopía
+    // ============================================
+    "oftalmology-gonioscopy-od-justification-textfield": {
+      label: "OD Gonioscopía (abrir panel)",
+      section: "oftalmologia_od",
+      fieldType: "button",
+      keywords: ["gonioscopía ojo derecho", "gonioscopia od", "gonioscopía od"]
+    },
+    "oftalmology-gonioscopy-od-normal-checkbox": {
+      label: "OD Gonioscopía Normal",
+      section: "oftalmologia_od",
+      fieldType: "checkbox",
+      keywords: ["gonioscopía normal od", "gonioscopia normal od", "gonioscopía od normal"]
+    },
+    // ============================================
+    // Oftalmología - OD Campo Visual por Confrontación
+    // ============================================
+    "oftalmology-confrontation_visual_field-od-justification-textfield": {
+      label: "OD Campo Visual Confrontación (abrir panel)",
+      section: "oftalmologia_od",
+      fieldType: "button",
+      keywords: ["campo visual ojo derecho", "campo visual od", "confrontación od"]
+    },
+    "oftalmology-confrontation_visual_field-od-normal-checkbox": {
+      label: "OD Campo Visual Confrontación Normal",
+      section: "oftalmologia_od",
+      fieldType: "checkbox",
+      keywords: ["campo visual normal od", "campo visual od normal", "confrontación normal od"]
+    },
+    // ============================================
+    // Oftalmología - OI Externo (Ojo Izquierdo Externo)
+    // ============================================
+    "oftalmology-external-oi-justification-textfield": {
+      label: "OI Externo (abrir panel)",
+      section: "oftalmologia_oi",
+      fieldType: "button",
+      keywords: ["ojo izquierdo externo", "oi externo", "izquierdo externo"]
+    },
+    "oftalmology-external-oi-normal-checkbox": {
+      label: "OI Externo Normal",
+      section: "oftalmologia_oi",
+      fieldType: "checkbox",
+      keywords: ["externo normal oi", "oi externo normal", "externo normal ojo izquierdo"]
+    },
+    // ============================================
+    // Oftalmología - OI Balance Muscular
+    // ============================================
+    "oftalmology-muscle_balance-oi-justification-textfield": {
+      label: "OI Balance Muscular (abrir panel)",
+      section: "oftalmologia_oi",
+      fieldType: "button",
+      keywords: ["balance muscular ojo izquierdo", "balance muscular oi", "oi balance muscular"]
+    },
+    "oftalmology-muscle_balance-oi-normal-checkbox": {
+      label: "OI Balance Muscular Normal",
+      section: "oftalmologia_oi",
+      fieldType: "checkbox",
+      keywords: ["balance muscular normal oi", "oi balance muscular normal", "muscular normal oi"]
+    },
+    // ============================================
+    // Oftalmología - OI P/P/L
+    // ============================================
+    "oftalmology-ppl-oi-justification-textfield": {
+      label: "OI P/P/L (abrir panel)",
+      section: "oftalmologia_oi",
+      fieldType: "button",
+      keywords: ["ppl ojo izquierdo", "ppl oi", "oi ppl", "pe pe ele oi"]
+    },
+    "oftalmology-ppl-oi-normal-checkbox": {
+      label: "OI P/P/L Normal",
+      section: "oftalmologia_oi",
+      fieldType: "checkbox",
+      keywords: ["ppl normal oi", "oi ppl normal", "ppl normal ojo izquierdo"]
+    },
+    // ============================================
+    // Oftalmología - OI Conjuntiva Esclera
+    // ============================================
+    "oftalmology-screra_conjunctiva-oi-justification-textfield": {
+      label: "OI Conjuntiva Esclera (abrir panel)",
+      section: "oftalmologia_oi",
+      fieldType: "button",
+      keywords: ["conjuntiva esclera ojo izquierdo", "conjuntiva esclera oi", "conjuntiva oi", "esclera oi"]
+    },
+    "oftalmology-screra_conjunctiva-oi-normal-checkbox": {
+      label: "OI Conjuntiva Esclera Normal",
+      section: "oftalmologia_oi",
+      fieldType: "checkbox",
+      keywords: ["conjuntiva esclera normal oi", "conjuntiva normal oi", "esclera normal oi"]
+    },
+    // ============================================
+    // Oftalmología - OI Córnea
+    // ============================================
+    "oftalmology-cornea-oi-justification-textfield": {
+      label: "OI Córnea (abrir panel)",
+      section: "oftalmologia_oi",
+      fieldType: "button",
+      keywords: ["córnea ojo izquierdo", "cornea ojo izquierdo", "córnea oi", "cornea oi"]
+    },
+    "oftalmology-cornea-oi-normal-checkbox": {
+      label: "OI Córnea Normal",
+      section: "oftalmologia_oi",
+      fieldType: "checkbox",
+      keywords: ["córnea normal oi", "cornea normal oi", "córnea oi normal", "cornea oi normal"]
+    },
+    // ============================================
+    // Oftalmología - OI Cámara Anterior
+    // ============================================
+    "oftalmology-previous_chamber-oi-justification-textfield": {
+      label: "OI Cámara Anterior (abrir panel)",
+      section: "oftalmologia_oi",
+      fieldType: "button",
+      keywords: ["cámara anterior ojo izquierdo", "camara anterior oi", "cámara anterior oi"]
+    },
+    "oftalmology-previous_chamber-oi-normal-checkbox": {
+      label: "OI Cámara Anterior Normal",
+      section: "oftalmologia_oi",
+      fieldType: "checkbox",
+      keywords: ["cámara anterior normal oi", "camara anterior normal oi", "cámara anterior oi normal"]
+    },
+    // ============================================
+    // Oftalmología - OI Iris
+    // ============================================
+    "oftalmology-iris-oi-justification-textfield": {
+      label: "OI Iris (abrir panel)",
+      section: "oftalmologia_oi",
+      fieldType: "button",
+      keywords: ["iris ojo izquierdo", "iris oi", "oi iris"]
+    },
+    "oftalmology-iris-oi-normal-checkbox": {
+      label: "OI Iris Normal",
+      section: "oftalmologia_oi",
+      fieldType: "checkbox",
+      keywords: ["iris normal oi", "oi iris normal", "iris oi normal"]
+    },
+    // ============================================
+    // Oftalmología - OI Cristalino
+    // ============================================
+    "oftalmology-crystalline-oi-justification-textfield": {
+      label: "OI Cristalino (abrir panel)",
+      section: "oftalmologia_oi",
+      fieldType: "button",
+      keywords: ["cristalino ojo izquierdo", "cristalino oi", "oi cristalino"]
+    },
+    "oftalmology-crystalline-oi-normal-checkbox": {
+      label: "OI Cristalino Normal",
+      section: "oftalmologia_oi",
+      fieldType: "checkbox",
+      keywords: ["cristalino normal oi", "oi cristalino normal", "cristalino oi normal"]
+    },
+    // ============================================
+    // Oftalmología - OI Retina / Vítreo
+    // ============================================
+    "oftalmology-retina_vitreous-oi-justification-textfield": {
+      label: "OI Retina/Vítreo (abrir panel)",
+      section: "oftalmologia_oi",
+      fieldType: "button",
+      keywords: ["retina vítreo ojo izquierdo", "retina vitreo oi", "retina oi", "vítreo oi"]
+    },
+    "oftalmology-retina_vitreous-oi-normal-checkbox": {
+      label: "OI Retina/Vítreo Normal",
+      section: "oftalmologia_oi",
+      fieldType: "checkbox",
+      keywords: ["retina vítreo normal oi", "retina vitreo normal oi", "retina normal oi"]
+    },
+    // ============================================
+    // Oftalmología - OI Nervio Óptico
+    // ============================================
+    "oftalmology-optic_nerve-oi-justification-textfield": {
+      label: "OI Nervio Óptico (abrir panel)",
+      section: "oftalmologia_oi",
+      fieldType: "button",
+      keywords: ["nervio óptico ojo izquierdo", "nervio optico oi", "nervio óptico oi"]
+    },
+    "oftalmology-optic_nerve-oi-normal-checkbox": {
+      label: "OI Nervio Óptico Normal",
+      section: "oftalmologia_oi",
+      fieldType: "checkbox",
+      keywords: ["nervio óptico normal oi", "nervio optico normal oi", "nervio óptico oi normal"]
+    },
+    // ============================================
+    // Oftalmología - OI Pupilometría
+    // ============================================
+    "oftalmology-pupillometry-oi-justification-textfield": {
+      label: "OI Pupilometría (abrir panel)",
+      section: "oftalmologia_oi",
+      fieldType: "button",
+      keywords: ["pupilometría ojo izquierdo", "pupilometria oi", "pupilometría oi"]
+    },
+    "oftalmology-pupillometry-oi-normal-checkbox": {
+      label: "OI Pupilometría Normal",
+      section: "oftalmologia_oi",
+      fieldType: "checkbox",
+      keywords: ["pupilometría normal oi", "pupilometria normal oi", "pupilometría oi normal"]
+    },
+    // ============================================
+    // Oftalmología - OI Gonioscopía
+    // ============================================
+    "oftalmology-gonioscopy-oi-justification-textfield": {
+      label: "OI Gonioscopía (abrir panel)",
+      section: "oftalmologia_oi",
+      fieldType: "button",
+      keywords: ["gonioscopía ojo izquierdo", "gonioscopia oi", "gonioscopía oi"]
+    },
+    "oftalmology-gonioscopy-oi-normal-checkbox": {
+      label: "OI Gonioscopía Normal",
+      section: "oftalmologia_oi",
+      fieldType: "checkbox",
+      keywords: ["gonioscopía normal oi", "gonioscopia normal oi", "gonioscopía oi normal"]
+    },
+    // ============================================
+    // Oftalmología - OI Campo Visual por Confrontación
+    // ============================================
+    "oftalmology-confrontation_visual_field-oi-justification-textfield": {
+      label: "OI Campo Visual Confrontación (abrir panel)",
+      section: "oftalmologia_oi",
+      fieldType: "button",
+      keywords: ["campo visual ojo izquierdo", "campo visual oi", "confrontación oi"]
+    },
+    "oftalmology-confrontation_visual_field-oi-normal-checkbox": {
+      label: "OI Campo Visual Confrontación Normal",
+      section: "oftalmologia_oi",
+      fieldType: "checkbox",
+      keywords: ["campo visual normal oi", "campo visual oi normal", "confrontación normal oi"]
+    },
+    // select-option-* se escanean DINÁMICAMENTE en scan()
+    // (son testids genéricos reutilizados por diferentes dropdowns)
     // ============================================
     // Antecedentes - Botón principal
     // ============================================
@@ -498,11 +849,11 @@
       fieldType: "text",
       keywords: []
     },
-    "antecedents-generalNotes-textarea": {
+    "antecedents-general-notes-textarea": {
       label: "Notas generales antecedentes",
       section: "antecedentes_generales",
       fieldType: "textarea",
-      keywords: ["notas generales", "notas antecedentes generales"]
+      keywords: ["antecedentes generales nota", "antecedentes generales notas", "notas generales", "nota general", "notas antecedentes generales"]
     },
     // ============================================
     // Antecedentes Oculares - Checkboxes + Inputs
@@ -651,11 +1002,11 @@
       fieldType: "text",
       keywords: []
     },
-    "antecedents-ocularNotes-textarea": {
+    "antecedents-ocular-notes-textarea": {
       label: "Notas oculares antecedentes",
       section: "antecedentes_oculares",
       fieldType: "textarea",
-      keywords: ["notas oculares", "notas antecedentes oculares"]
+      keywords: ["antecedentes oculares nota", "antecedentes oculares notas", "notas oculares", "nota ocular", "notas antecedentes oculares"]
     },
     // ============================================
     // Antecedentes Familiares - Checkboxes + Inputs
@@ -756,11 +1107,11 @@
       fieldType: "text",
       keywords: []
     },
-    "antecedents-familiarNotes-textarea": {
+    "antecedents-familiar-notes-textarea": {
       label: "Notas familiares antecedentes",
       section: "antecedentes_familiares",
       fieldType: "textarea",
-      keywords: ["notas familiares", "notas antecedentes familiares"]
+      keywords: ["antecedentes familiares nota", "antecedentes familiares notas", "notas familiares", "nota familiar", "notas antecedentes familiares"]
     },
     // ============================================
     // Antecedentes - Botones guardar/cancelar
@@ -801,7 +1152,28 @@
           this.inputMap.set(testId, result.inputEl);
         }
       }
-      console.log(`[BVA-Scanner] ${this.fields.length} campos registrados encontrados en DOM`);
+      const dynamicOptions = document.querySelectorAll('[data-testid^="select-option-"]');
+      for (const el of dynamicOptions) {
+        const testId = el.getAttribute("data-testid");
+        if (!testId || this.elementMap.has(testId)) continue;
+        const label = (el.textContent || "").trim();
+        if (!label) continue;
+        const field = {
+          data_testid: testId,
+          unique_key: testId,
+          label,
+          field_type: "button",
+          eye: null,
+          section: "dynamic_option",
+          options: [],
+          keywords: [],
+          tag: el.tagName.toLowerCase()
+        };
+        this.fields.push(field);
+        this.elementMap.set(testId, el);
+        this.inputMap.set(testId, el);
+      }
+      console.log(`[BVA-Scanner] ${this.fields.length} campos encontrados en DOM (${dynamicOptions.length} select-option dinámicos)`);
       return this.fields;
     }
     /**
@@ -1406,9 +1778,50 @@
         console.warn(`[BVA-DOM] _clickButton: elemento '${uniqueKey}' NO encontrado en DOM`);
         return false;
       }
-      console.log(`[BVA-DOM] _clickButton: clicking '${uniqueKey}' (tag=${el.tagName})`);
-      const clickable = el.querySelector('button, a, [role="button"], [role="menuitem"]') || el;
-      clickable.click();
+      console.log(`[BVA-DOM] _clickButton: clicking '${uniqueKey}' (tag=${el.tagName}, html=${el.outerHTML?.substring(0, 200)})`);
+      let clickable;
+      if (uniqueKey.endsWith("-select")) {
+        clickable = el.querySelector('[data-testid="select-toggle-button"]') || el.querySelector('button, a, [role="button"], [role="menuitem"]') || el;
+      } else if (el.tagName === "INPUT" && el.type === "radio") {
+        const parentLabel = el.closest("label");
+        if (parentLabel) {
+          parentLabel.click();
+        } else {
+          el.click();
+        }
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+        this._highlight(el);
+        console.log(`[BVA-DOM] _clickButton: radio nativo '${uniqueKey}' clicked`);
+        return true;
+      } else {
+        clickable = el.querySelector('button, a, [role="button"], [role="menuitem"]') || el;
+      }
+      if (typeof clickable.click === "function") {
+        clickable.click();
+      } else {
+        let clicked = false;
+        try {
+          const fiberKey = Object.keys(clickable).find((k) => k.startsWith("__reactFiber$"));
+          if (fiberKey) {
+            let fiber = clickable[fiberKey];
+            for (let i = 0; i < 10 && fiber; i++) {
+              if (typeof fiber.memoizedProps?.onClick === "function") {
+                console.log(`[BVA-DOM] SVG click: React fiber onClick found at level ${i}`);
+                fiber.memoizedProps.onClick();
+                clicked = true;
+                break;
+              }
+              fiber = fiber.return;
+            }
+          }
+        } catch (err) {
+          console.warn(`[BVA-DOM] React fiber click failed:`, err);
+        }
+        if (!clicked) {
+          console.log(`[BVA-DOM] SVG click: dispatching MouseEvent fallback`);
+          clickable.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
+        }
+      }
       this._highlight(el);
       console.log(`[BVA-DOM] _clickButton: '${uniqueKey}' clicked successfully`);
       return true;
@@ -1643,6 +2056,36 @@
       .bva-modal-btn:hover { background: #f3f4f6; }
       .bva-modal-btn-primary { background: #3b82f6; color: white; border-color: #3b82f6; }
       .bva-modal-btn-primary:hover { background: #2563eb; }
+
+      /* Batch mode styles */
+      .bva-separator { border: none; border-top: 1px solid #e5e7eb; margin: 10px 0; }
+      .bva-batch-title { font-size: 12px; font-weight: 600; color: #6b7280; margin-bottom: 8px; }
+      .bva-batch-row { display: flex; gap: 6px; margin-bottom: 6px; }
+      .bva-batch-btn {
+        flex: 1; padding: 7px 10px; border-radius: 8px; font-size: 12px;
+        font-weight: 500; cursor: pointer; border: 1px solid #d1d5db;
+        background: #f9fafb; color: #374151; transition: all 0.2s;
+        display: flex; align-items: center; justify-content: center; gap: 4px;
+      }
+      .bva-batch-btn:hover { background: #f3f4f6; border-color: #9ca3af; }
+      .bva-batch-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+      .bva-batch-btn-process { background: #10b981; color: white; border-color: #10b981; }
+      .bva-batch-btn-process:hover { background: #059669; }
+      .bva-batch-btn-process:disabled { background: #6ee7b7; border-color: #6ee7b7; }
+      .bva-batch-btn-record { background: #f59e0b; color: white; border-color: #f59e0b; }
+      .bva-batch-btn-record:hover { background: #d97706; }
+      .bva-batch-btn-record.recording { background: #ef4444; border-color: #ef4444; animation: bva-pulse 1.5s ease-in-out infinite; }
+      .bva-batch-file-name {
+        font-size: 11px; color: #6b7280; margin-bottom: 6px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .bva-batch-status {
+        font-size: 11px; padding: 6px 10px; border-radius: 6px;
+        background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;
+        display: none; margin-bottom: 6px;
+      }
+      .bva-batch-status.error { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+      .bva-batch-status.visible { display: block; }
     </style>
 
     <div class="bva-fields-overlay" id="bvaFieldsOverlay"></div>
@@ -1689,6 +2132,25 @@
           Detener
         </button>
       </div>
+      <hr class="bva-separator">
+      <div class="bva-batch-title">Modo Batch (audio completo)</div>
+      <input type="file" id="bvaBatchFileInput" accept=".wav,.flac,.mp3,.m4a,.ogg,.webm" style="display:none">
+      <div class="bva-batch-row">
+        <button class="bva-batch-btn" id="bvaBatchUploadBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Agregar audio
+        </button>
+        <button class="bva-batch-btn bva-batch-btn-record" id="bvaBatchRecordBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="6"/></svg>
+          Grabar
+        </button>
+      </div>
+      <div class="bva-batch-file-name" id="bvaBatchFileName" style="display:none"></div>
+      <button class="bva-batch-btn bva-batch-btn-process" id="bvaBatchProcessBtn" disabled style="width:100%;margin-bottom:6px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Procesar
+      </button>
+      <div class="bva-batch-status" id="bvaBatchStatus"></div>
       <button class="bva-minimize" id="bvaMinimize" title="Minimizar">&minus;</button>
     </div>
 
@@ -1729,7 +2191,7 @@
     const recorder = new VoiceRecorder();
     let ws = null;
     let accumulatedText = "";
-    const fields = scanner.scan();
+    let fields = scanner.scan();
     const widget = createWidget();
     document.body.appendChild(widget);
     const panel = widget.querySelector("#bvaPanel");
@@ -1751,9 +2213,41 @@
     widget.querySelector("#bvaDownloadFields");
     const tableContainer = widget.querySelector("#bvaFieldsTableContainer");
     fieldsCount.textContent = `${fields.length} campos detectados con data-testid`;
+    function rescanFields() {
+      const newFields = scanner.scan();
+      if (newFields.length !== fields.length) {
+        const diff = newFields.length - fields.length;
+        fields = newFields;
+        fieldsCount.textContent = `${fields.length} campos detectados con data-testid`;
+        addLog("decision", `Re-escaneo: ${fields.length} campos (${diff > 0 ? "+" : ""}${diff})`);
+        console.log(`[BVA] Re-scan: ${fields.length} campos detectados`);
+      }
+      return fields;
+    }
+    let rescanTimer = null;
+    const observer = new MutationObserver((mutations) => {
+      let hasNewTestIds = false;
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (node.nodeType === 1) {
+            if (node.hasAttribute?.("data-testid") || node.querySelector?.("[data-testid]")) {
+              hasNewTestIds = true;
+              break;
+            }
+          }
+        }
+        if (hasNewTestIds) break;
+      }
+      if (hasNewTestIds) {
+        if (rescanTimer) clearTimeout(rescanTimer);
+        rescanTimer = setTimeout(() => rescanFields(), 500);
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
     function showFieldsModal() {
+      const currentFields = rescanFields();
       let html = `<table class="bva-fields-table"><thead><tr><th>#</th><th>data-testid</th><th>Label</th><th>Tipo</th><th>Ojo</th><th>Sección</th><th>Opciones</th></tr></thead><tbody>`;
-      fields.forEach((f, i) => {
+      currentFields.forEach((f, i) => {
         html += `<tr><td>${i + 1}</td><td class="testid">${escapeHtml(f.data_testid)}</td><td>${escapeHtml(f.label || "-")}</td><td>${escapeHtml(f.field_type)}</td><td>${escapeHtml(f.eye || "-")}</td><td>${escapeHtml(f.section || "-")}</td><td>${f.options?.length ? escapeHtml(f.options.join(", ")) : "-"}</td></tr>`;
       });
       html += "</tbody></table>";
@@ -1909,6 +2403,181 @@
     fab.addEventListener("click", () => {
       panel.classList.remove("minimized");
       fab.classList.remove("visible");
+    });
+    const batchFileInput = document.createElement("input");
+    batchFileInput.type = "file";
+    batchFileInput.accept = ".wav,.flac,.mp3,.m4a,.ogg,.webm,.mp4,.aac";
+    batchFileInput.style.display = "none";
+    document.body.appendChild(batchFileInput);
+    const batchUploadBtn = widget.querySelector("#bvaBatchUploadBtn");
+    const batchRecordBtn = widget.querySelector("#bvaBatchRecordBtn");
+    const batchProcessBtn = widget.querySelector("#bvaBatchProcessBtn");
+    const batchFileName = widget.querySelector("#bvaBatchFileName");
+    const batchStatus = widget.querySelector("#bvaBatchStatus");
+    let batchSelectedFile = null;
+    let batchMediaRecorder = null;
+    let batchRecordedChunks = [];
+    let batchIsRecording = false;
+    function setBatchStatus(text, isError = false) {
+      batchStatus.textContent = text;
+      batchStatus.classList.toggle("error", isError);
+      batchStatus.classList.add("visible");
+    }
+    function clearBatchStatus() {
+      batchStatus.classList.remove("visible", "error");
+      batchStatus.textContent = "";
+    }
+    function setBatchFile(file) {
+      batchSelectedFile = file;
+      if (file) {
+        const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+        batchFileName.textContent = `${file.name} (${sizeMB} MB)`;
+        batchFileName.style.display = "block";
+        batchProcessBtn.disabled = false;
+      } else {
+        batchFileName.style.display = "none";
+        batchProcessBtn.disabled = true;
+      }
+    }
+    batchUploadBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setTimeout(() => batchFileInput.click(), 100);
+    });
+    batchFileInput.addEventListener("change", (e) => {
+      console.log("[BVA-Batch] File input change event, files:", e.target.files?.length);
+      const file = e.target.files?.[0];
+      if (file) {
+        console.log("[BVA-Batch] File selected:", file.name, file.size, file.type);
+        clearBatchStatus();
+        setBatchFile(file);
+        addLog("decision", `Audio cargado: ${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)`);
+      }
+      batchFileInput.value = "";
+    });
+    batchRecordBtn.addEventListener("click", async () => {
+      if (batchIsRecording) {
+        if (batchMediaRecorder && batchMediaRecorder.state !== "inactive") {
+          batchMediaRecorder.stop();
+        }
+        batchRecordBtn.classList.remove("recording");
+        batchRecordBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="6"/></svg> Grabar`;
+        batchIsRecording = false;
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        batchRecordedChunks = [];
+        batchMediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+        batchMediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) batchRecordedChunks.push(e.data);
+        };
+        batchMediaRecorder.onstop = () => {
+          stream.getTracks().forEach((t) => t.stop());
+          if (batchRecordedChunks.length > 0) {
+            const blob = new Blob(batchRecordedChunks, { type: "audio/webm" });
+            const file = new File([blob], "grabacion.webm", { type: "audio/webm" });
+            setBatchFile(file);
+            addLog("decision", `Grabación completada: ${(file.size / 1024).toFixed(0)} KB`);
+          }
+        };
+        batchMediaRecorder.start();
+        batchIsRecording = true;
+        batchRecordBtn.classList.add("recording");
+        batchRecordBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg> Detener`;
+        clearBatchStatus();
+        addLog("decision", "Grabando audio...");
+      } catch (err) {
+        console.error("[BVA-Batch] Error accediendo al micrófono:", err);
+        setBatchStatus("Error: no se pudo acceder al micrófono", true);
+      }
+    });
+    batchProcessBtn.addEventListener("click", async () => {
+      if (!batchSelectedFile) {
+        setBatchStatus("Selecciona o graba un audio primero", true);
+        return;
+      }
+      batchProcessBtn.disabled = true;
+      clearBatchStatus();
+      try {
+        setBatchStatus("Escaneando campos...");
+        const freshFields = rescanFields();
+        const filledFields = manipulator.getFilledFields();
+        setBatchStatus("Subiendo audio...");
+        const formData = new FormData();
+        formData.append("audio_file", batchSelectedFile);
+        formData.append("fields", JSON.stringify(freshFields));
+        formData.append("already_filled", JSON.stringify(filledFields));
+        addLog("decision", `Batch: enviando ${freshFields.length} campos + audio`);
+        setBatchStatus("Transcribiendo...");
+        const url = CONFIG.BACKEND_HTTP + CONFIG.BATCH_ENDPOINT;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6e5);
+        let response;
+        try {
+          response = await fetch(url, {
+            method: "POST",
+            body: formData,
+            signal: controller.signal
+          });
+        } finally {
+          clearTimeout(timeoutId);
+        }
+        if (!response.ok) {
+          let errMsg = `Error HTTP ${response.status}`;
+          try {
+            const errBody = await response.json();
+            errMsg = errBody.detail || errMsg;
+          } catch (e) {
+          }
+          throw new Error(errMsg);
+        }
+        setBatchStatus("Mapeando campos...");
+        const result = await response.json();
+        const { transcript: batchTranscript, filled_fields, stats } = result;
+        if (batchTranscript) {
+          transcript.textContent = batchTranscript;
+          addLog("transcript", batchTranscript.substring(0, 200));
+        }
+        const entries = Object.entries(filled_fields || {});
+        const clickItems = entries.filter(([_, v]) => v === "click");
+        const dataItems = entries.filter(([_, v]) => v !== "click");
+        if (entries.length === 0) {
+          setBatchStatus("No se encontraron campos para llenar en el audio");
+        } else {
+          let totalApplied = 0;
+          if (clickItems.length > 0) {
+            setBatchStatus(`Ejecutando ${clickItems.length} acciones...`);
+            addLog("fill", `Batch: ${clickItems.length} clicks + ${dataItems.length} campos`);
+            for (const [key, value] of clickItems) {
+              console.log(`[BVA-Batch] Click secuencial: ${key}`);
+              const success = manipulator.fillField(key, value);
+              if (success) {
+                totalApplied++;
+                manipulator.filledFields.set(key, value);
+              }
+              await new Promise((r) => setTimeout(r, 800));
+              rescanFields();
+            }
+          }
+          if (dataItems.length > 0) {
+            const items = dataItems.map(([key, value]) => ({ unique_key: key, value, confidence: 1 }));
+            const applied = manipulator.applyAutofill(items);
+            totalApplied += applied.length;
+          }
+          addLog("fill", `Batch: ${totalApplied} campos aplicados`);
+          setBatchStatus(
+            `Listo: ${totalApplied} campos aplicados` + (stats?.skipped_already_filled_count ? `, ${stats.skipped_already_filled_count} ya estaban llenos` : "")
+          );
+        }
+        console.log("[BVA-Batch] Resultado:", result);
+      } catch (err) {
+        console.error("[BVA-Batch] Error procesando:", err);
+        setBatchStatus(`Error: ${err.message}`, true);
+        addLog("ignore", `⚠ Batch error: ${err.message}`);
+      } finally {
+        batchProcessBtn.disabled = false;
+      }
     });
   }
   waitForBiowelPage();

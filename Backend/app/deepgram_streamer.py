@@ -47,13 +47,13 @@ class DeepgramStreamer:
             language=settings.deepgram_language,
             punctuate=False,  # Desactivado para evitar cortes por puntuación
             interim_results=True,
-            endpointing=2000,  # 2 segundos - valor seguro para evitar cortes prematuros
+            endpointing=800,  # 800ms - respuesta rápida sin cortar frases
             smart_format=True,
             encoding="linear16",
             sample_rate=16000,
             channels=1,
             vad_events=True,
-            utterance_end_ms=4000,  # 4 segundos - valor seguro para párrafos largos
+            utterance_end_ms=2000,  # 2 segundos - fin de utterance más ágil
             # Keywords médicos para mejorar precisión de transcripción en español
             # Boost máximo (5) para palabras clave de activación de campos principales
             # Esto ayuda a que Deepgram transcriba "motivo de consulta" en vez de "o dio consulta"

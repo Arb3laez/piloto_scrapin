@@ -25,6 +25,7 @@ from app.config import get_settings
 from app.models import FormStructure
 from app.voice_processor import VoiceProcessor
 from app.deepgram_streamer import DeepgramStreamer
+from app.api.batch_routes import router as batch_router
 from app.realtime_extractor import (
     RealtimeExtractor,
     ActiveFieldTracker,
@@ -35,6 +36,7 @@ from app.realtime_extractor import (
     EVOLUTION_TIME_ANCHORED_RE,
     EXCLUSIVE_FIELDS,
     CHECKBOX_WITH_INPUT,
+    AMBIGUOUS_BUTTON_KEYWORDS,
 )
 
 # Configurar logging
@@ -56,6 +58,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Batch mode router (POST /api/biowel/audio/process)
+app.include_router(batch_router)
 
 
 @app.websocket("/ws/voice-stream")
@@ -213,7 +218,8 @@ async def voice_stream_endpoint(websocket: WebSocket):
                         # PRIMERO: Confirmar el texto del utterance actual antes de cerrar
                         if active_field_tracker.active_field:
                             cleaned_text = strip_keywords_and_commands(
-                                text, active_field_tracker.last_keyword
+                                text, active_field_tracker.last_keyword,
+                                active_testid=active_field_tracker.active_field or ""
                             )
                             if cleaned_text:
                                 active_field_tracker.confirm_utterance(cleaned_text)
@@ -283,8 +289,20 @@ async def voice_stream_endpoint(websocket: WebSocket):
                     testid_candidate = keyword_match[0]
                     ftype_candidate = realtime_extractor.get_field_type(testid_candidate)
                     logger.info(f"[PRIO3-DEBUG] testid='{testid_candidate}', ftype='{ftype_candidate}', keyword='{keyword_match[1]}'")
-                    
-                    if ftype_candidate == "checkbox":
+
+                    # GUARD: Si hay un campo de texto activo (textarea/text), NO permitir
+                    # que NINGÚN otro campo interrumpa el dictado.
+                    # Solo cmd_stop/cmd_clear/cmd_uncheck (ya procesados en PRIO1) pueden interrumpir.
+                    # Esto evita que "antecedentes", "observaciones", "análisis y plan" etc.
+                    # saquen al doctor del campo donde está dictando.
+                    _active_ftype = realtime_extractor.get_field_type(active_field_tracker.active_field) if active_field_tracker.active_field else None
+                    if _active_ftype in ("textarea", "text"):
+                        logger.info(
+                            f"[PRIO3-GUARD] Campo texto '{active_field_tracker.active_field}' activo. "
+                            f"Ignorando {ftype_candidate} '{testid_candidate}' (keyword '{keyword_match[1]}'). "
+                            f"Solo cmd_stop/cmd_clear puede interrumpir."
+                        )
+                    elif ftype_candidate == "checkbox":
                         testid, keyword, content_after = keyword_match
                         # Finalizar campo anterior si existe
                         previous_field = active_field_tracker.activate_field(None, keyword)
@@ -424,7 +442,7 @@ async def voice_stream_endpoint(websocket: WebSocket):
                         initial = realtime_extractor.already_filled.get(testid, "")
                         active_field_tracker.activate_field(testid, keyword, initial_text=initial)
                         if content_after:
-                            clean_after = strip_keywords_and_commands(content_after, keyword)
+                            clean_after = strip_keywords_and_commands(content_after, keyword, active_testid=testid)
                             if clean_after:
                                 active_field_tracker.append_text(clean_after)
                         session_keyword_buffer = ""
@@ -455,22 +473,15 @@ async def voice_stream_endpoint(websocket: WebSocket):
                     ftype = realtime_extractor.get_field_type(testid)
                     
                     # Checkbox/select/radio ya manejados en Prioridad 3, skip
+                    _active_ftype5 = realtime_extractor.get_field_type(active_field_tracker.active_field) if active_field_tracker.active_field else None
                     if ftype in ("checkbox", "select", "radio"):
                         pass
-                    # [MODIFICACIÓN LOCK EXCLUSIVO]
-                    # Solo bloquear si:
-                    # 1. El campo activo es exclusivo
-                    # 2. La keyword detectada NO apunta a otro campo exclusivo/textarea
-                    # Esto permite cambiar entre campos principales ("motivo" → "enfermedad actual")
-                    # pero bloquea que keywords cortas ("normal", "tratamiento") interrumpan el dictado
-                    elif (active_field_tracker.active_field in EXCLUSIVE_FIELDS
-                          and testid not in EXCLUSIVE_FIELDS
-                          and testid != active_field_tracker.active_field):
+                    # GUARD: Si hay campo texto activo, bloquear TODO (incluyendo buttons y otros textareas)
+                    elif _active_ftype5 in ("textarea", "text"):
                         logger.info(
-                            f"[Lock] Campo exclusivo '{active_field_tracker.active_field}' activo. "
-                            f"Ignorando keyword no-exclusiva '{keyword}' → '{testid}'."
+                            f"[PRIO5-GUARD] Campo texto '{active_field_tracker.active_field}' activo. "
+                            f"Ignorando {ftype} '{testid}' (keyword '{keyword}'). Solo cmd_stop/cmd_clear."
                         )
-                        # Limpiar buffer para evitar que keywords viejas se acumulen
                         session_keyword_buffer = ""
 
                     else:
@@ -493,7 +504,7 @@ async def voice_stream_endpoint(websocket: WebSocket):
                             realtime_extractor.already_filled[prev_testid] = normalized
                         
                         if content_after:
-                            clean_after = strip_keywords_and_commands(content_after, keyword)
+                            clean_after = strip_keywords_and_commands(content_after, keyword, active_testid=testid)
                             if clean_after:
                                 active_field_tracker.append_text(clean_after)
                         
@@ -530,7 +541,8 @@ async def voice_stream_endpoint(websocket: WebSocket):
                     if is_finalization:
                         # PRIMERO: Confirmar el texto del utterance actual antes de cerrar
                         cleaned_text = strip_keywords_and_commands(
-                            text, active_field_tracker.last_keyword
+                            text, active_field_tracker.last_keyword,
+                            active_testid=active_field_tracker.active_field or ""
                         )
                         if cleaned_text:
                             active_field_tracker.confirm_utterance(cleaned_text)
@@ -565,7 +577,8 @@ async def voice_stream_endpoint(websocket: WebSocket):
                     # SEGUNDO: Eliminar keywords y comandos del texto antes de acumular
                     # Esto previene que "motivo de consulta", etc. aparezcan como contenido
                     cleaned_text = strip_keywords_and_commands(
-                        text, active_field_tracker.last_keyword
+                        text, active_field_tracker.last_keyword,
+                        active_testid=active_field_tracker.active_field or ""
                     )
                     if cleaned_text:
                         # is_final=True confirma un utterance completo.
@@ -612,7 +625,8 @@ async def voice_stream_endpoint(websocket: WebSocket):
                             # PRIMERO: Capturar el texto del parcial actual (sin "listo")
                             # El parcial contiene TODO el utterance actual (acumulativo)
                             cleaned_text = strip_keywords_and_commands(
-                                text, active_field_tracker.last_keyword
+                                text, active_field_tracker.last_keyword,
+                                active_testid=active_field_tracker.active_field or ""
                             )
                             if cleaned_text:
                                 # Actualizar el utterance actual con el texto completo
@@ -671,11 +685,21 @@ async def voice_stream_endpoint(websocket: WebSocket):
                     prio_testid = keyword_match[0]
                     prio_ftype = realtime_extractor.get_field_type(prio_testid)
 
-                    # 2.5a: Botones siempre tienen prioridad
-                    if prio_ftype == "button":
+                    # GUARD: Si hay un campo de texto activo, NO permitir que
+                    # botones/checkbox/radio/select interrumpan el dictado.
+                    _active_ftype_p = realtime_extractor.get_field_type(active_field_tracker.active_field) if active_field_tracker.active_field else None
+                    _is_text_active = _active_ftype_p in ("textarea", "text")
+
+                    # 2.5a: Botones tienen prioridad SOLO si no hay campo texto activo
+                    # SKIP ambiguous button keywords on partials — Deepgram may send
+                    # "Antecedentes" before the full "Antecedentes generales diabetes" arrives.
+                    # These are handled correctly on finals where the full phrase is available.
+                    _is_ambiguous_btn = (prio_ftype == "button"
+                                         and keyword_match[1].lower() in AMBIGUOUS_BUTTON_KEYWORDS)
+                    if prio_ftype == "button" and not _is_text_active and not _is_ambiguous_btn:
                         _prio25_handled = True
                         if active_field_tracker.active_field:
-                            cleaned = strip_keywords_and_commands(text, active_field_tracker.last_keyword)
+                            cleaned = strip_keywords_and_commands(text, active_field_tracker.last_keyword, active_testid=active_field_tracker.active_field or "")
                             if cleaned:
                                 active_field_tracker.confirm_utterance(cleaned)
                             prev = active_field_tracker.activate_field(None, keyword_match[1])
@@ -698,16 +722,36 @@ async def voice_stream_endpoint(websocket: WebSocket):
                         logger.info(f"[Button PARCIAL PRIO] '{prio_testid}' clickeado por '{keyword_match[1]}'")
                         session_keyword_buffer = ""
 
-                    # 2.5b: Cambio entre campos exclusivos en parciales
-                    # Si el campo activo es exclusivo y la keyword apunta a OTRO campo exclusivo,
-                    # cerrar el actual y activar el nuevo inmediatamente
-                    elif (active_field_tracker.active_field
+                    # 2.5b: Radio/Checkbox/Select cierran el campo activo en parciales
+                    # SOLO si no hay campo texto activo
+                    elif prio_ftype in ("radio", "checkbox", "select") and not _is_text_active:
+                        _prio25_handled = True
+                        if active_field_tracker.active_field:
+                            # NO confirmar el texto parcial — contiene la keyword del nuevo campo
+                            prev = active_field_tracker.activate_field(None, keyword_match[1])
+                            if prev:
+                                p_testid, p_text = prev
+                                p_ftype = realtime_extractor.get_field_type(p_testid)
+                                p_norm = normalize_value(p_text, p_ftype)
+                                await websocket.send_json({
+                                    "type": "partial_autofill",
+                                    "items": [{"unique_key": p_testid, "value": p_norm, "confidence": 0.95}],
+                                    "source_text": f"[Finalizado por {prio_ftype} parcial: {keyword_match[1]}]"
+                                })
+                                realtime_extractor.already_filled[p_testid] = p_norm
+                        logger.info(f"[{prio_ftype.upper()} PARCIAL PRIO] '{prio_testid}' detectado por '{keyword_match[1]}' — campo activo cerrado")
+                        session_keyword_buffer = ""
+
+                    # 2.5c: Cambio entre campos exclusivos en parciales
+                    # DESHABILITADO cuando hay campo texto activo — solo cmd_stop puede interrumpir
+                    elif (not _is_text_active
+                          and active_field_tracker.active_field
                           and active_field_tracker.active_field in EXCLUSIVE_FIELDS
                           and prio_testid in EXCLUSIVE_FIELDS
                           and prio_testid != active_field_tracker.active_field):
                         _prio25_handled = True
                         # Confirmar texto actual antes de cambiar
-                        cleaned = strip_keywords_and_commands(text, active_field_tracker.last_keyword)
+                        cleaned = strip_keywords_and_commands(text, active_field_tracker.last_keyword, active_testid=active_field_tracker.active_field or "")
                         # NO confirmar el texto limpio aquí porque contiene la keyword del nuevo campo
                         # Solo cerrar el campo anterior
                         initial = realtime_extractor.already_filled.get(prio_testid, "")
@@ -745,7 +789,8 @@ async def voice_stream_endpoint(websocket: WebSocket):
                     # utterance actual, preservando texto de utterances anteriores.
                     # Solo eliminar la keyword activadora del inicio del texto.
                     cleaned_text = strip_keywords_and_commands(
-                        text, active_field_tracker.last_keyword
+                        text, active_field_tracker.last_keyword,
+                        active_testid=active_field_tracker.active_field or ""
                     )
                     if cleaned_text:
                         # Parciales de Deepgram son ACUMULATIVOS: cada parcial contiene
@@ -779,9 +824,16 @@ async def voice_stream_endpoint(websocket: WebSocket):
                     testid, keyword, content_after = keyword_match
                     ftype = realtime_extractor.get_field_type(testid)
 
+                    # GUARD: Si hay campo texto activo, NO activar ningún otro campo
+                    _active_ftype_partial = realtime_extractor.get_field_type(active_field_tracker.active_field) if active_field_tracker.active_field else None
+                    if _active_ftype_partial in ("textarea", "text"):
+                        logger.info(
+                            f"[PARTIAL-GUARD] Campo texto '{active_field_tracker.active_field}' activo. "
+                            f"Ignorando {ftype} '{testid}' (keyword '{keyword}'). Solo cmd_stop/cmd_clear."
+                        )
                     # Activar radio/checkbox/select INMEDIATAMENTE en parciales
                     # No esperar a is_final porque el usuario puede parar el dictado antes
-                    if ftype == "radio" and testid not in realtime_extractor.already_filled:
+                    elif ftype == "radio" and testid not in realtime_extractor.already_filled:
                         await websocket.send_json({
                             "type": "partial_autofill",
                             "items": [{"unique_key": testid, "value": "true", "confidence": 1.0}],
@@ -833,7 +885,7 @@ async def voice_stream_endpoint(websocket: WebSocket):
                             })
                             realtime_extractor.already_filled[p_testid] = p_norm
                         if content_after:
-                            clean_after = strip_keywords_and_commands(content_after, keyword)
+                            clean_after = strip_keywords_and_commands(content_after, keyword, active_testid=testid)
                             if clean_after:
                                 active_field_tracker.set_partial(clean_after)
                         logger.info(f"[Textarea PARCIAL] Campo '{testid}' activado por '{keyword}'")
@@ -1233,5 +1285,8 @@ if __name__ == "__main__":
         "main:app",
         host=settings.host,
         port=settings.port,
-        reload=True
+        reload=True,
+        # Permitir uploads grandes (200 MB) para audios de 5+ min
+        h11_max_incomplete_event_size=200 * 1024 * 1024,
+        timeout_keep_alive=600,
     )

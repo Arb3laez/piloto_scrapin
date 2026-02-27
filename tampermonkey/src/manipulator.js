@@ -460,11 +460,59 @@ export class DOMManipulator {
             return false;
         }
 
-        console.log(`[BVA-DOM] _clickButton: clicking '${uniqueKey}' (tag=${el.tagName})`);
+        console.log(`[BVA-DOM] _clickButton: clicking '${uniqueKey}' (tag=${el.tagName}, html=${el.outerHTML?.substring(0, 200)})`);
 
-        // Buscar el elemento clickeable: puede ser el propio, un botón interno, o un anchor
-        const clickable = el.querySelector('button, a, [role="button"], [role="menuitem"]') || el;
-        clickable.click();
+        // Para contenedores de select (ej: diagnostic-impression-diagnosis-select),
+        // buscar el select-toggle-button INTERNO para abrir el dropdown correcto
+        let clickable;
+        if (uniqueKey.endsWith('-select')) {
+            clickable = el.querySelector('[data-testid="select-toggle-button"]')
+                      || el.querySelector('button, a, [role="button"], [role="menuitem"]')
+                      || el;
+        } else if (el.tagName === 'INPUT' && el.type === 'radio') {
+            // Radio nativo (ej: diagnostic-impression-eye-radio-0)
+            // Click en el label padre es más confiable para React
+            const parentLabel = el.closest('label');
+            if (parentLabel) {
+                parentLabel.click();
+            } else {
+                el.click();
+            }
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            this._highlight(el);
+            console.log(`[BVA-DOM] _clickButton: radio nativo '${uniqueKey}' clicked`);
+            return true;
+        } else {
+            clickable = el.querySelector('button, a, [role="button"], [role="menuitem"]') || el;
+        }
+        // Click strategy: native .click() for HTML, React fiber for SVG
+        if (typeof clickable.click === 'function') {
+            clickable.click();
+        } else {
+            // SVG: find React fiber onClick in memoizedProps
+            let clicked = false;
+            try {
+                const fiberKey = Object.keys(clickable).find(k => k.startsWith('__reactFiber$'));
+                if (fiberKey) {
+                    let fiber = clickable[fiberKey];
+                    for (let i = 0; i < 10 && fiber; i++) {
+                        if (typeof fiber.memoizedProps?.onClick === 'function') {
+                            console.log(`[BVA-DOM] SVG click: React fiber onClick found at level ${i}`);
+                            fiber.memoizedProps.onClick();
+                            clicked = true;
+                            break;
+                        }
+                        fiber = fiber.return;
+                    }
+                }
+            } catch (err) {
+                console.warn(`[BVA-DOM] React fiber click failed:`, err);
+            }
+            if (!clicked) {
+                console.log(`[BVA-DOM] SVG click: dispatching MouseEvent fallback`);
+                clickable.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+            }
+        }
         this._highlight(el);
 
         console.log(`[BVA-DOM] _clickButton: '${uniqueKey}' clicked successfully`);

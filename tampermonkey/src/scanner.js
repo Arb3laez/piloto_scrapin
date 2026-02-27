@@ -77,7 +77,6 @@ const REGISTERED_FIELDS = {
         fieldType: 'radio',
         keywords: ['diagnóstico ampliado', 'diagnostico ampliado', 'idx ampliada', 'ampliada'],
     },
-
     // ============================================
     // Preconsulta - Dropdown items (botones clickeables)
     // ============================================
@@ -265,7 +264,7 @@ const REGISTERED_FIELDS = {
     // ============================================
     // Oftalmología - OD Externo (Ojo Derecho Externo)
     // ============================================
-    'ophtalmology-justification-textfield': {
+    'oftalmology-external-od-justification-textfield': {
         label: 'OD Externo (abrir panel)',
         section: 'oftalmologia_externo',
         fieldType: 'button',
@@ -296,43 +295,416 @@ const REGISTERED_FIELDS = {
         keywords: ['guardar hallazgo', 'guardar'],
     },
 
-    // Opciones del dropdown de hallazgos OD Externo
-    'select-option-0': {
-        label: 'Párpados simétricos',
-        section: 'oftalmologia_externo',
-        fieldType: 'button',
-        keywords: ['párpados simétricos', 'parpados simetricos', 'párpados'],
+    // OD Externo - Normal checkbox
+    'oftalmology-external-od-normal-checkbox': {
+        label: 'OD Externo Normal',
+        section: 'oftalmologia_od',
+        fieldType: 'checkbox',
+        keywords: ['externo normal od', 'od externo normal', 'externo normal ojo derecho'],
     },
-    'select-option-1': {
-        label: 'Ausencia de edema palpebral',
-        section: 'oftalmologia_externo',
+
+    // ============================================
+    // Oftalmología - OD Balance Muscular
+    // ============================================
+    'oftalmology-muscle_balance-od-justification-textfield': {
+        label: 'OD Balance Muscular (abrir panel)',
+        section: 'oftalmologia_od',
         fieldType: 'button',
-        keywords: ['ausencia de edema', 'sin edema palpebral', 'ausencia edema'],
+        keywords: ['balance muscular ojo derecho', 'balance muscular od', 'od balance muscular'],
     },
-    'select-option-2': {
-        label: 'Distribución uniforme de las pestañas',
-        section: 'oftalmologia_externo',
+    'oftalmology-muscle_balance-od-normal-checkbox': {
+        label: 'OD Balance Muscular Normal',
+        section: 'oftalmologia_od',
+        fieldType: 'checkbox',
+        keywords: ['balance muscular normal od', 'od balance muscular normal', 'muscular normal od'],
+    },
+
+    // ============================================
+    // Oftalmología - OD P/P/L
+    // ============================================
+    'oftalmology-ppl-od-justification-textfield': {
+        label: 'OD P/P/L (abrir panel)',
+        section: 'oftalmologia_od',
         fieldType: 'button',
-        keywords: ['distribución uniforme', 'pestañas uniformes', 'pestañas'],
+        keywords: ['ppl ojo derecho', 'ppl od', 'od ppl', 'pe pe ele od'],
     },
-    'select-option-3': {
-        label: 'Movimientos oculares conjugados y simétricos',
-        section: 'oftalmologia_externo',
+    'oftalmology-ppl-od-normal-checkbox': {
+        label: 'OD P/P/L Normal',
+        section: 'oftalmologia_od',
+        fieldType: 'checkbox',
+        keywords: ['ppl normal od', 'od ppl normal', 'ppl normal ojo derecho'],
+    },
+
+    // ============================================
+    // Oftalmología - OD Conjuntiva Esclera
+    // ============================================
+    'oftalmology-screra_conjunctiva-od-justification-textfield': {
+        label: 'OD Conjuntiva Esclera (abrir panel)',
+        section: 'oftalmologia_od',
         fieldType: 'button',
-        keywords: ['movimientos oculares', 'movimientos conjugados'],
+        keywords: ['conjuntiva esclera ojo derecho', 'conjuntiva esclera od', 'conjuntiva od', 'esclera od'],
     },
-    'select-option-4': {
-        label: 'Lesiones',
-        section: 'oftalmologia_externo',
+    'oftalmology-screra_conjunctiva-od-normal-checkbox': {
+        label: 'OD Conjuntiva Esclera Normal',
+        section: 'oftalmologia_od',
+        fieldType: 'checkbox',
+        keywords: ['conjuntiva esclera normal od', 'conjuntiva normal od', 'esclera normal od'],
+    },
+
+    // ============================================
+    // Oftalmología - OD Córnea
+    // ============================================
+    'oftalmology-cornea-od-justification-textfield': {
+        label: 'OD Córnea (abrir panel)',
+        section: 'oftalmologia_od',
         fieldType: 'button',
-        keywords: ['lesiones', 'lesión', 'lesion'],
+        keywords: ['córnea ojo derecho', 'cornea ojo derecho', 'córnea od', 'cornea od'],
     },
-    'select-option-5': {
-        label: 'Rosácea',
-        section: 'oftalmologia_externo',
+    'oftalmology-cornea-od-normal-checkbox': {
+        label: 'OD Córnea Normal',
+        section: 'oftalmologia_od',
+        fieldType: 'checkbox',
+        keywords: ['córnea normal od', 'cornea normal od', 'córnea od normal', 'cornea od normal'],
+    },
+
+    // ============================================
+    // Oftalmología - OD Cámara Anterior
+    // ============================================
+    'oftalmology-previous_chamber-od-justification-textfield': {
+        label: 'OD Cámara Anterior (abrir panel)',
+        section: 'oftalmologia_od',
         fieldType: 'button',
-        keywords: ['rosácea', 'rosacea'],
+        keywords: ['cámara anterior ojo derecho', 'camara anterior od', 'cámara anterior od'],
     },
+    'oftalmology-previous_chamber-od-normal-checkbox': {
+        label: 'OD Cámara Anterior Normal',
+        section: 'oftalmologia_od',
+        fieldType: 'checkbox',
+        keywords: ['cámara anterior normal od', 'camara anterior normal od', 'cámara anterior od normal'],
+    },
+
+    // ============================================
+    // Oftalmología - OD Iris
+    // ============================================
+    'oftalmology-iris-od-justification-textfield': {
+        label: 'OD Iris (abrir panel)',
+        section: 'oftalmologia_od',
+        fieldType: 'button',
+        keywords: ['iris ojo derecho', 'iris od', 'od iris'],
+    },
+    'oftalmology-iris-od-normal-checkbox': {
+        label: 'OD Iris Normal',
+        section: 'oftalmologia_od',
+        fieldType: 'checkbox',
+        keywords: ['iris normal od', 'od iris normal', 'iris od normal'],
+    },
+
+    // ============================================
+    // Oftalmología - OD Cristalino
+    // ============================================
+    'oftalmology-crystalline-od-justification-textfield': {
+        label: 'OD Cristalino (abrir panel)',
+        section: 'oftalmologia_od',
+        fieldType: 'button',
+        keywords: ['cristalino ojo derecho', 'cristalino od', 'od cristalino'],
+    },
+    'oftalmology-crystalline-od-normal-checkbox': {
+        label: 'OD Cristalino Normal',
+        section: 'oftalmologia_od',
+        fieldType: 'checkbox',
+        keywords: ['cristalino normal od', 'od cristalino normal', 'cristalino od normal'],
+    },
+
+    // ============================================
+    // Oftalmología - OD Retina / Vítreo
+    // ============================================
+    'oftalmology-retina_vitreous-od-justification-textfield': {
+        label: 'OD Retina/Vítreo (abrir panel)',
+        section: 'oftalmologia_od',
+        fieldType: 'button',
+        keywords: ['retina vítreo ojo derecho', 'retina vitreo od', 'retina od', 'vítreo od'],
+    },
+    'oftalmology-retina_vitreous-od-normal-checkbox': {
+        label: 'OD Retina/Vítreo Normal',
+        section: 'oftalmologia_od',
+        fieldType: 'checkbox',
+        keywords: ['retina vítreo normal od', 'retina vitreo normal od', 'retina normal od'],
+    },
+
+    // ============================================
+    // Oftalmología - OD Nervio Óptico
+    // ============================================
+    'oftalmology-optic_nerve-od-justification-textfield': {
+        label: 'OD Nervio Óptico (abrir panel)',
+        section: 'oftalmologia_od',
+        fieldType: 'button',
+        keywords: ['nervio óptico ojo derecho', 'nervio optico od', 'nervio óptico od'],
+    },
+    'oftalmology-optic_nerve-od-normal-checkbox': {
+        label: 'OD Nervio Óptico Normal',
+        section: 'oftalmologia_od',
+        fieldType: 'checkbox',
+        keywords: ['nervio óptico normal od', 'nervio optico normal od', 'nervio óptico od normal'],
+    },
+
+    // ============================================
+    // Oftalmología - OD Pupilometría
+    // ============================================
+    'oftalmology-pupillometry-od-justification-textfield': {
+        label: 'OD Pupilometría (abrir panel)',
+        section: 'oftalmologia_od',
+        fieldType: 'button',
+        keywords: ['pupilometría ojo derecho', 'pupilometria od', 'pupilometría od'],
+    },
+    'oftalmology-pupillometry-od-normal-checkbox': {
+        label: 'OD Pupilometría Normal',
+        section: 'oftalmologia_od',
+        fieldType: 'checkbox',
+        keywords: ['pupilometría normal od', 'pupilometria normal od', 'pupilometría od normal'],
+    },
+
+    // ============================================
+    // Oftalmología - OD Gonioscopía
+    // ============================================
+    'oftalmology-gonioscopy-od-justification-textfield': {
+        label: 'OD Gonioscopía (abrir panel)',
+        section: 'oftalmologia_od',
+        fieldType: 'button',
+        keywords: ['gonioscopía ojo derecho', 'gonioscopia od', 'gonioscopía od'],
+    },
+    'oftalmology-gonioscopy-od-normal-checkbox': {
+        label: 'OD Gonioscopía Normal',
+        section: 'oftalmologia_od',
+        fieldType: 'checkbox',
+        keywords: ['gonioscopía normal od', 'gonioscopia normal od', 'gonioscopía od normal'],
+    },
+
+    // ============================================
+    // Oftalmología - OD Campo Visual por Confrontación
+    // ============================================
+    'oftalmology-confrontation_visual_field-od-justification-textfield': {
+        label: 'OD Campo Visual Confrontación (abrir panel)',
+        section: 'oftalmologia_od',
+        fieldType: 'button',
+        keywords: ['campo visual ojo derecho', 'campo visual od', 'confrontación od'],
+    },
+    'oftalmology-confrontation_visual_field-od-normal-checkbox': {
+        label: 'OD Campo Visual Confrontación Normal',
+        section: 'oftalmologia_od',
+        fieldType: 'checkbox',
+        keywords: ['campo visual normal od', 'campo visual od normal', 'confrontación normal od'],
+    },
+
+    // ============================================
+    // Oftalmología - OI Externo (Ojo Izquierdo Externo)
+    // ============================================
+    'oftalmology-external-oi-justification-textfield': {
+        label: 'OI Externo (abrir panel)',
+        section: 'oftalmologia_oi',
+        fieldType: 'button',
+        keywords: ['ojo izquierdo externo', 'oi externo', 'izquierdo externo'],
+    },
+    'oftalmology-external-oi-normal-checkbox': {
+        label: 'OI Externo Normal',
+        section: 'oftalmologia_oi',
+        fieldType: 'checkbox',
+        keywords: ['externo normal oi', 'oi externo normal', 'externo normal ojo izquierdo'],
+    },
+
+    // ============================================
+    // Oftalmología - OI Balance Muscular
+    // ============================================
+    'oftalmology-muscle_balance-oi-justification-textfield': {
+        label: 'OI Balance Muscular (abrir panel)',
+        section: 'oftalmologia_oi',
+        fieldType: 'button',
+        keywords: ['balance muscular ojo izquierdo', 'balance muscular oi', 'oi balance muscular'],
+    },
+    'oftalmology-muscle_balance-oi-normal-checkbox': {
+        label: 'OI Balance Muscular Normal',
+        section: 'oftalmologia_oi',
+        fieldType: 'checkbox',
+        keywords: ['balance muscular normal oi', 'oi balance muscular normal', 'muscular normal oi'],
+    },
+
+    // ============================================
+    // Oftalmología - OI P/P/L
+    // ============================================
+    'oftalmology-ppl-oi-justification-textfield': {
+        label: 'OI P/P/L (abrir panel)',
+        section: 'oftalmologia_oi',
+        fieldType: 'button',
+        keywords: ['ppl ojo izquierdo', 'ppl oi', 'oi ppl', 'pe pe ele oi'],
+    },
+    'oftalmology-ppl-oi-normal-checkbox': {
+        label: 'OI P/P/L Normal',
+        section: 'oftalmologia_oi',
+        fieldType: 'checkbox',
+        keywords: ['ppl normal oi', 'oi ppl normal', 'ppl normal ojo izquierdo'],
+    },
+
+    // ============================================
+    // Oftalmología - OI Conjuntiva Esclera
+    // ============================================
+    'oftalmology-screra_conjunctiva-oi-justification-textfield': {
+        label: 'OI Conjuntiva Esclera (abrir panel)',
+        section: 'oftalmologia_oi',
+        fieldType: 'button',
+        keywords: ['conjuntiva esclera ojo izquierdo', 'conjuntiva esclera oi', 'conjuntiva oi', 'esclera oi'],
+    },
+    'oftalmology-screra_conjunctiva-oi-normal-checkbox': {
+        label: 'OI Conjuntiva Esclera Normal',
+        section: 'oftalmologia_oi',
+        fieldType: 'checkbox',
+        keywords: ['conjuntiva esclera normal oi', 'conjuntiva normal oi', 'esclera normal oi'],
+    },
+
+    // ============================================
+    // Oftalmología - OI Córnea
+    // ============================================
+    'oftalmology-cornea-oi-justification-textfield': {
+        label: 'OI Córnea (abrir panel)',
+        section: 'oftalmologia_oi',
+        fieldType: 'button',
+        keywords: ['córnea ojo izquierdo', 'cornea ojo izquierdo', 'córnea oi', 'cornea oi'],
+    },
+    'oftalmology-cornea-oi-normal-checkbox': {
+        label: 'OI Córnea Normal',
+        section: 'oftalmologia_oi',
+        fieldType: 'checkbox',
+        keywords: ['córnea normal oi', 'cornea normal oi', 'córnea oi normal', 'cornea oi normal'],
+    },
+
+    // ============================================
+    // Oftalmología - OI Cámara Anterior
+    // ============================================
+    'oftalmology-previous_chamber-oi-justification-textfield': {
+        label: 'OI Cámara Anterior (abrir panel)',
+        section: 'oftalmologia_oi',
+        fieldType: 'button',
+        keywords: ['cámara anterior ojo izquierdo', 'camara anterior oi', 'cámara anterior oi'],
+    },
+    'oftalmology-previous_chamber-oi-normal-checkbox': {
+        label: 'OI Cámara Anterior Normal',
+        section: 'oftalmologia_oi',
+        fieldType: 'checkbox',
+        keywords: ['cámara anterior normal oi', 'camara anterior normal oi', 'cámara anterior oi normal'],
+    },
+
+    // ============================================
+    // Oftalmología - OI Iris
+    // ============================================
+    'oftalmology-iris-oi-justification-textfield': {
+        label: 'OI Iris (abrir panel)',
+        section: 'oftalmologia_oi',
+        fieldType: 'button',
+        keywords: ['iris ojo izquierdo', 'iris oi', 'oi iris'],
+    },
+    'oftalmology-iris-oi-normal-checkbox': {
+        label: 'OI Iris Normal',
+        section: 'oftalmologia_oi',
+        fieldType: 'checkbox',
+        keywords: ['iris normal oi', 'oi iris normal', 'iris oi normal'],
+    },
+
+    // ============================================
+    // Oftalmología - OI Cristalino
+    // ============================================
+    'oftalmology-crystalline-oi-justification-textfield': {
+        label: 'OI Cristalino (abrir panel)',
+        section: 'oftalmologia_oi',
+        fieldType: 'button',
+        keywords: ['cristalino ojo izquierdo', 'cristalino oi', 'oi cristalino'],
+    },
+    'oftalmology-crystalline-oi-normal-checkbox': {
+        label: 'OI Cristalino Normal',
+        section: 'oftalmologia_oi',
+        fieldType: 'checkbox',
+        keywords: ['cristalino normal oi', 'oi cristalino normal', 'cristalino oi normal'],
+    },
+
+    // ============================================
+    // Oftalmología - OI Retina / Vítreo
+    // ============================================
+    'oftalmology-retina_vitreous-oi-justification-textfield': {
+        label: 'OI Retina/Vítreo (abrir panel)',
+        section: 'oftalmologia_oi',
+        fieldType: 'button',
+        keywords: ['retina vítreo ojo izquierdo', 'retina vitreo oi', 'retina oi', 'vítreo oi'],
+    },
+    'oftalmology-retina_vitreous-oi-normal-checkbox': {
+        label: 'OI Retina/Vítreo Normal',
+        section: 'oftalmologia_oi',
+        fieldType: 'checkbox',
+        keywords: ['retina vítreo normal oi', 'retina vitreo normal oi', 'retina normal oi'],
+    },
+
+    // ============================================
+    // Oftalmología - OI Nervio Óptico
+    // ============================================
+    'oftalmology-optic_nerve-oi-justification-textfield': {
+        label: 'OI Nervio Óptico (abrir panel)',
+        section: 'oftalmologia_oi',
+        fieldType: 'button',
+        keywords: ['nervio óptico ojo izquierdo', 'nervio optico oi', 'nervio óptico oi'],
+    },
+    'oftalmology-optic_nerve-oi-normal-checkbox': {
+        label: 'OI Nervio Óptico Normal',
+        section: 'oftalmologia_oi',
+        fieldType: 'checkbox',
+        keywords: ['nervio óptico normal oi', 'nervio optico normal oi', 'nervio óptico oi normal'],
+    },
+
+    // ============================================
+    // Oftalmología - OI Pupilometría
+    // ============================================
+    'oftalmology-pupillometry-oi-justification-textfield': {
+        label: 'OI Pupilometría (abrir panel)',
+        section: 'oftalmologia_oi',
+        fieldType: 'button',
+        keywords: ['pupilometría ojo izquierdo', 'pupilometria oi', 'pupilometría oi'],
+    },
+    'oftalmology-pupillometry-oi-normal-checkbox': {
+        label: 'OI Pupilometría Normal',
+        section: 'oftalmologia_oi',
+        fieldType: 'checkbox',
+        keywords: ['pupilometría normal oi', 'pupilometria normal oi', 'pupilometría oi normal'],
+    },
+
+    // ============================================
+    // Oftalmología - OI Gonioscopía
+    // ============================================
+    'oftalmology-gonioscopy-oi-justification-textfield': {
+        label: 'OI Gonioscopía (abrir panel)',
+        section: 'oftalmologia_oi',
+        fieldType: 'button',
+        keywords: ['gonioscopía ojo izquierdo', 'gonioscopia oi', 'gonioscopía oi'],
+    },
+    'oftalmology-gonioscopy-oi-normal-checkbox': {
+        label: 'OI Gonioscopía Normal',
+        section: 'oftalmologia_oi',
+        fieldType: 'checkbox',
+        keywords: ['gonioscopía normal oi', 'gonioscopia normal oi', 'gonioscopía oi normal'],
+    },
+
+    // ============================================
+    // Oftalmología - OI Campo Visual por Confrontación
+    // ============================================
+    'oftalmology-confrontation_visual_field-oi-justification-textfield': {
+        label: 'OI Campo Visual Confrontación (abrir panel)',
+        section: 'oftalmologia_oi',
+        fieldType: 'button',
+        keywords: ['campo visual ojo izquierdo', 'campo visual oi', 'confrontación oi'],
+    },
+    'oftalmology-confrontation_visual_field-oi-normal-checkbox': {
+        label: 'OI Campo Visual Confrontación Normal',
+        section: 'oftalmologia_oi',
+        fieldType: 'checkbox',
+        keywords: ['campo visual normal oi', 'campo visual oi normal', 'confrontación normal oi'],
+    },
+
+    // select-option-* se escanean DINÁMICAMENTE en scan()
+    // (son testids genéricos reutilizados por diferentes dropdowns)
 
     // ============================================
     // Antecedentes - Botón principal
@@ -491,11 +863,11 @@ const REGISTERED_FIELDS = {
         fieldType: 'text',
         keywords: [],
     },
-    'antecedents-generalNotes-textarea': {
+    'antecedents-general-notes-textarea': {
         label: 'Notas generales antecedentes',
         section: 'antecedentes_generales',
         fieldType: 'textarea',
-        keywords: ['notas generales', 'notas antecedentes generales'],
+        keywords: ['antecedentes generales nota', 'antecedentes generales notas', 'nota antecedentes generales', 'notas antecedentes generales'],
     },
 
     // ============================================
@@ -645,11 +1017,11 @@ const REGISTERED_FIELDS = {
         fieldType: 'text',
         keywords: [],
     },
-    'antecedents-ocularNotes-textarea': {
+    'antecedents-ocular-notes-textarea': {
         label: 'Notas oculares antecedentes',
         section: 'antecedentes_oculares',
         fieldType: 'textarea',
-        keywords: ['notas oculares', 'notas antecedentes oculares'],
+        keywords: ['antecedentes oculares nota', 'antecedentes oculares notas', 'nota antecedentes oculares', 'notas antecedentes oculares'],
     },
 
     // ============================================
@@ -751,11 +1123,11 @@ const REGISTERED_FIELDS = {
         fieldType: 'text',
         keywords: [],
     },
-    'antecedents-familiarNotes-textarea': {
+    'antecedents-familiar-notes-textarea': {
         label: 'Notas familiares antecedentes',
         section: 'antecedentes_familiares',
         fieldType: 'textarea',
-        keywords: ['notas familiares', 'notas antecedentes familiares'],
+        keywords: ['antecedentes familiares nota', 'antecedentes familiares notas', 'nota antecedentes familiares', 'notas antecedentes familiares'],
     },
 
     // ============================================
@@ -803,7 +1175,33 @@ export class DOMScanner {
             }
         }
 
-        console.log(`[BVA-Scanner] ${this.fields.length} campos registrados encontrados en DOM`);
+        // Escaneo dinámico: detectar select-option-* visibles en el DOM
+        // (testids genéricos que cambian según el dropdown abierto)
+        const dynamicOptions = document.querySelectorAll('[data-testid^="select-option-"]');
+        for (const el of dynamicOptions) {
+            const testId = el.getAttribute('data-testid');
+            if (!testId || this.elementMap.has(testId)) continue;
+            const label = (el.textContent || '').trim();
+            if (!label) continue;
+
+            const field = {
+                data_testid: testId,
+                unique_key: testId,
+                label: label,
+                field_type: 'button',
+                eye: null,
+                section: 'dynamic_option',
+                options: [],
+                keywords: [],
+                tag: el.tagName.toLowerCase(),
+            };
+
+            this.fields.push(field);
+            this.elementMap.set(testId, el);
+            this.inputMap.set(testId, el);
+        }
+
+        console.log(`[BVA-Scanner] ${this.fields.length} campos encontrados en DOM (${dynamicOptions.length} select-option dinámicos)`);
         return this.fields;
     }
 

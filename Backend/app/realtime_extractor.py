@@ -30,14 +30,12 @@ KEYWORD_TO_FIELD = {
     "motivo de consulta": "attention-origin-reason-for-consulting-badge-field",
     "motivo de la consulta": "attention-origin-reason-for-consulting-badge-field",
     "el motivo de consulta": "attention-origin-reason-for-consulting-badge-field",
-    "consulta por": "attention-origin-reason-for-consulting-badge-field",
-    # NOTA: "motivo" suelto ELIMINADO — causaba cambios accidentales de campo
+    "motivo se consulta": "attention-origin-reason-for-consulting-badge-field",
+    # NOTA: "motivo" suelto y "consulta por" ELIMINADOS — causaban activaciones falsas
 
     "enfermedad actual": "attention-origin-current-disease-badge-field",
     "la enfermedad actual": "attention-origin-current-disease-badge-field",
-    "padecimiento actual": "attention-origin-current-disease-badge-field",
-    "cuadro clínico": "attention-origin-current-disease-badge-field",
-    "cuadro clinico": "attention-origin-current-disease-badge-field",
+    # NOTA: "padecimiento actual", "cuadro clínico" ELIMINADOS — causaban activaciones falsas
     # NOTA: "enfermedad" suelto ELIMINADO — causaba cambios accidentales de campo
     
 
@@ -81,8 +79,9 @@ KEYWORD_TO_FIELD = {
     "impresión diagnóstica": "diagnostic-impression-diagnosis-select",
     
     # Tipo de diagnóstico (radio buttons CIE-10)
-    "diagnóstico": "diagnostic-impression-type-cie10-radio",
-    "diagnostico": "diagnostic-impression-type-cie10-radio",
+    "diagnóstico simple": "diagnostic-impression-type-cie10-radio",
+    "diagnostico simple": "diagnostic-impression-type-cie10-radio",
+    "idx simple": "diagnostic-impression-type-cie10-radio",
     "idx": "diagnostic-impression-type-cie10-radio",
     "diagnóstico ampliado": "diagnostic-impression-type-extended-radio",
     "diagnostico ampliado": "diagnostic-impression-type-extended-radio",
@@ -95,7 +94,80 @@ KEYWORD_TO_FIELD = {
     "ampliada": "diagnostic-impression-type-extended-radio",
     "ampliado": "diagnostic-impression-type-extended-radio",
     "amplio": "diagnostic-impression-type-extended-radio",
-    
+
+    # Paso 1: Abrir dropdown de categorías CIE-10 (click en contenedor scoped)
+    "selección de diagnóstico amplio": "diagnostic-impression-diagnosis-select",
+    "seleccion de diagnostico amplio": "diagnostic-impression-diagnosis-select",
+    "selección diagnóstico amplio": "diagnostic-impression-diagnosis-select",
+    "seleccion diagnostico amplio": "diagnostic-impression-diagnosis-select",
+    "selección de diagnóstico ampliado": "diagnostic-impression-diagnosis-select",
+    "seleccion de diagnostico ampliado": "diagnostic-impression-diagnosis-select",
+    "selección diagnóstico ampliado": "diagnostic-impression-diagnosis-select",
+    "seleccion diagnostico ampliado": "diagnostic-impression-diagnosis-select",
+    "selección de diagnóstico ampliada": "diagnostic-impression-diagnosis-select",
+    "seleccion de diagnostico ampliada": "diagnostic-impression-diagnosis-select",
+    "seleccionar diagnóstico ampliado": "diagnostic-impression-diagnosis-select",
+    "seleccionar diagnostico ampliado": "diagnostic-impression-diagnosis-select",
+
+    # Paso 2: Categorías CIE-10 de diagnóstico ampliado — data-testid directos
+    # select-option-0 = Prueba Qqq (no se registra, es de prueba)
+    "enfermedades del aparato circulatorio": "select-option-1",
+    "enfermedades aparato circulatorio": "select-option-1",
+    "aparato circulatorio": "select-option-1",
+
+    "enfermedades del aparato respiratorio": "select-option-2",
+    "enfermedades aparato respiratorio": "select-option-2",
+    "aparato respiratorio": "select-option-2",
+
+    "enfermedades del aparato digestivo": "select-option-3",
+    "enfermedades aparato digestivo": "select-option-3",
+    "aparato digestivo": "select-option-3",
+
+    "enfermedades de la piel y el tejido subcutáneo": "select-option-4",
+    "enfermedades de la piel y el tejido subcutaneo": "select-option-4",
+    "enfermedades de la piel": "select-option-4",
+    "tejido subcutáneo": "select-option-4",
+    "tejido subcutaneo": "select-option-4",
+
+    "enfermedades del sistema osteomuscular y del tejido conectivo": "select-option-5",
+    "enfermedades del sistema osteomuscular": "select-option-5",
+    "sistema osteomuscular": "select-option-5",
+    "tejido conectivo": "select-option-5",
+
+    "enfermedades de la sangre y de los órganos hematopoyéticos": "select-option-6",
+    "enfermedades de la sangre y de los organos hematopoyeticos": "select-option-6",
+    "enfermedades de la sangre": "select-option-6",
+    "órganos hematopoyéticos": "select-option-6",
+    "organos hematopoyeticos": "select-option-6",
+
+    "enfermedades endocrinas nutricionales y metabólicas": "select-option-7",
+    "enfermedades endocrinas nutricionales y metabolicas": "select-option-7",
+    "enfermedades endocrinas": "select-option-7",
+    "endocrinas nutricionales": "select-option-7",
+
+    "trastornos mentales y del comportamiento": "select-option-8",
+    "trastornos mentales": "select-option-8",
+
+    "enfermedades del ojo y sus anexos": "select-option-9",
+    "enfermedades del ojo": "select-option-9",
+
+    # Paso 3: Ojo del diagnóstico (radio buttons nativos)
+    "diagnóstico ojo derecho": "diagnostic-impression-eye-radio-0",
+    "diagnostico ojo derecho": "diagnostic-impression-eye-radio-0",
+    "diagnóstico ojo izquierdo": "diagnostic-impression-eye-radio-1",
+    "diagnostico ojo izquierdo": "diagnostic-impression-eye-radio-1",
+    "diagnóstico ambos ojos": "diagnostic-impression-eye-radio-2",
+    "diagnostico ambos ojos": "diagnostic-impression-eye-radio-2",
+    "diagnóstico no aplica": "diagnostic-impression-eye-radio-3",
+    "diagnostico no aplica": "diagnostic-impression-eye-radio-3",
+
+    # Paso 4: Agregar diagnóstico (botón +)
+    "agregar diagnóstico": "diagnostic-impression-add-button",
+    "agregar diagnostico": "diagnostic-impression-add-button",
+    "Agregar": "diagnostic-impression-add-button",
+    "Agregar diagnóstico": "diagnostic-impression-add-button",
+
+
     # Observaciones del examen físico
     "observaciones del examen físico": "oftalmology-observations-textarea",
     "observaciones del examen fisico": "oftalmology-observations-textarea",
@@ -103,19 +175,16 @@ KEYWORD_TO_FIELD = {
     "observaciones de examen físico": "oftalmology-observations-textarea",
     "observaciones de examen fisico": "oftalmology-observations-textarea",
     "observaciones examen": "oftalmology-observations-textarea",
+    "observaciones examen físico": "oftalmology-observations-textarea",
+    "observaciones examen fisico": "oftalmology-observations-textarea",
     "observaciones": "oftalmology-observations-textarea",
-    "observacion": "oftalmology-observations-textarea",
 
     # Análisis y plan
     "análisis y plan": "analysis-and-plan-textarea",
     "analisis y plan": "analysis-and-plan-textarea",
-    "análisis plan": "analysis-and-plan-textarea",
-    "analisis plan": "analysis-and-plan-textarea",
-    "análisis": "analysis-and-plan-textarea",
-    "analisis": "analysis-and-plan-textarea",
     "análisis y plan de tratamiento": "analysis-and-plan-textarea",
     "analisis y plan de tratamiento": "analysis-and-plan-textarea",
-    "plan": "analysis-and-plan-textarea",
+    # NOTA: "análisis" suelto, "analisis" suelto, "plan" suelto, "análisis plan" ELIMINADOS — causaban activaciones falsas
     
     # Tiempo de evolución
     "cantidad": "attention-origin-evolution-time-input",
@@ -270,11 +339,487 @@ KEYWORD_TO_FIELD = {
     # Oftalmología - OD Externo (Ojo Derecho Externo)
     # ============================================
     # Paso 1: Abrir panel de hallazgos OD Externo
-    "ojo derecho externo": "ophtalmology-justification-textfield",
-    "od externo": "ophtalmology-justification-textfield",
-    "derecho externo": "ophtalmology-justification-textfield",
-    "externo derecho": "ophtalmology-justification-textfield",
-    "externo od": "ophtalmology-justification-textfield",
+    "ojo derecho externo": "oftalmology-external-od-justification-textfield",
+    "od externo": "oftalmology-external-od-justification-textfield",
+    "derecho externo": "oftalmology-external-od-justification-textfield",
+    "externo derecho": "oftalmology-external-od-justification-textfield",
+    "externo od": "oftalmology-external-od-justification-textfield",
+
+    # OD Externo - Normal checkbox
+    "externo normal ojo derecho": "oftalmology-external-od-normal-checkbox",
+    "externo od normal": "oftalmology-external-od-normal-checkbox",
+    "od externo normal": "oftalmology-external-od-normal-checkbox",
+    "normal externo od": "oftalmology-external-od-normal-checkbox",
+    "ojo derecho externo normal": "oftalmology-external-od-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OD Balance Muscular
+    # ============================================
+    "balance muscular ojo derecho": "oftalmology-muscle_balance-od-justification-textfield",
+    "balance muscular od": "oftalmology-muscle_balance-od-justification-textfield",
+    "od balance muscular": "oftalmology-muscle_balance-od-justification-textfield",
+    "derecho balance muscular": "oftalmology-muscle_balance-od-justification-textfield",
+    "muscular od": "oftalmology-muscle_balance-od-justification-textfield",
+    "muscular ojo derecho": "oftalmology-muscle_balance-od-justification-textfield",
+    # Normal
+    "balance muscular normal ojo derecho": "oftalmology-muscle_balance-od-normal-checkbox",
+    "balance muscular od normal": "oftalmology-muscle_balance-od-normal-checkbox",
+    "od balance muscular normal": "oftalmology-muscle_balance-od-normal-checkbox",
+    "normal balance muscular od": "oftalmology-muscle_balance-od-normal-checkbox",
+    "muscular normal od": "oftalmology-muscle_balance-od-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OD P/P/L (Párpados, Pestañas, Lagrimales)
+    # ============================================
+    "ppl ojo derecho": "oftalmology-ppl-od-justification-textfield",
+    "ppl od": "oftalmology-ppl-od-justification-textfield",
+    "od ppl": "oftalmology-ppl-od-justification-textfield",
+    "pe pe ele ojo derecho": "oftalmology-ppl-od-justification-textfield",
+    "pe pe ele od": "oftalmology-ppl-od-justification-textfield",
+    "párpados pestañas lagrimales ojo derecho": "oftalmology-ppl-od-justification-textfield",
+    "parpados pestañas lagrimales od": "oftalmology-ppl-od-justification-textfield",
+    # Normal
+    "ppl normal ojo derecho": "oftalmology-ppl-od-normal-checkbox",
+    "ppl od normal": "oftalmology-ppl-od-normal-checkbox",
+    "od ppl normal": "oftalmology-ppl-od-normal-checkbox",
+    "normal ppl od": "oftalmology-ppl-od-normal-checkbox",
+    "pe pe ele normal od": "oftalmology-ppl-od-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OD Conjuntiva Esclera
+    # ============================================
+    "conjuntiva esclera ojo derecho": "oftalmology-screra_conjunctiva-od-justification-textfield",
+    "conjuntiva esclera od": "oftalmology-screra_conjunctiva-od-justification-textfield",
+    "od conjuntiva esclera": "oftalmology-screra_conjunctiva-od-justification-textfield",
+    "conjuntiva ojo derecho": "oftalmology-screra_conjunctiva-od-justification-textfield",
+    "conjuntiva od": "oftalmology-screra_conjunctiva-od-justification-textfield",
+    "esclera ojo derecho": "oftalmology-screra_conjunctiva-od-justification-textfield",
+    "esclera od": "oftalmology-screra_conjunctiva-od-justification-textfield",
+    # Normal
+    "conjuntiva esclera normal ojo derecho": "oftalmology-screra_conjunctiva-od-normal-checkbox",
+    "conjuntiva esclera od normal": "oftalmology-screra_conjunctiva-od-normal-checkbox",
+    "od conjuntiva esclera normal": "oftalmology-screra_conjunctiva-od-normal-checkbox",
+    "conjuntiva normal od": "oftalmology-screra_conjunctiva-od-normal-checkbox",
+    "esclera normal od": "oftalmology-screra_conjunctiva-od-normal-checkbox",
+    "normal conjuntiva od": "oftalmology-screra_conjunctiva-od-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OD Córnea
+    # ============================================
+    "córnea ojo derecho": "oftalmology-cornea-od-justification-textfield",
+    "cornea ojo derecho": "oftalmology-cornea-od-justification-textfield",
+    "córnea od": "oftalmology-cornea-od-justification-textfield",
+    "cornea od": "oftalmology-cornea-od-justification-textfield",
+    "od córnea": "oftalmology-cornea-od-justification-textfield",
+    "od cornea": "oftalmology-cornea-od-justification-textfield",
+    "derecho córnea": "oftalmology-cornea-od-justification-textfield",
+    "derecho cornea": "oftalmology-cornea-od-justification-textfield",
+    # Normal
+    "córnea normal ojo derecho": "oftalmology-cornea-od-normal-checkbox",
+    "cornea normal ojo derecho": "oftalmology-cornea-od-normal-checkbox",
+    "córnea od normal": "oftalmology-cornea-od-normal-checkbox",
+    "cornea od normal": "oftalmology-cornea-od-normal-checkbox",
+    "od córnea normal": "oftalmology-cornea-od-normal-checkbox",
+    "od cornea normal": "oftalmology-cornea-od-normal-checkbox",
+    "normal córnea od": "oftalmology-cornea-od-normal-checkbox",
+    "normal cornea od": "oftalmology-cornea-od-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OD Cámara Anterior
+    # ============================================
+    "cámara anterior ojo derecho": "oftalmology-previous_chamber-od-justification-textfield",
+    "camara anterior ojo derecho": "oftalmology-previous_chamber-od-justification-textfield",
+    "cámara anterior od": "oftalmology-previous_chamber-od-justification-textfield",
+    "camara anterior od": "oftalmology-previous_chamber-od-justification-textfield",
+    "od cámara anterior": "oftalmology-previous_chamber-od-justification-textfield",
+    "od camara anterior": "oftalmology-previous_chamber-od-justification-textfield",
+    "derecho cámara anterior": "oftalmology-previous_chamber-od-justification-textfield",
+    "derecho camara anterior": "oftalmology-previous_chamber-od-justification-textfield",
+    # Normal
+    "cámara anterior normal ojo derecho": "oftalmology-previous_chamber-od-normal-checkbox",
+    "camara anterior normal ojo derecho": "oftalmology-previous_chamber-od-normal-checkbox",
+    "cámara anterior od normal": "oftalmology-previous_chamber-od-normal-checkbox",
+    "camara anterior od normal": "oftalmology-previous_chamber-od-normal-checkbox",
+    "od cámara anterior normal": "oftalmology-previous_chamber-od-normal-checkbox",
+    "od camara anterior normal": "oftalmology-previous_chamber-od-normal-checkbox",
+    "normal cámara anterior od": "oftalmology-previous_chamber-od-normal-checkbox",
+    "normal camara anterior od": "oftalmology-previous_chamber-od-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OD Iris
+    # ============================================
+    "iris ojo derecho": "oftalmology-iris-od-justification-textfield",
+    "iris od": "oftalmology-iris-od-justification-textfield",
+    "od iris": "oftalmology-iris-od-justification-textfield",
+    "derecho iris": "oftalmology-iris-od-justification-textfield",
+    # Normal
+    "iris normal ojo derecho": "oftalmology-iris-od-normal-checkbox",
+    "iris od normal": "oftalmology-iris-od-normal-checkbox",
+    "od iris normal": "oftalmology-iris-od-normal-checkbox",
+    "normal iris od": "oftalmology-iris-od-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OD Cristalino
+    # ============================================
+    "cristalino ojo derecho": "oftalmology-crystalline-od-justification-textfield",
+    "cristalino od": "oftalmology-crystalline-od-justification-textfield",
+    "od cristalino": "oftalmology-crystalline-od-justification-textfield",
+    "derecho cristalino": "oftalmology-crystalline-od-justification-textfield",
+    # Normal
+    "cristalino normal ojo derecho": "oftalmology-crystalline-od-normal-checkbox",
+    "cristalino od normal": "oftalmology-crystalline-od-normal-checkbox",
+    "od cristalino normal": "oftalmology-crystalline-od-normal-checkbox",
+    "normal cristalino od": "oftalmology-crystalline-od-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OD Retina / Vítreo
+    # ============================================
+    "retina vítreo ojo derecho": "oftalmology-retina_vitreous-od-justification-textfield",
+    "retina vitreo ojo derecho": "oftalmology-retina_vitreous-od-justification-textfield",
+    "retina vítreo od": "oftalmology-retina_vitreous-od-justification-textfield",
+    "retina vitreo od": "oftalmology-retina_vitreous-od-justification-textfield",
+    "od retina vítreo": "oftalmology-retina_vitreous-od-justification-textfield",
+    "od retina vitreo": "oftalmology-retina_vitreous-od-justification-textfield",
+    "retina ojo derecho": "oftalmology-retina_vitreous-od-justification-textfield",
+    "retina od": "oftalmology-retina_vitreous-od-justification-textfield",
+    "vítreo ojo derecho": "oftalmology-retina_vitreous-od-justification-textfield",
+    "vitreo ojo derecho": "oftalmology-retina_vitreous-od-justification-textfield",
+    "vítreo od": "oftalmology-retina_vitreous-od-justification-textfield",
+    "vitreo od": "oftalmology-retina_vitreous-od-justification-textfield",
+    # Normal
+    "retina vítreo normal ojo derecho": "oftalmology-retina_vitreous-od-normal-checkbox",
+    "retina vitreo normal ojo derecho": "oftalmology-retina_vitreous-od-normal-checkbox",
+    "retina vítreo od normal": "oftalmology-retina_vitreous-od-normal-checkbox",
+    "retina vitreo od normal": "oftalmology-retina_vitreous-od-normal-checkbox",
+    "od retina vítreo normal": "oftalmology-retina_vitreous-od-normal-checkbox",
+    "od retina vitreo normal": "oftalmology-retina_vitreous-od-normal-checkbox",
+    "retina normal od": "oftalmology-retina_vitreous-od-normal-checkbox",
+    "normal retina od": "oftalmology-retina_vitreous-od-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OD Nervio Óptico
+    # ============================================
+    "nervio óptico ojo derecho": "oftalmology-optic_nerve-od-justification-textfield",
+    "nervio optico ojo derecho": "oftalmology-optic_nerve-od-justification-textfield",
+    "nervio óptico od": "oftalmology-optic_nerve-od-justification-textfield",
+    "nervio optico od": "oftalmology-optic_nerve-od-justification-textfield",
+    "od nervio óptico": "oftalmology-optic_nerve-od-justification-textfield",
+    "od nervio optico": "oftalmology-optic_nerve-od-justification-textfield",
+    "derecho nervio óptico": "oftalmology-optic_nerve-od-justification-textfield",
+    "derecho nervio optico": "oftalmology-optic_nerve-od-justification-textfield",
+    # Normal
+    "nervio óptico normal ojo derecho": "oftalmology-optic_nerve-od-normal-checkbox",
+    "nervio optico normal ojo derecho": "oftalmology-optic_nerve-od-normal-checkbox",
+    "nervio óptico od normal": "oftalmology-optic_nerve-od-normal-checkbox",
+    "nervio optico od normal": "oftalmology-optic_nerve-od-normal-checkbox",
+    "od nervio óptico normal": "oftalmology-optic_nerve-od-normal-checkbox",
+    "od nervio optico normal": "oftalmology-optic_nerve-od-normal-checkbox",
+    "normal nervio óptico od": "oftalmology-optic_nerve-od-normal-checkbox",
+    "normal nervio optico od": "oftalmology-optic_nerve-od-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OD Pupilometría
+    # ============================================
+    "pupilometría ojo derecho": "oftalmology-pupillometry-od-justification-textfield",
+    "pupilometria ojo derecho": "oftalmology-pupillometry-od-justification-textfield",
+    "pupilometría od": "oftalmology-pupillometry-od-justification-textfield",
+    "pupilometria od": "oftalmology-pupillometry-od-justification-textfield",
+    "od pupilometría": "oftalmology-pupillometry-od-justification-textfield",
+    "od pupilometria": "oftalmology-pupillometry-od-justification-textfield",
+    # Normal
+    "pupilometría normal ojo derecho": "oftalmology-pupillometry-od-normal-checkbox",
+    "pupilometria normal ojo derecho": "oftalmology-pupillometry-od-normal-checkbox",
+    "pupilometría od normal": "oftalmology-pupillometry-od-normal-checkbox",
+    "pupilometria od normal": "oftalmology-pupillometry-od-normal-checkbox",
+    "od pupilometría normal": "oftalmology-pupillometry-od-normal-checkbox",
+    "od pupilometria normal": "oftalmology-pupillometry-od-normal-checkbox",
+    "normal pupilometría od": "oftalmology-pupillometry-od-normal-checkbox",
+    "normal pupilometria od": "oftalmology-pupillometry-od-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OD Gonioscopía
+    # ============================================
+    "gonioscopía ojo derecho": "oftalmology-gonioscopy-od-justification-textfield",
+    "gonioscopia ojo derecho": "oftalmology-gonioscopy-od-justification-textfield",
+    "gonioscopía od": "oftalmology-gonioscopy-od-justification-textfield",
+    "gonioscopia od": "oftalmology-gonioscopy-od-justification-textfield",
+    "od gonioscopía": "oftalmology-gonioscopy-od-justification-textfield",
+    "od gonioscopia": "oftalmology-gonioscopy-od-justification-textfield",
+    # Normal
+    "gonioscopía normal ojo derecho": "oftalmology-gonioscopy-od-normal-checkbox",
+    "gonioscopia normal ojo derecho": "oftalmology-gonioscopy-od-normal-checkbox",
+    "gonioscopía od normal": "oftalmology-gonioscopy-od-normal-checkbox",
+    "gonioscopia od normal": "oftalmology-gonioscopy-od-normal-checkbox",
+    "od gonioscopía normal": "oftalmology-gonioscopy-od-normal-checkbox",
+    "od gonioscopia normal": "oftalmology-gonioscopy-od-normal-checkbox",
+    "normal gonioscopía od": "oftalmology-gonioscopy-od-normal-checkbox",
+    "normal gonioscopia od": "oftalmology-gonioscopy-od-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OD Campo Visual por Confrontación
+    # ============================================
+    "campo visual ojo derecho": "oftalmology-confrontation_visual_field-od-justification-textfield",
+    "campo visual od": "oftalmology-confrontation_visual_field-od-justification-textfield",
+    "od campo visual": "oftalmology-confrontation_visual_field-od-justification-textfield",
+    "campo visual por confrontación ojo derecho": "oftalmology-confrontation_visual_field-od-justification-textfield",
+    "campo visual por confrontacion ojo derecho": "oftalmology-confrontation_visual_field-od-justification-textfield",
+    "campo visual por confrontación od": "oftalmology-confrontation_visual_field-od-justification-textfield",
+    "campo visual por confrontacion od": "oftalmology-confrontation_visual_field-od-justification-textfield",
+    "confrontación ojo derecho": "oftalmology-confrontation_visual_field-od-justification-textfield",
+    "confrontacion ojo derecho": "oftalmology-confrontation_visual_field-od-justification-textfield",
+    "confrontación od": "oftalmology-confrontation_visual_field-od-justification-textfield",
+    "confrontacion od": "oftalmology-confrontation_visual_field-od-justification-textfield",
+    # Normal
+    "campo visual normal ojo derecho": "oftalmology-confrontation_visual_field-od-normal-checkbox",
+    "campo visual od normal": "oftalmology-confrontation_visual_field-od-normal-checkbox",
+    "od campo visual normal": "oftalmology-confrontation_visual_field-od-normal-checkbox",
+    "campo visual por confrontación normal od": "oftalmology-confrontation_visual_field-od-normal-checkbox",
+    "campo visual por confrontacion normal od": "oftalmology-confrontation_visual_field-od-normal-checkbox",
+    "confrontación normal od": "oftalmology-confrontation_visual_field-od-normal-checkbox",
+    "confrontacion normal od": "oftalmology-confrontation_visual_field-od-normal-checkbox",
+    "normal campo visual od": "oftalmology-confrontation_visual_field-od-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OI Externo (Ojo Izquierdo Externo)
+    # ============================================
+    "ojo izquierdo externo": "oftalmology-external-oi-justification-textfield",
+    "oi externo": "oftalmology-external-oi-justification-textfield",
+    "izquierdo externo": "oftalmology-external-oi-justification-textfield",
+    "externo izquierdo": "oftalmology-external-oi-justification-textfield",
+    "externo oi": "oftalmology-external-oi-justification-textfield",
+    # Normal
+    "externo normal ojo izquierdo": "oftalmology-external-oi-normal-checkbox",
+    "externo oi normal": "oftalmology-external-oi-normal-checkbox",
+    "oi externo normal": "oftalmology-external-oi-normal-checkbox",
+    "normal externo oi": "oftalmology-external-oi-normal-checkbox",
+    "ojo izquierdo externo normal": "oftalmology-external-oi-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OI Balance Muscular
+    # ============================================
+    "balance muscular ojo izquierdo": "oftalmology-muscle_balance-oi-justification-textfield",
+    "balance muscular oi": "oftalmology-muscle_balance-oi-justification-textfield",
+    "oi balance muscular": "oftalmology-muscle_balance-oi-justification-textfield",
+    "izquierdo balance muscular": "oftalmology-muscle_balance-oi-justification-textfield",
+    "muscular oi": "oftalmology-muscle_balance-oi-justification-textfield",
+    "muscular ojo izquierdo": "oftalmology-muscle_balance-oi-justification-textfield",
+    # Normal
+    "balance muscular normal ojo izquierdo": "oftalmology-muscle_balance-oi-normal-checkbox",
+    "balance muscular oi normal": "oftalmology-muscle_balance-oi-normal-checkbox",
+    "oi balance muscular normal": "oftalmology-muscle_balance-oi-normal-checkbox",
+    "normal balance muscular oi": "oftalmology-muscle_balance-oi-normal-checkbox",
+    "muscular normal oi": "oftalmology-muscle_balance-oi-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OI P/P/L
+    # ============================================
+    "ppl ojo izquierdo": "oftalmology-ppl-oi-justification-textfield",
+    "ppl oi": "oftalmology-ppl-oi-justification-textfield",
+    "oi ppl": "oftalmology-ppl-oi-justification-textfield",
+    "pe pe ele ojo izquierdo": "oftalmology-ppl-oi-justification-textfield",
+    "pe pe ele oi": "oftalmology-ppl-oi-justification-textfield",
+    "párpados pestañas lagrimales ojo izquierdo": "oftalmology-ppl-oi-justification-textfield",
+    "parpados pestañas lagrimales oi": "oftalmology-ppl-oi-justification-textfield",
+    # Normal
+    "ppl normal ojo izquierdo": "oftalmology-ppl-oi-normal-checkbox",
+    "ppl oi normal": "oftalmology-ppl-oi-normal-checkbox",
+    "oi ppl normal": "oftalmology-ppl-oi-normal-checkbox",
+    "normal ppl oi": "oftalmology-ppl-oi-normal-checkbox",
+    "pe pe ele normal oi": "oftalmology-ppl-oi-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OI Conjuntiva Esclera
+    # ============================================
+    "conjuntiva esclera ojo izquierdo": "oftalmology-screra_conjunctiva-oi-justification-textfield",
+    "conjuntiva esclera oi": "oftalmology-screra_conjunctiva-oi-justification-textfield",
+    "oi conjuntiva esclera": "oftalmology-screra_conjunctiva-oi-justification-textfield",
+    "conjuntiva ojo izquierdo": "oftalmology-screra_conjunctiva-oi-justification-textfield",
+    "conjuntiva oi": "oftalmology-screra_conjunctiva-oi-justification-textfield",
+    "esclera ojo izquierdo": "oftalmology-screra_conjunctiva-oi-justification-textfield",
+    "esclera oi": "oftalmology-screra_conjunctiva-oi-justification-textfield",
+    # Normal
+    "conjuntiva esclera normal ojo izquierdo": "oftalmology-screra_conjunctiva-oi-normal-checkbox",
+    "conjuntiva esclera oi normal": "oftalmology-screra_conjunctiva-oi-normal-checkbox",
+    "oi conjuntiva esclera normal": "oftalmology-screra_conjunctiva-oi-normal-checkbox",
+    "conjuntiva normal oi": "oftalmology-screra_conjunctiva-oi-normal-checkbox",
+    "esclera normal oi": "oftalmology-screra_conjunctiva-oi-normal-checkbox",
+    "normal conjuntiva oi": "oftalmology-screra_conjunctiva-oi-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OI Córnea
+    # ============================================
+    "córnea ojo izquierdo": "oftalmology-cornea-oi-justification-textfield",
+    "cornea ojo izquierdo": "oftalmology-cornea-oi-justification-textfield",
+    "córnea oi": "oftalmology-cornea-oi-justification-textfield",
+    "cornea oi": "oftalmology-cornea-oi-justification-textfield",
+    "oi córnea": "oftalmology-cornea-oi-justification-textfield",
+    "oi cornea": "oftalmology-cornea-oi-justification-textfield",
+    "izquierdo córnea": "oftalmology-cornea-oi-justification-textfield",
+    "izquierdo cornea": "oftalmology-cornea-oi-justification-textfield",
+    # Normal
+    "córnea normal ojo izquierdo": "oftalmology-cornea-oi-normal-checkbox",
+    "cornea normal ojo izquierdo": "oftalmology-cornea-oi-normal-checkbox",
+    "córnea oi normal": "oftalmology-cornea-oi-normal-checkbox",
+    "cornea oi normal": "oftalmology-cornea-oi-normal-checkbox",
+    "oi córnea normal": "oftalmology-cornea-oi-normal-checkbox",
+    "oi cornea normal": "oftalmology-cornea-oi-normal-checkbox",
+    "normal córnea oi": "oftalmology-cornea-oi-normal-checkbox",
+    "normal cornea oi": "oftalmology-cornea-oi-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OI Cámara Anterior
+    # ============================================
+    "cámara anterior ojo izquierdo": "oftalmology-previous_chamber-oi-justification-textfield",
+    "camara anterior ojo izquierdo": "oftalmology-previous_chamber-oi-justification-textfield",
+    "cámara anterior oi": "oftalmology-previous_chamber-oi-justification-textfield",
+    "camara anterior oi": "oftalmology-previous_chamber-oi-justification-textfield",
+    "oi cámara anterior": "oftalmology-previous_chamber-oi-justification-textfield",
+    "oi camara anterior": "oftalmology-previous_chamber-oi-justification-textfield",
+    "izquierdo cámara anterior": "oftalmology-previous_chamber-oi-justification-textfield",
+    "izquierdo camara anterior": "oftalmology-previous_chamber-oi-justification-textfield",
+    # Normal
+    "cámara anterior normal ojo izquierdo": "oftalmology-previous_chamber-oi-normal-checkbox",
+    "camara anterior normal ojo izquierdo": "oftalmology-previous_chamber-oi-normal-checkbox",
+    "cámara anterior oi normal": "oftalmology-previous_chamber-oi-normal-checkbox",
+    "camara anterior oi normal": "oftalmology-previous_chamber-oi-normal-checkbox",
+    "oi cámara anterior normal": "oftalmology-previous_chamber-oi-normal-checkbox",
+    "oi camara anterior normal": "oftalmology-previous_chamber-oi-normal-checkbox",
+    "normal cámara anterior oi": "oftalmology-previous_chamber-oi-normal-checkbox",
+    "normal camara anterior oi": "oftalmology-previous_chamber-oi-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OI Iris
+    # ============================================
+    "iris ojo izquierdo": "oftalmology-iris-oi-justification-textfield",
+    "iris oi": "oftalmology-iris-oi-justification-textfield",
+    "oi iris": "oftalmology-iris-oi-justification-textfield",
+    "izquierdo iris": "oftalmology-iris-oi-justification-textfield",
+    # Normal
+    "iris normal ojo izquierdo": "oftalmology-iris-oi-normal-checkbox",
+    "iris oi normal": "oftalmology-iris-oi-normal-checkbox",
+    "oi iris normal": "oftalmology-iris-oi-normal-checkbox",
+    "normal iris oi": "oftalmology-iris-oi-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OI Cristalino
+    # ============================================
+    "cristalino ojo izquierdo": "oftalmology-crystalline-oi-justification-textfield",
+    "cristalino oi": "oftalmology-crystalline-oi-justification-textfield",
+    "oi cristalino": "oftalmology-crystalline-oi-justification-textfield",
+    "izquierdo cristalino": "oftalmology-crystalline-oi-justification-textfield",
+    # Normal
+    "cristalino normal ojo izquierdo": "oftalmology-crystalline-oi-normal-checkbox",
+    "cristalino oi normal": "oftalmology-crystalline-oi-normal-checkbox",
+    "oi cristalino normal": "oftalmology-crystalline-oi-normal-checkbox",
+    "normal cristalino oi": "oftalmology-crystalline-oi-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OI Retina / Vítreo
+    # ============================================
+    "retina vítreo ojo izquierdo": "oftalmology-retina_vitreous-oi-justification-textfield",
+    "retina vitreo ojo izquierdo": "oftalmology-retina_vitreous-oi-justification-textfield",
+    "retina vítreo oi": "oftalmology-retina_vitreous-oi-justification-textfield",
+    "retina vitreo oi": "oftalmology-retina_vitreous-oi-justification-textfield",
+    "oi retina vítreo": "oftalmology-retina_vitreous-oi-justification-textfield",
+    "oi retina vitreo": "oftalmology-retina_vitreous-oi-justification-textfield",
+    "retina ojo izquierdo": "oftalmology-retina_vitreous-oi-justification-textfield",
+    "retina oi": "oftalmology-retina_vitreous-oi-justification-textfield",
+    "vítreo ojo izquierdo": "oftalmology-retina_vitreous-oi-justification-textfield",
+    "vitreo ojo izquierdo": "oftalmology-retina_vitreous-oi-justification-textfield",
+    "vítreo oi": "oftalmology-retina_vitreous-oi-justification-textfield",
+    "vitreo oi": "oftalmology-retina_vitreous-oi-justification-textfield",
+    # Normal
+    "retina vítreo normal ojo izquierdo": "oftalmology-retina_vitreous-oi-normal-checkbox",
+    "retina vitreo normal ojo izquierdo": "oftalmology-retina_vitreous-oi-normal-checkbox",
+    "retina vítreo oi normal": "oftalmology-retina_vitreous-oi-normal-checkbox",
+    "retina vitreo oi normal": "oftalmology-retina_vitreous-oi-normal-checkbox",
+    "oi retina vítreo normal": "oftalmology-retina_vitreous-oi-normal-checkbox",
+    "oi retina vitreo normal": "oftalmology-retina_vitreous-oi-normal-checkbox",
+    "retina normal oi": "oftalmology-retina_vitreous-oi-normal-checkbox",
+    "normal retina oi": "oftalmology-retina_vitreous-oi-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OI Nervio Óptico
+    # ============================================
+    "nervio óptico ojo izquierdo": "oftalmology-optic_nerve-oi-justification-textfield",
+    "nervio optico ojo izquierdo": "oftalmology-optic_nerve-oi-justification-textfield",
+    "nervio óptico oi": "oftalmology-optic_nerve-oi-justification-textfield",
+    "nervio optico oi": "oftalmology-optic_nerve-oi-justification-textfield",
+    "oi nervio óptico": "oftalmology-optic_nerve-oi-justification-textfield",
+    "oi nervio optico": "oftalmology-optic_nerve-oi-justification-textfield",
+    "izquierdo nervio óptico": "oftalmology-optic_nerve-oi-justification-textfield",
+    "izquierdo nervio optico": "oftalmology-optic_nerve-oi-justification-textfield",
+    # Normal
+    "nervio óptico normal ojo izquierdo": "oftalmology-optic_nerve-oi-normal-checkbox",
+    "nervio optico normal ojo izquierdo": "oftalmology-optic_nerve-oi-normal-checkbox",
+    "nervio óptico oi normal": "oftalmology-optic_nerve-oi-normal-checkbox",
+    "nervio optico oi normal": "oftalmology-optic_nerve-oi-normal-checkbox",
+    "oi nervio óptico normal": "oftalmology-optic_nerve-oi-normal-checkbox",
+    "oi nervio optico normal": "oftalmology-optic_nerve-oi-normal-checkbox",
+    "normal nervio óptico oi": "oftalmology-optic_nerve-oi-normal-checkbox",
+    "normal nervio optico oi": "oftalmology-optic_nerve-oi-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OI Pupilometría
+    # ============================================
+    "pupilometría ojo izquierdo": "oftalmology-pupillometry-oi-justification-textfield",
+    "pupilometria ojo izquierdo": "oftalmology-pupillometry-oi-justification-textfield",
+    "pupilometría oi": "oftalmology-pupillometry-oi-justification-textfield",
+    "pupilometria oi": "oftalmology-pupillometry-oi-justification-textfield",
+    "oi pupilometría": "oftalmology-pupillometry-oi-justification-textfield",
+    "oi pupilometria": "oftalmology-pupillometry-oi-justification-textfield",
+    # Normal
+    "pupilometría normal ojo izquierdo": "oftalmology-pupillometry-oi-normal-checkbox",
+    "pupilometria normal ojo izquierdo": "oftalmology-pupillometry-oi-normal-checkbox",
+    "pupilometría oi normal": "oftalmology-pupillometry-oi-normal-checkbox",
+    "pupilometria oi normal": "oftalmology-pupillometry-oi-normal-checkbox",
+    "oi pupilometría normal": "oftalmology-pupillometry-oi-normal-checkbox",
+    "oi pupilometria normal": "oftalmology-pupillometry-oi-normal-checkbox",
+    "normal pupilometría oi": "oftalmology-pupillometry-oi-normal-checkbox",
+    "normal pupilometria oi": "oftalmology-pupillometry-oi-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OI Gonioscopía
+    # ============================================
+    "gonioscopía ojo izquierdo": "oftalmology-gonioscopy-oi-justification-textfield",
+    "gonioscopia ojo izquierdo": "oftalmology-gonioscopy-oi-justification-textfield",
+    "gonioscopía oi": "oftalmology-gonioscopy-oi-justification-textfield",
+    "gonioscopia oi": "oftalmology-gonioscopy-oi-justification-textfield",
+    "oi gonioscopía": "oftalmology-gonioscopy-oi-justification-textfield",
+    "oi gonioscopia": "oftalmology-gonioscopy-oi-justification-textfield",
+    # Normal
+    "gonioscopía normal ojo izquierdo": "oftalmology-gonioscopy-oi-normal-checkbox",
+    "gonioscopia normal ojo izquierdo": "oftalmology-gonioscopy-oi-normal-checkbox",
+    "gonioscopía oi normal": "oftalmology-gonioscopy-oi-normal-checkbox",
+    "gonioscopia oi normal": "oftalmology-gonioscopy-oi-normal-checkbox",
+    "oi gonioscopía normal": "oftalmology-gonioscopy-oi-normal-checkbox",
+    "oi gonioscopia normal": "oftalmology-gonioscopy-oi-normal-checkbox",
+    "normal gonioscopía oi": "oftalmology-gonioscopy-oi-normal-checkbox",
+    "normal gonioscopia oi": "oftalmology-gonioscopy-oi-normal-checkbox",
+
+    # ============================================
+    # Oftalmología - OI Campo Visual por Confrontación
+    # ============================================
+    "campo visual ojo izquierdo": "oftalmology-confrontation_visual_field-oi-justification-textfield",
+    "campo visual oi": "oftalmology-confrontation_visual_field-oi-justification-textfield",
+    "oi campo visual": "oftalmology-confrontation_visual_field-oi-justification-textfield",
+    "campo visual por confrontación ojo izquierdo": "oftalmology-confrontation_visual_field-oi-justification-textfield",
+    "campo visual por confrontacion ojo izquierdo": "oftalmology-confrontation_visual_field-oi-justification-textfield",
+    "campo visual por confrontación oi": "oftalmology-confrontation_visual_field-oi-justification-textfield",
+    "campo visual por confrontacion oi": "oftalmology-confrontation_visual_field-oi-justification-textfield",
+    "confrontación ojo izquierdo": "oftalmology-confrontation_visual_field-oi-justification-textfield",
+    "confrontacion ojo izquierdo": "oftalmology-confrontation_visual_field-oi-justification-textfield",
+    "confrontación oi": "oftalmology-confrontation_visual_field-oi-justification-textfield",
+    "confrontacion oi": "oftalmology-confrontation_visual_field-oi-justification-textfield",
+    # Normal
+    "campo visual normal ojo izquierdo": "oftalmology-confrontation_visual_field-oi-normal-checkbox",
+    "campo visual oi normal": "oftalmology-confrontation_visual_field-oi-normal-checkbox",
+    "oi campo visual normal": "oftalmology-confrontation_visual_field-oi-normal-checkbox",
+    "campo visual por confrontación normal oi": "oftalmology-confrontation_visual_field-oi-normal-checkbox",
+    "campo visual por confrontacion normal oi": "oftalmology-confrontation_visual_field-oi-normal-checkbox",
+    "confrontación normal oi": "oftalmology-confrontation_visual_field-oi-normal-checkbox",
+    "confrontacion normal oi": "oftalmology-confrontation_visual_field-oi-normal-checkbox",
+    "normal campo visual oi": "oftalmology-confrontation_visual_field-oi-normal-checkbox",
 
     # Paso 2: Abrir dropdown de hallazgos (dentro del panel)
     "hallazgo": "text-config-findings-select",
@@ -283,31 +828,8 @@ KEYWORD_TO_FIELD = {
     "buscar hallazgos": "text-config-findings-select",
     "seleccionar hallazgo": "text-config-findings-select",
 
-    # Opciones del dropdown de hallazgos OD Externo
-    "párpados simétricos": "select-option-0",
-    "parpados simetricos": "select-option-0",
-    "párpados": "select-option-0",
-
-    "ausencia de edema palpebral": "select-option-1",
-    "ausencia de edema": "select-option-1",
-    "sin edema palpebral": "select-option-1",
-    "ausencia edema": "select-option-1",
-
-    "distribución uniforme de las pestañas": "select-option-2",
-    "distribucion uniforme de las pestanas": "select-option-2",
-    "pestañas uniformes": "select-option-2",
-    "pestañas": "select-option-2",
-
-    "movimientos oculares conjugados y simétricos": "select-option-3",
-    "movimientos oculares": "select-option-3",
-    "movimientos conjugados": "select-option-3",
-
-    "lesiones": "select-option-4",
-    "lesión": "select-option-4",
-    "lesion": "select-option-4",
-
-    "rosácea": "select-option-5",
-    "rosacea": "select-option-5",
+    # select-option-* se resuelven DINÁMICAMENTE en sync_with_biowel_fields()
+    # (son testids genéricos reutilizados por diferentes dropdowns: hallazgos, diagnóstico, etc.)
 
     # Paso 3: Textarea de justificación (dentro del panel)
     "justificación": "text-config-justification-textarea",
@@ -331,6 +853,9 @@ KEYWORD_TO_FIELD = {
     "ver antecedentes": "header-antecedents-button",
     "guardar antecedentes": "antecedents-save-button",
     "salvar antecedentes": "antecedents-save-button",
+    "guardar cambios": "antecedents-save-button",
+    "guardar cambios antecedentes": "antecedents-save-button",
+    "guardar datos": "antecedents-save-button",
     "cancelar antecedentes": "antecedents-cancel-button",
 
 }
@@ -413,116 +938,280 @@ KEYWORD_TO_UNCHECK = {
     "quitar paciente dilatado": "dilatation-patient-dilated-switch",
     "borrar dilatado": "dilatation-patient-dilated-switch",
     "desmarcar dilatado": "dilatation-patient-dilated-switch",
+}
 
-    # ============================================
-    # Antecedentes Generales - Checkboxes
-    # ============================================
+# ============================================
+# Antecedentes Checkboxes y Textareas — keywords de activación
+# (Se mezclan con KEYWORD_TO_FIELD al final del módulo)
+# ============================================
+_ANTECEDENTES_KEYWORDS = {
+    # Hipertensión arterial
+    "antecedentes generales hipertensión arterial": "antecedents-arterialHypertension-checkbox",
+    "antecedentes generales hipertension arterial": "antecedents-arterialHypertension-checkbox",
+    "generales hipertensión arterial": "antecedents-arterialHypertension-checkbox",
+    "generales hipertension arterial": "antecedents-arterialHypertension-checkbox",
     "hipertension arterial": "antecedents-arterialHypertension-checkbox",
     "hipertensión arterial": "antecedents-arterialHypertension-checkbox",
+    # Diabetes
+    "antecedentes generales diabetes": "antecedents-diabetesGeneral-checkbox",
+    "generales diabetes": "antecedents-diabetesGeneral-checkbox",
     "diabetes": "antecedents-diabetesGeneral-checkbox",
     "diabetes general": "antecedents-diabetesGeneral-checkbox",
+    # Asma
+    "antecedentes generales asma": "antecedents-asthmaGeneral-checkbox",
+    "generales asma": "antecedents-asthmaGeneral-checkbox",
     "asma": "antecedents-asthmaGeneral-checkbox",
     "asma general": "antecedents-asthmaGeneral-checkbox",
+    # Cáncer
+    "antecedentes generales cáncer": "antecedents-cancerGeneral-checkbox",
+    "antecedentes generales cancer": "antecedents-cancerGeneral-checkbox",
+    "generales cáncer": "antecedents-cancerGeneral-checkbox",
+    "generales cancer": "antecedents-cancerGeneral-checkbox",
     "cancer": "antecedents-cancerGeneral-checkbox",
     "cáncer": "antecedents-cancerGeneral-checkbox",
+    # Cardiopatía coronaria (Enfermedad coronaria)
+    "antecedentes generales cardiopatía coronaria": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
+    "antecedentes generales cardiopatia coronaria": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
+    "antecedentes generales enfermedad coronaria": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
+    "generales cardiopatía coronaria": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
+    "generales cardiopatia coronaria": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
+    "generales enfermedad coronaria": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
     "cardiopatía coronaria": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
     "cardiopatia coronaria": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
+    "enfermedad coronaria": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
     "cardiopatía": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
     "cardiopatia": "antecedents-coronaryHeartDiseaseGeneral-checkbox",
+    # Tuberculosis
+    "antecedentes generales tuberculosis": "antecedents-tuberculosisGeneral-checkbox",
+    "generales tuberculosis": "antecedents-tuberculosisGeneral-checkbox",
     "tuberculosis": "antecedents-tuberculosisGeneral-checkbox",
     "tbc": "antecedents-tuberculosisGeneral-checkbox",
+    # Artritis reumatoide (Artritis Reumatoidea)
+    "antecedentes generales artritis reumatoide": "antecedents-rheumatoidArthritisGeneral-checkbox",
+    "antecedentes generales artritis reumatoidea": "antecedents-rheumatoidArthritisGeneral-checkbox",
+    "generales artritis reumatoide": "antecedents-rheumatoidArthritisGeneral-checkbox",
+    "generales artritis reumatoidea": "antecedents-rheumatoidArthritisGeneral-checkbox",
+    "generales artritis": "antecedents-rheumatoidArthritisGeneral-checkbox",
     "artritis reumatoide": "antecedents-rheumatoidArthritisGeneral-checkbox",
+    "artritis reumatoidea": "antecedents-rheumatoidArthritisGeneral-checkbox",
     "artritis": "antecedents-rheumatoidArthritisGeneral-checkbox",
+    # EPOC
+    "antecedentes generales epoc": "antecedents-copdGeneral-checkbox",
+    "generales epoc": "antecedents-copdGeneral-checkbox",
+    "antecedentes generales enfermedad pulmonar obstructiva": "antecedents-copdGeneral-checkbox",
+    "generales enfermedad pulmonar obstructiva": "antecedents-copdGeneral-checkbox",
     "epoc": "antecedents-copdGeneral-checkbox",
     "enfermedad pulmonar obstructiva": "antecedents-copdGeneral-checkbox",
+    # Cirugías previas
+    "antecedentes generales cirugías previas": "antecedents-previousSurgeriesGeneral-checkbox",
+    "antecedentes generales cirugias previas": "antecedents-previousSurgeriesGeneral-checkbox",
+    "generales cirugías previas": "antecedents-previousSurgeriesGeneral-checkbox",
+    "generales cirugias previas": "antecedents-previousSurgeriesGeneral-checkbox",
     "cirugías previas": "antecedents-previousSurgeriesGeneral-checkbox",
     "cirugias previas": "antecedents-previousSurgeriesGeneral-checkbox",
+    # Alergias
+    "antecedentes generales alergias": "antecedents-allergiesGeneral-checkbox",
+    "antecedentes generales alergia": "antecedents-allergiesGeneral-checkbox",
+    "generales alergias": "antecedents-allergiesGeneral-checkbox",
+    "generales alergia": "antecedents-allergiesGeneral-checkbox",
     "alergias": "antecedents-allergiesGeneral-checkbox",
     "alergia": "antecedents-allergiesGeneral-checkbox",
     "alérgico": "antecedents-allergiesGeneral-checkbox",
     "alergico": "antecedents-allergiesGeneral-checkbox",
+    # ¿Usa medicamentos?
+    "antecedentes generales uso de medicamentos": "antecedents-useMedicationsGeneral-checkbox",
+    "antecedentes generales medicamentos": "antecedents-useMedicationsGeneral-checkbox",
+    "generales uso de medicamentos": "antecedents-useMedicationsGeneral-checkbox",
+    "generales medicamentos": "antecedents-useMedicationsGeneral-checkbox",
     "uso de medicamentos": "antecedents-useMedicationsGeneral-checkbox",
     "medicamentos": "antecedents-useMedicationsGeneral-checkbox",
     "usa medicamentos": "antecedents-useMedicationsGeneral-checkbox",
+    # Otros
+    "antecedentes generales otros": "antecedents-othersGeneral-checkbox",
     "otros generales": "antecedents-othersGeneral-checkbox",
     "otro general": "antecedents-othersGeneral-checkbox",
     "otros antecedentes generales": "antecedents-othersGeneral-checkbox",
 
     # Antecedentes Generales - Textarea notas
-    "notas generales": "antecedents-generalNotes-textarea",
-    "notas antecedentes generales": "antecedents-generalNotes-textarea",
+    "antecedentes generales nota": "antecedents-general-notes-textarea",
+    "antecedentes generales notas": "antecedents-general-notes-textarea",
+    "nota antecedentes generales": "antecedents-general-notes-textarea",
+    "notas antecedentes generales": "antecedents-general-notes-textarea",
+    "notas generales antecedentes": "antecedents-general-notes-textarea",
 
     # ============================================
     # Antecedentes Oculares - Checkboxes
     # ============================================
+    # Glaucoma
+    "antecedentes oculares glaucoma": "antecedents-glaucomaOcular-checkbox",
+    "oculares glaucoma": "antecedents-glaucomaOcular-checkbox",
     "glaucoma": "antecedents-glaucomaOcular-checkbox",
     "glaucoma ocular": "antecedents-glaucomaOcular-checkbox",
+    # ROP
+    "antecedentes oculares rop": "antecedents-ropOcular-checkbox",
+    "oculares rop": "antecedents-ropOcular-checkbox",
+    "antecedentes oculares retinopatía del prematuro": "antecedents-ropOcular-checkbox",
+    "oculares retinopatía del prematuro": "antecedents-ropOcular-checkbox",
+    "oculares retinopatia del prematuro": "antecedents-ropOcular-checkbox",
     "rop": "antecedents-ropOcular-checkbox",
     "retinopatía del prematuro": "antecedents-ropOcular-checkbox",
     "retinopatia del prematuro": "antecedents-ropOcular-checkbox",
+    # DMRE
+    "antecedentes oculares dmre": "antecedents-dmreOcular-checkbox",
+    "oculares dmre": "antecedents-dmreOcular-checkbox",
+    "antecedentes oculares degeneración macular": "antecedents-dmreOcular-checkbox",
+    "oculares degeneración macular": "antecedents-dmreOcular-checkbox",
+    "oculares degeneracion macular": "antecedents-dmreOcular-checkbox",
     "dmre": "antecedents-dmreOcular-checkbox",
     "degeneración macular": "antecedents-dmreOcular-checkbox",
     "degeneracion macular": "antecedents-dmreOcular-checkbox",
+    # Gafas
+    "antecedentes oculares gafas": "antecedents-glassesOcular-checkbox",
+    "oculares gafas": "antecedents-glassesOcular-checkbox",
+    "antecedentes oculares uso de gafas": "antecedents-glassesOcular-checkbox",
+    "oculares uso de gafas": "antecedents-glassesOcular-checkbox",
     "uso de gafas": "antecedents-glassesOcular-checkbox",
     "gafas": "antecedents-glassesOcular-checkbox",
     "usa gafas": "antecedents-glassesOcular-checkbox",
     "lentes": "antecedents-glassesOcular-checkbox",
+    # Ojo seco
+    "antecedentes oculares ojo seco": "antecedents-dryEyeOcular-checkbox",
+    "oculares ojo seco": "antecedents-dryEyeOcular-checkbox",
     "ojo seco": "antecedents-dryEyeOcular-checkbox",
     "síndrome de ojo seco": "antecedents-dryEyeOcular-checkbox",
     "sindrome de ojo seco": "antecedents-dryEyeOcular-checkbox",
+    # Retinopatía diabética
+    "antecedentes oculares retinopatía diabética": "antecedents-diabeticRetinoPathyOcular-checkbox",
+    "antecedentes oculares retinopatia diabetica": "antecedents-diabeticRetinoPathyOcular-checkbox",
+    "oculares retinopatía diabética": "antecedents-diabeticRetinoPathyOcular-checkbox",
+    "oculares retinopatia diabetica": "antecedents-diabeticRetinoPathyOcular-checkbox",
     "retinopatía diabética": "antecedents-diabeticRetinoPathyOcular-checkbox",
     "retinopatia diabetica": "antecedents-diabeticRetinoPathyOcular-checkbox",
+    # Uveítis
+    "antecedentes oculares uveítis": "antecedents-uveitisOcular-checkbox",
+    "antecedentes oculares uveitis": "antecedents-uveitisOcular-checkbox",
+    "oculares uveítis": "antecedents-uveitisOcular-checkbox",
+    "oculares uveitis": "antecedents-uveitisOcular-checkbox",
     "uveítis": "antecedents-uveitisOcular-checkbox",
     "uveitis": "antecedents-uveitisOcular-checkbox",
+    # Lentes de contacto
+    "antecedentes oculares lentes de contacto": "antecedents-contactLensesOcular-checkbox",
+    "oculares lentes de contacto": "antecedents-contactLensesOcular-checkbox",
     "lentes de contacto": "antecedents-contactLensesOcular-checkbox",
     "usa lentes de contacto": "antecedents-contactLensesOcular-checkbox",
+    # Traumas
+    "antecedentes oculares traumas": "antecedents-traumasOcular-checkbox",
+    "antecedentes oculares trauma": "antecedents-traumasOcular-checkbox",
+    "oculares traumas": "antecedents-traumasOcular-checkbox",
+    "oculares trauma": "antecedents-traumasOcular-checkbox",
     "traumas oculares": "antecedents-traumasOcular-checkbox",
     "trauma ocular": "antecedents-traumasOcular-checkbox",
+    # Cirugía
+    "antecedentes oculares cirugía": "antecedents-surgeriesOcular-checkbox",
+    "antecedentes oculares cirugia": "antecedents-surgeriesOcular-checkbox",
+    "oculares cirugía": "antecedents-surgeriesOcular-checkbox",
+    "oculares cirugia": "antecedents-surgeriesOcular-checkbox",
     "cirugías oculares": "antecedents-surgeriesOcular-checkbox",
     "cirugias oculares": "antecedents-surgeriesOcular-checkbox",
     "cirugía ocular": "antecedents-surgeriesOcular-checkbox",
     "cirugia ocular": "antecedents-surgeriesOcular-checkbox",
+    # Alertas
+    "antecedentes oculares alertas": "antecedents-alertsOcular-checkbox",
+    "antecedentes oculares alerta": "antecedents-alertsOcular-checkbox",
+    "oculares alertas": "antecedents-alertsOcular-checkbox",
+    "oculares alerta": "antecedents-alertsOcular-checkbox",
     "alertas oculares": "antecedents-alertsOcular-checkbox",
     "alerta ocular": "antecedents-alertsOcular-checkbox",
+    # Otros
+    "antecedentes oculares otros": "antecedents-othersOcular-checkbox",
     "otros oculares": "antecedents-othersOcular-checkbox",
     "otro ocular": "antecedents-othersOcular-checkbox",
     "otros antecedentes oculares": "antecedents-othersOcular-checkbox",
 
     # Antecedentes Oculares - Textarea notas
-    "notas oculares": "antecedents-ocularNotes-textarea",
-    "notas antecedentes oculares": "antecedents-ocularNotes-textarea",
+    "antecedentes oculares nota": "antecedents-ocular-notes-textarea",
+    "antecedentes oculares notas": "antecedents-ocular-notes-textarea",
+    "nota antecedentes oculares": "antecedents-ocular-notes-textarea",
+    "notas antecedentes oculares": "antecedents-ocular-notes-textarea",
+    "notas oculares antecedentes": "antecedents-ocular-notes-textarea",
 
     # ============================================
     # Antecedentes Familiares - Checkboxes
     # ============================================
+    # HTA
+    "antecedentes familiares hipertensión": "antecedents-ahtFamiliar-checkbox",
+    "antecedentes familiares hipertension": "antecedents-ahtFamiliar-checkbox",
+    "antecedentes familiares hta": "antecedents-ahtFamiliar-checkbox",
+    "familiares hipertensión": "antecedents-ahtFamiliar-checkbox",
+    "familiares hipertension": "antecedents-ahtFamiliar-checkbox",
+    "familiares hta": "antecedents-ahtFamiliar-checkbox",
     "hipertensión familiar": "antecedents-ahtFamiliar-checkbox",
     "hipertension familiar": "antecedents-ahtFamiliar-checkbox",
     "hta familiar": "antecedents-ahtFamiliar-checkbox",
+    # Diabetes
+    "antecedentes familiares diabetes": "antecedents-diabetesFamiliar-checkbox",
+    "familiares diabetes": "antecedents-diabetesFamiliar-checkbox",
     "diabetes familiar": "antecedents-diabetesFamiliar-checkbox",
+    # Asma
+    "antecedentes familiares asma": "antecedents-asthmaFamiliar-checkbox",
+    "familiares asma": "antecedents-asthmaFamiliar-checkbox",
     "asma familiar": "antecedents-asthmaFamiliar-checkbox",
+    # Enfermedad coronaria
+    "antecedentes familiares enfermedad coronaria": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
+    "antecedentes familiares cardiopatía coronaria": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
+    "antecedentes familiares cardiopatia coronaria": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
+    "antecedentes familiares cardiopatía": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
+    "antecedentes familiares cardiopatia": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
+    "familiares enfermedad coronaria": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
+    "familiares cardiopatía coronaria": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
+    "familiares cardiopatia coronaria": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
+    "familiares cardiopatía": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
+    "familiares cardiopatia": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
     "cardiopatía familiar": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
     "cardiopatia familiar": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
     "cardiopatía coronaria familiar": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
     "cardiopatia coronaria familiar": "antecedents-coronaryHeartDiseaseFamiliar-checkbox",
+    # Enfermedad del colágeno
+    "antecedentes familiares enfermedad del colágeno": "antecedents-collagenDiseaseFamiliar-checkbox",
+    "antecedentes familiares enfermedad del colageno": "antecedents-collagenDiseaseFamiliar-checkbox",
+    "antecedentes familiares colágeno": "antecedents-collagenDiseaseFamiliar-checkbox",
+    "antecedentes familiares colageno": "antecedents-collagenDiseaseFamiliar-checkbox",
+    "familiares enfermedad del colágeno": "antecedents-collagenDiseaseFamiliar-checkbox",
+    "familiares enfermedad del colageno": "antecedents-collagenDiseaseFamiliar-checkbox",
+    "familiares colágeno": "antecedents-collagenDiseaseFamiliar-checkbox",
+    "familiares colageno": "antecedents-collagenDiseaseFamiliar-checkbox",
     "enfermedad del colágeno": "antecedents-collagenDiseaseFamiliar-checkbox",
     "enfermedad del colageno": "antecedents-collagenDiseaseFamiliar-checkbox",
     "colágeno familiar": "antecedents-collagenDiseaseFamiliar-checkbox",
     "colageno familiar": "antecedents-collagenDiseaseFamiliar-checkbox",
+    # Glaucoma
+    "antecedentes familiares glaucoma": "antecedents-glaucomaFamiliar-checkbox",
+    "familiares glaucoma": "antecedents-glaucomaFamiliar-checkbox",
     "glaucoma familiar": "antecedents-glaucomaFamiliar-checkbox",
+    # Queratocono
+    "antecedentes familiares queratocono": "antecedents-keratoconusFamiliar-checkbox",
+    "antecedentes familiares keratocono": "antecedents-keratoconusFamiliar-checkbox",
+    "familiares queratocono": "antecedents-keratoconusFamiliar-checkbox",
+    "familiares keratocono": "antecedents-keratoconusFamiliar-checkbox",
     "queratocono familiar": "antecedents-keratoconusFamiliar-checkbox",
     "queratocono": "antecedents-keratoconusFamiliar-checkbox",
     "keratocono familiar": "antecedents-keratoconusFamiliar-checkbox",
+    # Otros
+    "antecedentes familiares otros": "antecedents-othersFamiliar-checkbox",
     "otros familiares": "antecedents-othersFamiliar-checkbox",
     "otro familiar": "antecedents-othersFamiliar-checkbox",
     "otros antecedentes familiares": "antecedents-othersFamiliar-checkbox",
 
     # Antecedentes Familiares - Textarea notas
-    "notas familiares": "antecedents-familiarNotes-textarea",
-    "notas antecedentes familiares": "antecedents-familiarNotes-textarea",
+    "antecedentes familiares nota": "antecedents-familiar-notes-textarea",
+    "antecedentes familiares notas": "antecedents-familiar-notes-textarea",
+    "nota antecedentes familiares": "antecedents-familiar-notes-textarea",
+    "notas antecedentes familiares": "antecedents-familiar-notes-textarea",
+    "notas familiares antecedentes": "antecedents-familiar-notes-textarea",
 }
 
-# Palabras clave para fuinalizar campo
-
+# Mezclar antecedentes keywords en KEYWORD_TO_FIELD
+KEYWORD_TO_FIELD.update(_ANTECEDENTES_KEYWORDS)
 
 COMMAND_KEYWORDS = {
     "listo": "cmd_stop",
@@ -543,12 +1232,70 @@ COMMAND_KEYWORDS = {
 # Override explícito para campos cuyo data-testid engaña la heurística de tipo
 # Se verifica PRIMERO en get_field_type() antes de la heurística por substring
 FIELD_TYPE_OVERRIDES = {
-    "ophtalmology-justification-textfield": "button",  # Click abre panel hallazgos
+    # Oftalmología - Textfields que abren panel de hallazgos (son botones, no inputs)
+    "oftalmology-external-od-justification-textfield": "button",
+    "oftalmology-muscle_balance-od-justification-textfield": "button",
+    "oftalmology-ppl-od-justification-textfield": "button",
+    "oftalmology-screra_conjunctiva-od-justification-textfield": "button",
+    "oftalmology-cornea-od-justification-textfield": "button",
+    "oftalmology-previous_chamber-od-justification-textfield": "button",
+    "oftalmology-iris-od-justification-textfield": "button",
+    "oftalmology-crystalline-od-justification-textfield": "button",
+    "oftalmology-retina_vitreous-od-justification-textfield": "button",
+    "oftalmology-optic_nerve-od-justification-textfield": "button",
+    "oftalmology-pupillometry-od-justification-textfield": "button",
+    "oftalmology-gonioscopy-od-justification-textfield": "button",
+    "oftalmology-confrontation_visual_field-od-justification-textfield": "button",
+    "oftalmology-external-oi-justification-textfield": "button",
+    "oftalmology-muscle_balance-oi-justification-textfield": "button",
+    "oftalmology-ppl-oi-justification-textfield": "button",
+    "oftalmology-screra_conjunctiva-oi-justification-textfield": "button",
+    "oftalmology-cornea-oi-justification-textfield": "button",
+    "oftalmology-previous_chamber-oi-justification-textfield": "button",
+    "oftalmology-iris-oi-justification-textfield": "button",
+    "oftalmology-crystalline-oi-justification-textfield": "button",
+    "oftalmology-retina_vitreous-oi-justification-textfield": "button",
+    "oftalmology-optic_nerve-oi-justification-textfield": "button",
+    "oftalmology-pupillometry-oi-justification-textfield": "button",
+    "oftalmology-gonioscopy-oi-justification-textfield": "button",
+    "oftalmology-confrontation_visual_field-oi-justification-textfield": "button",
+    # Panel de hallazgos compartido
     "text-config-findings-select": "button",            # Click abre dropdown hallazgos
     "text-config-search-field": "button",               # Click enfoca búsqueda
+    "diagnostic-impression-diagnosis-select": "button",   # Click abre dropdown categorías CIE-10
+    "diagnostic-impression-eye-radio-0": "button",        # OD - click directo en input radio nativo
+    "diagnostic-impression-eye-radio-1": "button",        # OI
+    "diagnostic-impression-eye-radio-2": "button",        # AO
+    "diagnostic-impression-eye-radio-3": "button",        # N/A
     # text-config-justification-textarea → "textarea" (se detecta con nueva regla)
     # text-config-save-button → "button" (ya se detecta correctamente)
 }
+
+# ============================================
+# AMBIGUOUS_BUTTON_KEYWORDS: keywords de botones que son prefijos de keywords
+# más largas de otros tipos de campo (checkbox, textarea, etc.).
+# Estas NO deben activarse en parciales — Deepgram envía "Antecedentes" antes
+# de que llegue "Antecedentes generales diabetes". Solo activar en finales.
+# ============================================
+def _build_ambiguous_button_keywords():
+    """Construye set de keywords de botón que son prefijo de keywords de otros tipos."""
+    _button_kw_to_testid = {}
+    _non_button_keywords = set()
+    for kw, testid in KEYWORD_TO_FIELD.items():
+        ftype = FIELD_TYPE_OVERRIDES.get(testid, "")
+        if ftype == "button" or testid.endswith("-button"):
+            _button_kw_to_testid[kw.lower()] = testid
+        else:
+            _non_button_keywords.add(kw.lower())
+    ambiguous = set()
+    for btn_kw in _button_kw_to_testid:
+        for non_btn_kw in _non_button_keywords:
+            if non_btn_kw.startswith(btn_kw + " ") and non_btn_kw != btn_kw:
+                ambiguous.add(btn_kw)
+                break
+    return ambiguous
+
+AMBIGUOUS_BUTTON_KEYWORDS = _build_ambiguous_button_keywords()
 
 # Campos que requieren flujo "exclusivo" (lock)
 # Una vez activados, NO se debe cambiar a otro campo hasta que se diga "listo" o "terminar"
@@ -558,6 +1305,9 @@ EXCLUSIVE_FIELDS = {
     "oftalmology-observations-textarea",
     "analysis-and-plan-textarea",
     "text-config-justification-textarea",  # Justificación hallazgo oftalmológico
+    "antecedents-general-notes-textarea",   # Notas antecedentes generales
+    "antecedents-ocular-notes-textarea",    # Notas antecedentes oculares
+    "antecedents-familiar-notes-textarea",  # Notas antecedentes familiares
     ""
 }
 
@@ -943,7 +1693,21 @@ def clean_captured_value(value: str) -> str:
     return val # Retorna lo que quede (puede ser "")
 
 
-def strip_keywords_and_commands(text: str, active_keyword: str = "") -> str:
+def _strip_accents(s: str) -> str:
+    """Elimina acentos/tildes de una cadena: 'análisis' → 'analisis'."""
+    import unicodedata
+    return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')
+
+
+# Mapa inverso: testid → {todas las keywords que apuntan a ese testid}
+# Se usa para limpiar TODAS las variantes de keyword del texto, no solo la que activó el campo
+_TESTID_TO_KEYWORDS: dict[str, set[str]] = {}
+for _kw, _tid in KEYWORD_TO_FIELD.items():
+    _TESTID_TO_KEYWORDS.setdefault(_tid, set()).add(_kw)
+    _TESTID_TO_KEYWORDS[_tid].add(_strip_accents(_kw))
+
+
+def strip_keywords_and_commands(text: str, active_keyword: str = "", active_testid: str = "") -> str:
     """
     Limpia SOLO la keyword activadora del INICIO del texto y comandos de control.
 
@@ -955,6 +1719,9 @@ def strip_keywords_and_commands(text: str, active_keyword: str = "") -> str:
     Args:
         text: Texto a limpiar
         active_keyword: La keyword que activó el campo actual (se elimina del inicio)
+        active_testid: El testid del campo activo. Si se proporciona, se intentan
+                       TODAS las keywords que apuntan a ese testid (robustez ante
+                       variantes de Deepgram: con/sin tildes, con/sin artículos).
 
     Returns:
         Texto con la keyword activadora removida del inicio
@@ -964,14 +1731,52 @@ def strip_keywords_and_commands(text: str, active_keyword: str = "") -> str:
 
     val = text.strip()
 
-    # 1. Eliminar la keyword activa SOLO del INICIO del texto
-    # Esto es lo único que debemos quitar: "motivo de consulta dolor de ojos" → "dolor de ojos"
+    # 1. Recopilar TODAS las variantes de keyword a intentar limpiar
+    all_variants: set[str] = set()
     if active_keyword:
+        all_variants.add(active_keyword)
+        all_variants.add(_strip_accents(active_keyword))
+    if active_testid and active_testid in _TESTID_TO_KEYWORDS:
+        all_variants.update(_TESTID_TO_KEYWORDS[active_testid])
+
+    # Ordenar de más larga a más corta: limpiar primero la variante más larga
+    # para evitar dejar fragmentos (ej: "de la consulta" si solo limpiamos "consulta")
+    #
+    # PASO 1a: Intentar limpiar del INICIO del texto (caso normal)
+    cleaned_from_start = False
+    for kw_variant in sorted(all_variants, key=len, reverse=True):
         pattern = re.compile(
-            r"^" + re.escape(active_keyword) + r"\b[.,;:\s]*",
+            r"^" + re.escape(kw_variant) + r"\b[.,;:\s]*",
             re.IGNORECASE
         )
-        val = pattern.sub("", val).strip()
+        new_val = pattern.sub("", val).strip()
+        if new_val != val:
+            val = new_val
+            cleaned_from_start = True
+            break
+
+    # PASO 1b: Si no encontramos la keyword al inicio, buscar en CUALQUIER posición
+    # y tomar solo el contenido DESPUÉS de la keyword.
+    # Esto maneja parciales acumulativos de Deepgram donde la keyword está en el medio:
+    # "paciente tiene dolor motivo de consulta dolor de cabeza" → "dolor de cabeza"
+    if not cleaned_from_start and all_variants:
+        val_lower = val.lower()
+        val_no_accent = _strip_accents(val_lower)
+        best_end = -1
+        for kw_variant in sorted(all_variants, key=len, reverse=True):
+            kw_lower = kw_variant.lower()
+            # Buscar en texto original y sin acentos
+            for search_text in (val_lower, val_no_accent):
+                idx = search_text.rfind(kw_lower)
+                if idx != -1:
+                    end_pos = idx + len(kw_lower)
+                    if end_pos > best_end:
+                        best_end = end_pos
+        if best_end > 0:
+            # Tomar solo lo que viene después de la keyword
+            val = val[best_end:].strip()
+            # Limpiar puntuación/conectores sobrantes al inicio
+            val = re.sub(r"^[.,;:\s]+", "", val).strip()
 
     # 2. Eliminar SOLO comandos de control (listo, borrar, etc.) - estos nunca son contenido clínico
     for cmd in COMMAND_KEYWORDS:
@@ -1354,17 +2159,8 @@ class RealtimeExtractor:
         # key: keyword variante (lowercase) -> value: data_testid
         self.dynamic_keyword_map: Dict[str, str] = {}
         # Seeds útiles (pueden añadirse más manualmente)
-        # Observaciones (campo proporcionado por el usuario)
-        try:
-            self.dynamic_keyword_map.update({
-                "observaciones": "oftalmology-observations-textarea",
-                "observacion": "oftalmology-observations-textarea",
-                "notas": "oftalmology-observations-textarea",
-                "comentarios": "oftalmology-observations-textarea",
-            })
-        except Exception:
-            # seguridad: no interrumpir la inicialización
-            pass
+        # NOTA: Keywords genéricas como "observaciones", "observacion", "notas", "comentarios"
+        # se eliminaron porque causaban activaciones falsas durante el dictado.
 
         # Compilar patrones una vez
         self._compiled_eye = {
@@ -1417,10 +2213,16 @@ class RealtimeExtractor:
             if not label or not testid:
                 continue
 
-            # IGNORAR Opciones de Select (ej: select-option-0)
-            # Estas NO son campos llenables, son valores para el select padre.
-            # Si las incluimos, "General" mapeará a "select-option-0" y fallará.
-            if "select-option-" in testid or "select-default-" in testid:
+            # select-default-* siempre ignorar (placeholder text)
+            if "select-default-" in testid:
+                continue
+
+            # select-option-*: registrar SOLO el label completo como keyword
+            # (son testids genéricos reutilizados por diferentes dropdowns,
+            #  generar sub-keywords causaría colisiones)
+            if testid.startswith("select-option-"):
+                if label not in self.dynamic_keyword_map:
+                    self.dynamic_keyword_map[label] = testid
                 continue
 
             keywords = self._generate_keywords_from_label(label)
@@ -1458,6 +2260,21 @@ class RealtimeExtractor:
         "ocular", "preconsulta", "signos", "vitales", "signos vitales",
         "medicamentosa", "conciliación", "conciliacion",
         "ortopédica", "ortopedica",
+        # "enfermedad" sola es substring de "enfermedades del aparato X" (diagnóstico)
+        # La keyword correcta es "enfermedad actual" (estática en KEYWORD_TO_FIELD)
+        "enfermedad", "enfermedades",
+        # "actual" sola es demasiado genérica
+        "actual",
+        # Palabras genéricas que causan activaciones falsas de campos principales
+        "observaciones", "observacion", "observación",
+        "notas", "comentarios",
+        "análisis", "analisis", "plan", "y plan", "analisis y", "análisis y",
+        "consulta", "consulta por", "motivo", "de consulta", "motivo de",
+        "cuadro", "cuadro clínico", "cuadro clinico",
+        "padecimiento", "padecimiento actual",
+        # Antecedentes — solo frases con categoría deben activar
+        "generales", "general", "en general", "oculares", "familiares",
+        "antecedentes", "antecedente",
     }
 
     def _generate_keywords_from_label(self, label: str) -> List[str]:
@@ -1493,11 +2310,11 @@ class RealtimeExtractor:
         """Retorna sinónimos médicamente relevantes según el label."""
         # Mapa simple de sinónimos; puede extenderse
         synonyms_map = {
-            "motivo de consulta": ["consulta por", "viene por"],
-            "enfermedad actual": ["padecimiento actual", "cuadro clínico"],
+            # NOTA: "motivo de consulta" y "enfermedad actual" ya no generan sinónimos cortos
+            # para evitar activaciones falsas durante dictado
             "presión intraocular": ["pio", "tonometría", "tonometria"],
             "agudeza visual": ["agudeza", "av", "visual"],
-            "observaciones": ["notas", "comentarios", "observación"],
+            # NOTA: "observaciones" ya no genera sinónimos genéricos
             "refracción": ["refraccion", "refraction"],
             "córnea": ["cornea", "corneal"],
         }
@@ -1926,7 +2743,13 @@ class RealtimeExtractor:
         if not unique_key:
             return "text"
 
-        # PRIMERO: Buscar en biowel_fields (si existe) - máxima prioridad
+        # Override explícito — MÁXIMA prioridad (sobre biowel_fields y todo lo demás)
+        # Necesario para campos como diagnostic-impression-diagnosis-select que el scanner
+        # reporta como "select" pero que el backend necesita tratar como "button" (click)
+        if unique_key in FIELD_TYPE_OVERRIDES:
+            return FIELD_TYPE_OVERRIDES[unique_key]
+
+        # Buscar en biowel_fields (si existe) - segunda prioridad
         # Esto garantiza que el scanner (frontend) está en control del tipo
         if self.biowel_fields:
             for field in self.biowel_fields:
@@ -1935,10 +2758,6 @@ class RealtimeExtractor:
                     field_type = getattr(field, 'field_type', None) or (isinstance(field, dict) and field.get('field_type'))
                     if field_type:
                         return field_type
-
-        # Override explícito (máxima prioridad después de biowel_fields)
-        if unique_key in FIELD_TYPE_OVERRIDES:
-            return FIELD_TYPE_OVERRIDES[unique_key]
 
         # Opciones de dropdown (select-option-X) son clickeables, no selects
         if unique_key.startswith("select-option"):

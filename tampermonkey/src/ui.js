@@ -101,6 +101,36 @@ export function createWidget() {
       .bva-modal-btn:hover { background: #f3f4f6; }
       .bva-modal-btn-primary { background: #3b82f6; color: white; border-color: #3b82f6; }
       .bva-modal-btn-primary:hover { background: #2563eb; }
+
+      /* Batch mode styles */
+      .bva-separator { border: none; border-top: 1px solid #e5e7eb; margin: 10px 0; }
+      .bva-batch-title { font-size: 12px; font-weight: 600; color: #6b7280; margin-bottom: 8px; }
+      .bva-batch-row { display: flex; gap: 6px; margin-bottom: 6px; }
+      .bva-batch-btn {
+        flex: 1; padding: 7px 10px; border-radius: 8px; font-size: 12px;
+        font-weight: 500; cursor: pointer; border: 1px solid #d1d5db;
+        background: #f9fafb; color: #374151; transition: all 0.2s;
+        display: flex; align-items: center; justify-content: center; gap: 4px;
+      }
+      .bva-batch-btn:hover { background: #f3f4f6; border-color: #9ca3af; }
+      .bva-batch-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+      .bva-batch-btn-process { background: #10b981; color: white; border-color: #10b981; }
+      .bva-batch-btn-process:hover { background: #059669; }
+      .bva-batch-btn-process:disabled { background: #6ee7b7; border-color: #6ee7b7; }
+      .bva-batch-btn-record { background: #f59e0b; color: white; border-color: #f59e0b; }
+      .bva-batch-btn-record:hover { background: #d97706; }
+      .bva-batch-btn-record.recording { background: #ef4444; border-color: #ef4444; animation: bva-pulse 1.5s ease-in-out infinite; }
+      .bva-batch-file-name {
+        font-size: 11px; color: #6b7280; margin-bottom: 6px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .bva-batch-status {
+        font-size: 11px; padding: 6px 10px; border-radius: 6px;
+        background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;
+        display: none; margin-bottom: 6px;
+      }
+      .bva-batch-status.error { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+      .bva-batch-status.visible { display: block; }
     </style>
 
     <div class="bva-fields-overlay" id="bvaFieldsOverlay"></div>
@@ -147,6 +177,25 @@ export function createWidget() {
           Detener
         </button>
       </div>
+      <hr class="bva-separator">
+      <div class="bva-batch-title">Modo Batch (audio completo)</div>
+      <input type="file" id="bvaBatchFileInput" accept=".wav,.flac,.mp3,.m4a,.ogg,.webm" style="display:none">
+      <div class="bva-batch-row">
+        <button class="bva-batch-btn" id="bvaBatchUploadBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Agregar audio
+        </button>
+        <button class="bva-batch-btn bva-batch-btn-record" id="bvaBatchRecordBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="6"/></svg>
+          Grabar
+        </button>
+      </div>
+      <div class="bva-batch-file-name" id="bvaBatchFileName" style="display:none"></div>
+      <button class="bva-batch-btn bva-batch-btn-process" id="bvaBatchProcessBtn" disabled style="width:100%;margin-bottom:6px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Procesar
+      </button>
+      <div class="bva-batch-status" id="bvaBatchStatus"></div>
       <button class="bva-minimize" id="bvaMinimize" title="Minimizar">&minus;</button>
     </div>
 

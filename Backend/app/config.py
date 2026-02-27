@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
     # Deepgram
     deepgram_api_key: str = ""
-    deepgram_model: str = "nova-2"
+    deepgram_model: str = "nova-3"
     deepgram_language: str = "es"
 
     # Server
